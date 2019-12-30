@@ -1,0 +1,7 @@
+.idea
+Common/bin
+Common/obj
+ResourceMonitor/bin
+ResourceMonitor/obj
+Tests/bin
+Tests/obj
