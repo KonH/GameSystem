@@ -11,12 +11,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8039F495-22C2-4C45-A452-20387AB26D7F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildPipeline", "BuildPipeline\BuildPipeline.csproj", "{03FE412A-A229-4DA8-8ED8-BB92CE6B0CF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03FE412A-A229-4DA8-8ED8-BB92CE6B0CF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03FE412A-A229-4DA8-8ED8-BB92CE6B0CF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{168BDA9E-5FB6-4C83-951B-F4D02F988D39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{168BDA9E-5FB6-4C83-951B-F4D02F988D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{168BDA9E-5FB6-4C83-951B-F4D02F988D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
