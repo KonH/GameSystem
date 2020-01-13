@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Common.Utils;
 
 namespace ResourceMonitor {
 	static class Program {
@@ -8,15 +7,17 @@ namespace ResourceMonitor {
 
 		static async Task Main() {
 			var writer = new ConsoleWriter();
+			var prevCpu = CpuInfoReader.Read();
 			while ( true ) {
-				// Read top output once
-				var output = ProgramRunner.StartAndReadLines("top", "-l 1");
-				var info = TopParser.GetSystemInfo(output);
-				writer.Write(info);
 				if ( Console.KeyAvailable ) {
 					return;
 				}
 				await Task.Delay(Interval);
+				var curCpu = CpuInfoReader.Read();
+				var memory = MemoryInfoReader.Read();
+				var info = new SystemInfo(prevCpu, curCpu, memory);
+				writer.Write(info);
+				prevCpu = curCpu;
 			}
 		}
 	}

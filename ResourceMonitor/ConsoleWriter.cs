@@ -5,8 +5,8 @@ namespace ResourceMonitor {
 		const int ColumnCount = 10;
 
 		public void Write(SystemInfo info) {
-			WritePercent("CPU", info.TotalCpuUsage);
-			WritePercent("MEM", info.RelativeMemoryUsage);
+			WritePercent("CPU", info.CpuUsage);
+			WritePercent("MEM", info.MemoryUsage);
 			Console.WriteLine();
 		}
 
