@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ResourceMonitor.Writer;
 
 namespace ResourceMonitor {
 	static class Program {
 		const int Interval = 3000;
 
 		static async Task Main() {
-			var writer = new ConsoleWriter();
+			using var writer = new CompositeWriter(new ConsoleWriter(), new PiWriter());
 			var prevCpu = CpuInfoReader.Read();
 			while ( true ) {
 				if ( Console.KeyAvailable ) {

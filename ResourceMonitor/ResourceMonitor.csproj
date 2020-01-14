@@ -9,4 +9,8 @@
 	  <ProjectReference Include="..\Common\Common.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="kenssamson.rpi-ws281x-csharp" Version="1.1.0" />
+	</ItemGroup>
+
 </Project>
