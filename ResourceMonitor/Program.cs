@@ -8,11 +8,9 @@ namespace ResourceMonitor {
 
 		static async Task Main() {
 			using var writer = new CompositeWriter(new ConsoleWriter(), new PiWriter());
+			AppDomain.CurrentDomain.ProcessExit += (sender, args) => writer.Dispose();
 			var prevCpu = CpuInfoReader.Read();
 			while ( true ) {
-				if ( Console.KeyAvailable ) {
-					return;
-				}
 				await Task.Delay(Interval);
 				var curCpu = CpuInfoReader.Read();
 				var memory = MemoryInfoReader.Read();
