@@ -31,8 +31,8 @@ class Build : NukeBuild {
 	[Parameter("Self-contained for publish")]
 	readonly bool? SelfContained;
 
-	[Parameter("Path to Pi deploy directory")]
-	readonly string PiHome;
+	[Parameter("Path to Pi deploy directory on local machine")]
+	readonly string LocalPiHome;
 
 	Target CleanDotNet => _ => _
 		.Requires(() => TargetProject)
@@ -89,22 +89,16 @@ class Build : NukeBuild {
 	Target DeployDotNet => _ => _
 		.Description("Deploy build result to target Pi directory root")
 		.Requires(() => TargetProject)
-		.Requires(() => PiHome)
+		.Requires(() => LocalPiHome)
 		.DependsOn(PublishDotNet)
 		.Executes(() => {
 			var project = GetTargetProject();
 			var buildConfigurationDir = project.Directory / "bin" / Configuration;
 			var buildDir = GetBuildDir(buildConfigurationDir);
-			var targetPath = (AbsolutePath) PiHome / TargetProject;
-			if ( SelfContained.GetValueOrDefault() ) {
-				var sourceFilePath = GetPublishDirWithRuntime(buildDir) / project.Name;
-				CopyFile(sourceFilePath, targetPath,
-					FileExistsPolicy.Overwrite);
-			} else {
-				var sourceDirPath = GetPublishDir(buildDir);
-				CopyDirectoryRecursively(sourceDirPath, targetPath,
-					DirectoryExistsPolicy.Merge, FileExistsPolicy.OverwriteIfNewer);
-			}
+			var targetPath = (AbsolutePath) LocalPiHome / TargetProject;
+			var sourceDirPath = GetPublishDir(buildDir);
+			CopyDirectoryRecursively(sourceDirPath, targetPath,
+				DirectoryExistsPolicy.Merge, FileExistsPolicy.OverwriteIfNewer);
 		});
 
 	Project GetTargetProject() {
