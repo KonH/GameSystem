@@ -1,0 +1,13 @@
+[Unit] 
+Description=LED resource monitor
+  
+[Service]
+ExecStart=/share/ResourceMonitor/ResourceMonitor
+WorkingDirectory=/share/ResourceMonitor
+User=root 
+Group=root
+Restart=on-failure
+SyslogIdentifier=resource-monitor  
+
+[Install]
+WantedBy=multi-user.target
