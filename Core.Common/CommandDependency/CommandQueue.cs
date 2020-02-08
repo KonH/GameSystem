@@ -5,7 +5,7 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Common.CommandDependency {
-	public sealed class CommandQueue<TConfig, TState> where TConfig : IConfig where TState : IState {
+	public class CommandQueue<TConfig, TState> where TConfig : IConfig where TState : IState {
 		public delegate bool Condition(TConfig config, TState state, ICommand<TConfig, TState> c);
 
 		public delegate ICommand<TConfig, TState> Initializer(

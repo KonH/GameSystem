@@ -2,13 +2,13 @@ using Clicker.Common;
 using Clicker.Common.Config;
 using Clicker.Common.State;
 using Core.Common.CommandExecution;
-using Core.Common.Tests.Utils;
+using Core.Common.Utils;
 
 namespace Clicker.Tests {
 	public static class Common {
 		public static BatchCommandExecutor<GameConfig, GameState> CreateExecutor() {
-			var logger = new TestLogger<BatchCommandExecutor<GameConfig, GameState>>();
-			var queue = new CommandQueue().Queue;
+			var logger = new ConsoleLogger<BatchCommandExecutor<GameConfig, GameState>>();
+			var queue = new CommandQueue();
 			return new BatchCommandExecutor<GameConfig, GameState>(logger, queue);
 		}
 	}
