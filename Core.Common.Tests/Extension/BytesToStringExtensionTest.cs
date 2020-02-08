@@ -1,7 +1,7 @@
 using Core.Common.Extension;
 using NUnit.Framework;
 
-namespace Core.Common.Tests.Common.Extensions {
+namespace Core.Common.Tests.Extension {
 	public sealed class BytesToStringExtensionTest {
 		[Test]
 		public void IsByteCorrect() {

@@ -1,7 +1,7 @@
 using Core.Common.Extension;
 using NUnit.Framework;
 
-namespace Core.Common.Tests.Common.Extensions {
+namespace Core.Common.Tests.Extension {
 	public sealed class ByteConvertExtensionTest {
 		[Test]
 		public void IsKbCorrect() => Assert.AreEqual(1024, 1.Kb());
