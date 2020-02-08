@@ -14,7 +14,8 @@ namespace Core.Common.CommandDependency {
 			_queue = queue;
 		}
 
-		public IReadOnlyCollection<ICommand<TConfig, TState>> GetDependentCommands(ICommand<TConfig, TState> command) {
+		public IReadOnlyCollection<ICommand<TConfig, TState>> GetDependentCommands(
+			TConfig config, TState state, ICommand<TConfig, TState> command) {
 			var commandType = command.GetType();
 			var dependencies = _queue.Dependencies.GetValueOrDefault(commandType);
 			if ( dependencies == null ) {
@@ -22,10 +23,10 @@ namespace Core.Common.CommandDependency {
 			}
 			return dependencies
 				.Select(d => {
-					if ( !d.Condition(command) ) {
+					if ( !d.Condition(config, state, command) ) {
 						return null;
 					}
-					return d.Initializer(command);
+					return d.Initializer(config, state, command);
 				})
 				.Where(d => d != null)
 				.ToArray();

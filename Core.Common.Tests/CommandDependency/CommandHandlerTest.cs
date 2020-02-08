@@ -39,7 +39,7 @@ namespace Core.Common.Tests.CommandDependency {
 		public void ResultIsEmptyIfNoDependencies() {
 			var handler = CreateHandler(new CommandQueue<Config, State>());
 
-			var result = handler.GetDependentCommands(new FirstCommand());
+			var result = handler.GetDependentCommands(null, null, new FirstCommand());
 
 			Assert.IsEmpty(result);
 		}
@@ -49,7 +49,7 @@ namespace Core.Common.Tests.CommandDependency {
 			var handler = CreateHandler(new CommandQueue<Config, State>()
 				.AddDependency((FirstCommand c) => new SecondCommand()));
 
-			var result = handler.GetDependentCommands(new FirstCommand());
+			var result = handler.GetDependentCommands(null, null, new FirstCommand());
 
 			Assert.NotNull(result.FirstOrDefault(c => c is SecondCommand));
 		}
@@ -60,7 +60,7 @@ namespace Core.Common.Tests.CommandDependency {
 				.AddDependency((FirstCommand c) => new SecondCommand())
 				.AddDependency((FirstCommand c) => new SecondCommand()));
 
-			var result = handler.GetDependentCommands(new FirstCommand());
+			var result = handler.GetDependentCommands(null, null, new FirstCommand());
 
 			Assert.AreEqual(2, result.Count);
 		}
@@ -70,7 +70,7 @@ namespace Core.Common.Tests.CommandDependency {
 			var handler = CreateHandler(new CommandQueue<Config, State>()
 				.AddDependency((FirstCommand c) => c.Value, c => new SecondCommand()));
 
-			var result = handler.GetDependentCommands(new FirstCommand(true));
+			var result = handler.GetDependentCommands(null, null, new FirstCommand(true));
 
 			Assert.AreEqual(1, result.Count);
 		}
@@ -80,7 +80,7 @@ namespace Core.Common.Tests.CommandDependency {
 			var handler = CreateHandler(new CommandQueue<Config, State>()
 				.AddDependency((FirstCommand c) => c.Value, c => new SecondCommand()));
 
-			var result = handler.GetDependentCommands(new FirstCommand(false));
+			var result = handler.GetDependentCommands(null, null, new FirstCommand(false));
 
 			Assert.IsEmpty(result);
 		}

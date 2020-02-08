@@ -25,9 +25,10 @@ namespace Core.Common.CommandExecution {
 			_logger.LogTrace($"Applying command: '{command}'");
 			var commandResult = _executor.Apply(config, state, command);
 			if ( commandResult is CommandResult.BadCommandResult badCommand ) {
+				_logger.LogWarning($"Command '{command}' failed: '{badCommand.Description}'");
 				return BatchCommandResult<TConfig, TState>.BadCommand(badCommand.Description);
 			}
-			var dependencies = _handler.GetDependentCommands(command);
+			var dependencies = _handler.GetDependentCommands(config, state, command);
 			var accum = new List<ICommand<TConfig, TState>>();
 			foreach ( var dependency in dependencies ) {
 				var dependencyResult = Apply(config, state, dependency);
