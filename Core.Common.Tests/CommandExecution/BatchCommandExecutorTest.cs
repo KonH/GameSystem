@@ -4,7 +4,7 @@ using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
-using Core.Common.Tests.Utils;
+using Core.Common.Utils;
 using NUnit.Framework;
 
 namespace Core.Common.Tests.CommandExecution {
@@ -183,7 +183,7 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		BatchCommandExecutor<Config, State> CreateExecutor(CommandQueue<Config, State> queue) {
-			var logger = new TestLogger<BatchCommandExecutor<Config, State>>();
+			var logger = new ConsoleLogger<BatchCommandExecutor<Config, State>>();
 			return new BatchCommandExecutor<Config, State>(logger, queue);
 		}
 	}
