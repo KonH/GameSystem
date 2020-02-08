@@ -9,3 +9,5 @@ Core.Common/bin
 Core.Common/obj
 Core.Common.Tests/bin
 Core.Common.Tests/obj
+.teamcity/target
+.teamcity/GameSystem_dsl.iml
