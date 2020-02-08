@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Common.Extension {
+namespace Core.Common.Extension {
 	public static class BytesToStringExtension {
 		static StringBuilder _sb = new StringBuilder();
 

@@ -1,11 +1,11 @@
 .tmp
 .idea
-Common/bin
-Common/obj
-ResourceMonitor/bin
-ResourceMonitor/obj
-Tests/bin
-Tests/obj
 BuildPipeline/bin
 BuildPipeline/obj
 BuildPipeline/BuildPipeline.csproj.DotSettings
+ResourceMonitor/bin
+ResourceMonitor/obj
+Core.Common/bin
+Core.Common/obj
+Core.Common.Tests/bin
+Core.Common.Tests/obj

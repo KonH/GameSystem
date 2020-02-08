@@ -7,9 +7,9 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceMonitor", "ResourceMonitor\ResourceMonitor.csproj", "{168BDA9E-5FB6-4C83-951B-F4D02F988D39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{54A85B40-58CF-4489-A760-7CE912C9C362}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Common", "Core.Common\Core.Common.csproj", "{54A85B40-58CF-4489-A760-7CE912C9C362}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8039F495-22C2-4C45-A452-20387AB26D7F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Common.Tests", "Core.Common.Tests\Core.Common.Tests.csproj", "{8039F495-22C2-4C45-A452-20387AB26D7F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildPipeline", "BuildPipeline\BuildPipeline.csproj", "{03FE412A-A229-4DA8-8ED8-BB92CE6B0CF0}"
 EndProject

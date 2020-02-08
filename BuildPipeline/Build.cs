@@ -62,7 +62,7 @@ class Build : NukeBuild {
 
 	Target TestDotNet => _ => _
 		.Executes(() => {
-			var testProject = Solution.GetProject("Tests");
+			var testProject = Solution.GetProject("Core.Common.Tests");
 			DotNetTest(new DotNetTestSettings()
 				.SetProjectFile(testProject)
 				.SetConfiguration(Configuration));

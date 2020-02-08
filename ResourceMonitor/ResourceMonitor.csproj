@@ -6,11 +6,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Common\Common.csproj" />
+	  <PackageReference Include="kenssamson.rpi-ws281x-csharp" Version="1.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="kenssamson.rpi-ws281x-csharp" Version="1.1.0" />
+	  <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
 	</ItemGroup>
 
 </Project>

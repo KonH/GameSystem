@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Common.Utils {
+namespace Core.Common.Utils {
 	public static class ProgramRunner {
 		public static string StartAndReadOutput(string fileName, string arguments) {
 			var startInfo = new ProcessStartInfo {

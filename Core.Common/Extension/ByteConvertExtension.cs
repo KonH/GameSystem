@@ -1,4 +1,4 @@
-namespace Common.Extension {
+namespace Core.Common.Extension {
 	public static class ByteConvertExtension {
 		public const int BytesInKb = 1024;
 		public const int BytesInMb = BytesInKb * 1024;

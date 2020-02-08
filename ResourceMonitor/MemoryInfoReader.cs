@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using Common.Extension;
+using Core.Common.Extension;
 
 namespace ResourceMonitor {
 	static class MemoryInfoReader {
