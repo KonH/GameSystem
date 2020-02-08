@@ -1,5 +1,7 @@
 .tmp
 .idea
+.teamcity/target
+.teamcity/GameSystem_dsl.iml
 BuildPipeline/bin
 BuildPipeline/obj
 BuildPipeline/BuildPipeline.csproj.DotSettings
@@ -9,5 +11,11 @@ Core.Common/bin
 Core.Common/obj
 Core.Common.Tests/bin
 Core.Common.Tests/obj
-.teamcity/target
-.teamcity/GameSystem_dsl.iml
+Core.ConsoleClient/bin
+Core.ConsoleClient/obj
+Clicker.Common/bin
+Clicker.Common/obj
+Clicker.Tests/bin
+Clicker.Tests/obj
+Clicker.ConsoleClient/bin
+Clicker.ConsoleClient/obj
