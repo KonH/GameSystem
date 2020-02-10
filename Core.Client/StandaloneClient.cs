@@ -1,10 +1,7 @@
-using System;
 using Core.Common.Command;
-using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
-using Core.Common.Utils;
 
 namespace Core.Client {
 	public sealed class StandaloneClient<TConfig, TState>
@@ -19,13 +16,12 @@ namespace Core.Client {
 		CommandHistory<TConfig, TState> _history = new CommandHistory<TConfig, TState>();
 
 		public StandaloneClient(
-			LoggerFactory loggerFactory, CommandQueue<TConfig, TState> queue,
+			BatchCommandExecutor<TConfig, TState> batchExecutor,
 			TConfig config, StateFactory<TState> stateFactory) {
 			_config = config;
 			_stateFactory = stateFactory;
 			_singleExecutor = new CommandExecutor<TConfig, TState>();
-			var logger = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
-			_batchExecutor = new BatchCommandExecutor<TConfig, TState>(logger, queue);
+			_batchExecutor = batchExecutor;
 			State = _stateFactory.Create();
 		}
 

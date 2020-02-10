@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Core.ConsoleClient.Utils {
+namespace Core.Client.ConsoleClient.Utils {
 	public sealed class ConsoleReader {
 		readonly Dictionary<Type, Func<object>> _readers = new Dictionary<Type, Func<object>> {
 			{ typeof(string), ReadString },

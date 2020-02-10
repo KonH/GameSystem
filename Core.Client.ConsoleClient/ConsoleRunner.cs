@@ -2,36 +2,30 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Core.Client;
 using Core.Common.Command;
-using Core.Common.CommandDependency;
-using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
-using Core.Common.Utils;
-using Core.ConsoleClient.Utils;
+using Core.Client.ConsoleClient.Utils;
 
-namespace Core.ConsoleClient {
-	public sealed class StandaloneConsoleClient<TConfig, TState>
-		where TConfig : IConfig where TState : IState {
+namespace Core.Client.ConsoleClient {
+	public sealed class ConsoleRunner<TConfig, TState> where TConfig : IConfig where TState : IState {
 		readonly CommandProvider<TConfig, TState> _commandProvider;
-
-		readonly ConsoleReader _reader = new ConsoleReader();
+		readonly ConsoleReader                    _reader;
+		readonly IConsoleClient<TConfig, TState>  _client;
 
 		readonly JsonObjectPresenter _presenter = new JsonObjectPresenter(
 			new JsonSerializerOptions { WriteIndented = true });
 
-		readonly StandaloneClient<TConfig, TState> _client;
-
-		public StandaloneConsoleClient(
-			CommandProvider<TConfig, TState> commandProvider, CommandQueue<TConfig, TState> queue,
-			TConfig config, StateFactory<TState> stateFactory) {
+		public ConsoleRunner(
+			CommandProvider<TConfig, TState> commandProvider, ConsoleReader reader,
+			IConsoleClient<TConfig, TState> client) {
 			_commandProvider = commandProvider;
-			var loggerFactory = new LoggerFactory(typeof(ConsoleLogger<>));
-			_client = new StandaloneClient<TConfig, TState>(loggerFactory, queue, config, stateFactory);
+			_reader          = reader;
+			_client          = client;
 		}
 
 		public void Run() {
+			_client.Initialize();
 			while ( true ) {
 				var finished = UpdateLoop();
 				if ( finished ) {
@@ -43,14 +37,20 @@ namespace Core.ConsoleClient {
 		bool UpdateLoop() {
 			DrawState();
 			DrawCommands();
-			var selection = _reader.Read<int>();
+			var selection = ReadSelection();
 			if ( selection == 0 ) {
 				return true;
 			}
 			if ( selection > 0 ) {
 				ExecuteCommand(selection - 1);
 			}
+			Console.WriteLine();
 			return false;
+		}
+
+		void ExecuteCommand(int index) {
+			var command = CreateCommand(index);
+			_client.Apply(command);
 		}
 
 		void DrawState() {
@@ -70,19 +70,16 @@ namespace Core.ConsoleClient {
 			Console.WriteLine();
 		}
 
-		void ExecuteCommand(int index) {
+		int ReadSelection() => _reader.Read<int>();
+
+		ICommand<TConfig, TState> CreateCommand(int index) {
 			var commands = _commandProvider.CommandTypes;
-			var type = commands[index];
+			var type     = commands[index];
 			Console.WriteLine($"Execute command: {type.Name}");
 			var instance = Activator.CreateInstance(type);
 			TryAddPropertyValues(instance);
-			var commandInstance = (ICommand<TConfig, TState>)instance;
-			var result = _client.Apply(commandInstance);
-			if ( result is BatchCommandResult<TConfig, TState>.BadCommand badResult ) {
-				Console.WriteLine($"Command failed with '{badResult.Description}', rewind state");
-				_client.Rewind();
-			}
-			Console.WriteLine();
+			var commandInstance = (ICommand<TConfig, TState>) instance;
+			return commandInstance;
 		}
 
 		void TryAddPropertyValues(object instance) {

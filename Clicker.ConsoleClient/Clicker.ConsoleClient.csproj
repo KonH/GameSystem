@@ -7,7 +7,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Clicker.Common\Clicker.Common.csproj" />
-	  <ProjectReference Include="..\Core.ConsoleClient\Core.ConsoleClient.csproj" />
+	  <ProjectReference Include="..\Core.Client.ConsoleClient\Core.Client.ConsoleClient.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

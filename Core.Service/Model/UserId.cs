@@ -8,6 +8,10 @@ namespace Core.Service.Model {
 			Value = value;
 		}
 
+		public override string ToString() {
+			return Value;
+		}
+
 		public override bool Equals(object obj) {
 			return ReferenceEquals(this, obj) || obj is UserId other && Equals(other);
 		}

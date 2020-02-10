@@ -8,6 +8,10 @@ namespace Core.Common.Config {
 			Value = value;
 		}
 
+		public override string ToString() {
+			return Value;
+		}
+
 		public override bool Equals(object obj) {
 			return ReferenceEquals(this, obj) || obj is ConfigVersion other && Equals(other);
 		}

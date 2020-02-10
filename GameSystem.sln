@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Common.Tests", "Core.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildPipeline", "BuildPipeline\BuildPipeline.csproj", "{03FE412A-A229-4DA8-8ED8-BB92CE6B0CF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.ConsoleClient", "Core.ConsoleClient\Core.ConsoleClient.csproj", "{1D13A7CB-3D4D-465D-83C5-6CAC8FE38689}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Client.ConsoleClient", "Core.Client.ConsoleClient\Core.Client.ConsoleClient.csproj", "{1D13A7CB-3D4D-465D-83C5-6CAC8FE38689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clicker.Common", "Clicker.Common\Clicker.Common.csproj", "{704AE2C4-5700-41C0-9C02-1C7799BB6AAE}"
 EndProject
