@@ -1,8 +1,8 @@
 namespace Core.Common.Command {
 	public abstract class CommandResult {
-		public class OkResult : CommandResult { }
+		public sealed class OkResult : CommandResult { }
 
-		public class BadCommandResult : CommandResult {
+		public sealed class BadCommandResult : CommandResult {
 			public string Description { get; set; }
 
 			public BadCommandResult() { }
@@ -11,6 +11,8 @@ namespace Core.Common.Command {
 				Description = description;
 			}
 		}
+
+		CommandResult() { }
 
 		public static CommandResult Ok() => new OkResult();
 

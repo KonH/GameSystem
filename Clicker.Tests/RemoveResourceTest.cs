@@ -26,7 +26,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(new GameConfig(), new GameState(), new RemoveResourceCommand { Amount = 10 });
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommandResult>(result);
+			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}
 
 		[Test]
@@ -40,7 +40,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(new GameConfig(), state, new RemoveResourceCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommandResult>(result);
+			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}
 
 		[Test]
@@ -53,7 +53,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(new GameConfig(), state, new RemoveResourceCommand { Amount = -10 });
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommandResult>(result);
+			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}
 	}
 }

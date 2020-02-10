@@ -26,23 +26,23 @@ namespace Core.Common.CommandExecution {
 			var commandResult = _executor.Apply(config, state, command);
 			if ( commandResult is CommandResult.BadCommandResult badCommand ) {
 				_logger.LogWarning($"Command '{command}' failed: '{badCommand.Description}'");
-				return BatchCommandResult<TConfig, TState>.BadCommand(badCommand.Description);
+				return new BatchCommandResult<TConfig, TState>.BadCommand(badCommand.Description);
 			}
 			var dependencies = _handler.GetDependentCommands(config, state, command);
 			var accum = new List<ICommand<TConfig, TState>>();
 			foreach ( var dependency in dependencies ) {
 				var dependencyResult = Apply(config, state, dependency);
-				if ( dependencyResult is BatchCommandResult<TConfig, TState>.BadCommandResult ) {
+				if ( dependencyResult is BatchCommandResult<TConfig, TState>.BadCommand ) {
 					return dependencyResult;
 				}
 				_logger.LogTrace($"Add dependency: '{dependency}'");
 				accum.Add(dependency);
-				var okResult = (BatchCommandResult<TConfig, TState>.OkResult) dependencyResult;
+				var okResult = (BatchCommandResult<TConfig, TState>.Ok) dependencyResult;
 				_logger.LogTrace(
 					$"Add dependencies from command: '{dependency}' = {string.Join(',', okResult.NextCommands)}");
 				accum.AddRange(okResult.NextCommands);
 			}
-			return BatchCommandResult<TConfig, TState>.Ok(accum);
+			return new BatchCommandResult<TConfig, TState>.Ok(accum);
 		}
 	}
 }

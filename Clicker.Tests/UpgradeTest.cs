@@ -43,7 +43,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(config, new GameState(), new UpgradeCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommandResult>(result);
+			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}
 
 
@@ -59,7 +59,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(config, state, new UpgradeCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommandResult>(result);
+			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}
 
 		GameConfig CreateConfig() {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Core.Common.State {
 	public sealed class StateVersion : IComparable<StateVersion> {
@@ -23,17 +24,29 @@ namespace Core.Common.State {
 		}
 
 		public int CompareTo(StateVersion other) {
-			if ( ReferenceEquals(this, other) ) {
-				return 0;
-			}
-			if ( ReferenceEquals(null, other) ) {
-				return 1;
-			}
+			if ( ReferenceEquals(this, other) ) return 0;
+			if ( ReferenceEquals(null, other) ) return 1;
 			return Value.CompareTo(other.Value);
 		}
 
 		bool Equals(StateVersion other) {
 			return Value == other.Value;
+		}
+
+		public static bool operator <(StateVersion left, StateVersion right) {
+			return Comparer<StateVersion>.Default.Compare(left, right) < 0;
+		}
+
+		public static bool operator >(StateVersion left, StateVersion right) {
+			return Comparer<StateVersion>.Default.Compare(left, right) > 0;
+		}
+
+		public static bool operator <=(StateVersion left, StateVersion right) {
+			return Comparer<StateVersion>.Default.Compare(left, right) <= 0;
+		}
+
+		public static bool operator >=(StateVersion left, StateVersion right) {
+			return Comparer<StateVersion>.Default.Compare(left, right) >= 0;
 		}
 	}
 }

@@ -32,7 +32,7 @@ namespace Core.Client {
 		public BatchCommandResult<TConfig, TState> Apply(ICommand<TConfig, TState> command) {
 			var result = _batchExecutor.Apply(_config, State, command);
 			switch ( result ) {
-				case BatchCommandResult<TConfig, TState>.OkResult okResult: {
+				case BatchCommandResult<TConfig, TState>.Ok okResult: {
 					_history.AddCommand(command, true);
 					_history.AddCommands(okResult.NextCommands, true);
 					break;

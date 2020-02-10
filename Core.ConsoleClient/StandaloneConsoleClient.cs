@@ -78,7 +78,7 @@ namespace Core.ConsoleClient {
 			TryAddPropertyValues(instance);
 			var commandInstance = (ICommand<TConfig, TState>)instance;
 			var result = _client.Apply(commandInstance);
-			if ( result is BatchCommandResult<TConfig, TState>.BadCommandResult badResult ) {
+			if ( result is BatchCommandResult<TConfig, TState>.BadCommand badResult ) {
 				Console.WriteLine($"Command failed with '{badResult.Description}', rewind state");
 				_client.Rewind();
 			}

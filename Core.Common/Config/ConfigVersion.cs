@@ -1,6 +1,6 @@
 namespace Core.Common.Config {
 	public sealed class ConfigVersion {
-		public string Value { get; set; }
+		public string Value { get; set; } = string.Empty;
 
 		public ConfigVersion() { }
 
