@@ -13,6 +13,10 @@ Core.Common.Tests/bin
 Core.Common.Tests/obj
 Core.Client/bin
 Core.Client/obj
+Core.Service/bin
+Core.Service/obj
+Core.Service.Tests/bin
+Core.Service.Tests/obj
 Core.ConsoleClient/bin
 Core.ConsoleClient/obj
 Clicker.Common/bin

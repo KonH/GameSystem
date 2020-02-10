@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clicker.ConsoleClient", "Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Client", "Core.Client\Core.Client.csproj", "{96E32A8D-2348-4463-B9DA-9CFCF9F8E0D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Service", "Core.Service\Core.Service.csproj", "{3A4B65A5-B065-4A37-A691-7FCD04C83E6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Service.Tests", "Core.Service.Tests\Core.Service.Tests.csproj", "{0C52CED9-A378-48AA-B9C4-C84189C65073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,5 +67,15 @@ Global
 		{96E32A8D-2348-4463-B9DA-9CFCF9F8E0D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96E32A8D-2348-4463-B9DA-9CFCF9F8E0D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96E32A8D-2348-4463-B9DA-9CFCF9F8E0D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A4B65A5-B065-4A37-A691-7FCD04C83E6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A4B65A5-B065-4A37-A691-7FCD04C83E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A4B65A5-B065-4A37-A691-7FCD04C83E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A4B65A5-B065-4A37-A691-7FCD04C83E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal
