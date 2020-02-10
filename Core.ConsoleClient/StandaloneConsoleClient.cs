@@ -14,7 +14,7 @@ using Core.ConsoleClient.Utils;
 namespace Core.ConsoleClient {
 	public sealed class StandaloneConsoleClient<TConfig, TState>
 		where TConfig : IConfig where TState : IState {
-		readonly Type[] _commands;
+		readonly CommandProvider<TConfig, TState> _commandProvider;
 
 		readonly ConsoleReader _reader = new ConsoleReader();
 
@@ -24,10 +24,11 @@ namespace Core.ConsoleClient {
 		readonly StandaloneClient<TConfig, TState> _client;
 
 		public StandaloneConsoleClient(
-			Type[] commands, CommandQueue<TConfig, TState> queue, TConfig config, Func<TState> state) {
-			_commands = commands;
+			CommandProvider<TConfig, TState> commandProvider, CommandQueue<TConfig, TState> queue,
+			TConfig config, StateFactory<TState> stateFactory) {
+			_commandProvider = commandProvider;
 			var loggerFactory = new LoggerFactory(typeof(ConsoleLogger<>));
-			_client = new StandaloneClient<TConfig, TState>(loggerFactory, queue, config, state);
+			_client = new StandaloneClient<TConfig, TState>(loggerFactory, queue, config, stateFactory);
 		}
 
 		public void Run() {
@@ -61,15 +62,17 @@ namespace Core.ConsoleClient {
 		void DrawCommands() {
 			Console.WriteLine("Commands:");
 			Console.WriteLine("0) Exit");
-			for ( var i = 0; i < _commands.Length; i++ ) {
-				var type = _commands[i].Name;
+			var commands = _commandProvider.CommandTypes;
+			for ( var i = 0; i < commands.Count; i++ ) {
+				var type = commands[i].Name;
 				Console.WriteLine($"{(i + 1).ToString()}) {type}");
 			}
 			Console.WriteLine();
 		}
 
 		void ExecuteCommand(int index) {
-			var type = _commands[index];
+			var commands = _commandProvider.CommandTypes;
+			var type = commands[index];
 			Console.WriteLine($"Execute command: {type.Name}");
 			var instance = Activator.CreateInstance(type);
 			TryAddPropertyValues(instance);

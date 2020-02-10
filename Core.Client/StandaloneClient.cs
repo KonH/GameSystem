@@ -14,19 +14,19 @@ namespace Core.Client {
 		readonly CommandExecutor<TConfig, TState>      _singleExecutor;
 		readonly BatchCommandExecutor<TConfig, TState> _batchExecutor;
 		readonly TConfig                               _config;
-		readonly Func<TState>                          _stateInitializer;
+		readonly StateFactory<TState>                  _stateFactory;
 
 		CommandHistory<TConfig, TState> _history = new CommandHistory<TConfig, TState>();
 
 		public StandaloneClient(
 			LoggerFactory loggerFactory, CommandQueue<TConfig, TState> queue,
-			TConfig config, Func<TState> state) {
+			TConfig config, StateFactory<TState> stateFactory) {
 			_config = config;
-			_stateInitializer = state;
+			_stateFactory = stateFactory;
 			_singleExecutor = new CommandExecutor<TConfig, TState>();
 			var logger = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
 			_batchExecutor = new BatchCommandExecutor<TConfig, TState>(logger, queue);
-			State = state();
+			State = _stateFactory.Create();
 		}
 
 		public BatchCommandResult<TConfig, TState> Apply(ICommand<TConfig, TState> command) {
@@ -47,7 +47,7 @@ namespace Core.Client {
 		}
 
 		public void Rewind() {
-			State = _stateInitializer();
+			State = _stateFactory.Create();
 			var validCommands = _history.ValidCommands;
 			_history = new CommandHistory<TConfig, TState>();
 			foreach ( var command in validCommands ) {
