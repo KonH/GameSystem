@@ -11,21 +11,25 @@ namespace Core.Client.ConsoleClient {
 	public sealed class ConsoleRunner<TConfig, TState> where TConfig : IConfig where TState : IState {
 		readonly CommandProvider<TConfig, TState> _commandProvider;
 		readonly ConsoleReader                    _reader;
-		readonly IConsoleClient<TConfig, TState>  _client;
+		readonly IClient<TConfig, TState>         _client;
 
 		readonly JsonObjectPresenter _presenter = new JsonObjectPresenter(
 			new JsonSerializerOptions { WriteIndented = true });
 
 		public ConsoleRunner(
 			CommandProvider<TConfig, TState> commandProvider, ConsoleReader reader,
-			IConsoleClient<TConfig, TState> client) {
+			IClient<TConfig, TState> client) {
 			_commandProvider = commandProvider;
 			_reader          = reader;
 			_client          = client;
 		}
 
 		public void Run() {
-			_client.Initialize();
+			var initializeResult = _client.Initialize();
+			if ( initializeResult is InitializationResult.Error e ) {
+				Console.WriteLine($"Initialization failed with '{e.Description}'");
+				return;
+			}
 			while ( true ) {
 				var finished = UpdateLoop();
 				if ( finished ) {

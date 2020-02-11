@@ -12,7 +12,7 @@ using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 
 namespace Core.Client {
-	public sealed class EmbeddedServiceClient<TConfig, TState>
+	public sealed class EmbeddedServiceClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
 		public TState State { get; private set; }
 
@@ -42,30 +42,32 @@ namespace Core.Client {
 			_singleExecutor     = new CommandExecutor<TConfig, TState>();
 		}
 
-		public void Initialize() {
+		public InitializationResult Initialize() {
 			_configRepository.Add(_config);
 			_stateRepository.AddForUserId(_userId, _stateFactory.Create());
 			UpdateState();
+			return new InitializationResult.Ok();
 		}
 
-		public void Apply(ICommand<TConfig, TState> command) {
+		public CommandApplyResult Apply(ICommand<TConfig, TState> command) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
 			var response = _updateStateUseCase.Handle(request);
 			switch ( response ) {
 				case UpdateStateResponse<TConfig, TState>.Updated updated: {
-					_logger.LogTrace("Command applied correctly, update local state");
 					_singleExecutor.Apply(_config, State, command);
 					foreach ( var cmd in updated.NextCommands ) {
 						_singleExecutor.Apply(_config, State, cmd);
 					}
 					State.Version = updated.NewVersion;
-					break;
+					return new CommandApplyResult.Ok();
 				}
 
 				case object value: {
-					_logger.LogError($"Result is '{value.GetType()}', force update state");
-					UpdateState();
-					break;
+					return new CommandApplyResult.Error($"Result is '{value.GetType()}', force update state");
+				}
+
+				default: {
+					return new CommandApplyResult.Error("Failed to apply command");
 				}
 			}
 		}

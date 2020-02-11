@@ -80,8 +80,7 @@ namespace Clicker.ConsoleClient {
 		}
 
 		static void AddStandaloneDependencies(ServiceCollection services) {
-			services.AddSingleton<StandaloneClient<GameConfig, GameState>>();
-			services.AddSingleton<IConsoleClient<GameConfig, GameState>, StandaloneConsoleClient<GameConfig, GameState>>();
+			services.AddSingleton<IClient<GameConfig, GameState>, StandaloneClient<GameConfig, GameState>>();
 		}
 
 		static void AddEmbeddedDependencies(ServiceCollection services) {
@@ -91,8 +90,7 @@ namespace Clicker.ConsoleClient {
 			services.AddSingleton<IStateRepository<GameState>, InMemoryStateRepository<GameState>>();
 			services.AddSingleton<GetStateUseCase<GameState>>();
 			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
-			services.AddSingleton<EmbeddedServiceClient<GameConfig, GameState>>();
-			services.AddSingleton<IConsoleClient<GameConfig, GameState>, EmbeddedServiceConsoleClient<GameConfig, GameState>>();
+			services.AddSingleton<IClient<GameConfig, GameState>, EmbeddedServiceClient<GameConfig, GameState>>();
 		}
 	}
 }

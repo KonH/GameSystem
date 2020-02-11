@@ -4,7 +4,7 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Client {
-	public sealed class StandaloneClient<TConfig, TState>
+	public sealed class StandaloneClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : IState {
 		public TState State { get; private set; }
 
@@ -25,24 +25,26 @@ namespace Core.Client {
 			State = _stateFactory.Create();
 		}
 
-		public BatchCommandResult<TConfig, TState> Apply(ICommand<TConfig, TState> command) {
+		public InitializationResult Initialize() => new InitializationResult.Ok();
+
+		CommandApplyResult IClient<TConfig, TState>.Apply(ICommand<TConfig, TState> command) {
 			var result = _batchExecutor.Apply(_config, State, command);
 			switch ( result ) {
 				case BatchCommandResult<TConfig, TState>.Ok okResult: {
 					_history.AddCommand(command, true);
 					_history.AddCommands(okResult.NextCommands, true);
-					break;
+					return new CommandApplyResult.Ok();
 				}
 
 				default: {
 					_history.AddCommand(command, false);
-					break;
+					Rewind();
+					return new CommandApplyResult.Error("Failed to apply command");
 				}
 			}
-			return result;
 		}
 
-		public void Rewind() {
+		void Rewind() {
 			State = _stateFactory.Create();
 			var validCommands = _history.ValidCommands;
 			_history = new CommandHistory<TConfig, TState>();
