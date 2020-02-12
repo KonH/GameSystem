@@ -16,7 +16,7 @@ namespace ResourceMonitor.Writer {
 			var settings = Settings.CreateDefaultSettings();
 			var ledCount = _width * _height;
 			_controller = settings.AddController(ledCount, Pin.Gpio18, StripType.WS2812_STRIP, brightness: 125);
-			_device = new WS281x(settings);
+			_device     = new WS281x(settings);
 		}
 
 		public void Write(SystemInfo info) {

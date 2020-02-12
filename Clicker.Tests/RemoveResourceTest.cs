@@ -15,7 +15,7 @@ namespace Clicker.Tests {
 				}
 			};
 
-			executor.Apply(new GameConfig(), state, new RemoveResourceCommand { Amount = 10 });
+			executor.Apply(new GameConfig(), state, new RemoveResourceCommand(10));
 
 			Assert.AreEqual(0, state.Resource.Resources);
 		}
@@ -24,7 +24,7 @@ namespace Clicker.Tests {
 		public void IsResourceNotRemovedIfNotEnough() {
 			var executor = Common.CreateExecutor();
 
-			var result = executor.Apply(new GameConfig(), new GameState(), new RemoveResourceCommand { Amount = 10 });
+			var result = executor.Apply(new GameConfig(), new GameState(), new RemoveResourceCommand(10));
 
 			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}
@@ -45,13 +45,14 @@ namespace Clicker.Tests {
 
 		[Test]
 		public void IsInvalidCountNotRemoved() {
-			var executor = Common.CreateExecutor();var state = new GameState {
+			var executor = Common.CreateExecutor();
+			var state = new GameState {
 				Resource = new ResourceState {
 					Resources = 10
 				}
 			};
 
-			var result = executor.Apply(new GameConfig(), state, new RemoveResourceCommand { Amount = -10 });
+			var result = executor.Apply(new GameConfig(), state, new RemoveResourceCommand(-10));
 
 			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}

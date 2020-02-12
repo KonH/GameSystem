@@ -5,9 +5,9 @@ using Core.Common.Command;
 namespace Clicker.Common.Command {
 	public sealed class UpgradeCommand : ICommand<GameConfig, GameState> {
 		public CommandResult Apply(GameConfig config, GameState state) {
-			var levelCount = config.Upgrade.Levels.Length;
+			var levelCount   = config.Upgrade.Levels.Length;
 			var currentLevel = state.Upgrade.Level;
-			var nextLevel = currentLevel + 1;
+			var nextLevel    = currentLevel + 1;
 			if ( nextLevel > levelCount ) {
 				return CommandResult.BadCommand("No more available upgrade levels");
 			}

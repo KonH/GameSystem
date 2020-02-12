@@ -11,7 +11,7 @@ namespace ResourceMonitor.Writer {
 		}
 
 		void WritePercent(string header, double value) {
-			var usedCount = (int)Math.Round(value * ColumnCount);
+			var usedCount = (int) Math.Round(value * ColumnCount);
 			var freeCount = Math.Max(ColumnCount - usedCount, 0);
 			Console.WriteLine($"{header} [{new string('=', usedCount)}{new string(' ', freeCount)}] {value:P2}");
 		}

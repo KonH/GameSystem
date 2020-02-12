@@ -89,9 +89,9 @@ namespace Clicker.ConsoleClient {
 		}
 
 		static ServiceProvider AddEmbeddedDependencies(ServiceCollection services) {
-			services.AddSingleton(RepositoryDecoratorSettings.Create<GameConfig>());
+			services.AddSingleton(JsonRepositoryDecoratorSettings.Create<GameConfig>());
 			services.AddSingleton<IConfigRepository<GameConfig>, InMemoryConfigRepository<GameConfig>>();
-			services.AddSingleton(RepositoryDecoratorSettings.Create<GameState>());
+			services.AddSingleton(JsonRepositoryDecoratorSettings.Create<GameState>());
 			services.AddSingleton<IStateRepository<GameState>, InMemoryStateRepository<GameState>>();
 			services.AddSingleton(new GetSingleConfigStrategy<GameConfig>.Settings(new ConfigVersion("Config")));
 			services.AddSingleton<IGetConfigStrategy<GameConfig>, GetSingleConfigStrategy<GameConfig>>();
@@ -101,8 +101,10 @@ namespace Clicker.ConsoleClient {
 			services.AddSingleton<IClient<GameConfig, GameState>, EmbeddedServiceClient<GameConfig, GameState>>();
 
 			var provider = services.BuildServiceProvider();
-			provider.GetRequiredService<IConfigRepository<GameConfig>>().Add(Config);
-			provider.GetRequiredService<IStateRepository<GameState>>().AddForUserId(new UserId("UserId"), new GameState());
+			provider.GetRequiredService<IConfigRepository<GameConfig>>()
+				.Add(Config);
+			provider.GetRequiredService<IStateRepository<GameState>>()
+				.AddForUserId(new UserId("UserId"), new GameState());
 
 			return provider;
 		}

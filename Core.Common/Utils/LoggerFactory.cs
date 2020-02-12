@@ -10,7 +10,7 @@ namespace Core.Common.Utils {
 
 		public ILogger<T> Create<T>() {
 			var closedType = _openType.MakeGenericType(typeof(T));
-			return (ILogger<T>)Activator.CreateInstance(closedType);
+			return (ILogger<T>) Activator.CreateInstance(closedType);
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace Clicker.Tests {
 		[Test]
 		public void IsUpgradeIncreaseUpgradeLevel() {
 			var executor = Common.CreateExecutor();
-			var config = CreateConfig();
+			var config   = CreateConfig();
 			var state = new GameState {
 				Resource = new ResourceState {
 					Resources = 10
@@ -24,7 +24,7 @@ namespace Clicker.Tests {
 		[Test]
 		public void IsUpgradeDecreaseResources() {
 			var executor = Common.CreateExecutor();
-			var config = CreateConfig();
+			var config   = CreateConfig();
 			var state = new GameState {
 				Resource = new ResourceState {
 					Resources = 10
@@ -39,7 +39,7 @@ namespace Clicker.Tests {
 		[Test]
 		public void IsUpgradeFailedIfNotEnoughResources() {
 			var executor = Common.CreateExecutor();
-			var config = CreateConfig();
+			var config   = CreateConfig();
 
 			var result = executor.Apply(config, new GameState(), new UpgradeCommand());
 
@@ -50,7 +50,7 @@ namespace Clicker.Tests {
 		[Test]
 		public void CantUpgradeToUnknownLevel() {
 			var executor = Common.CreateExecutor();
-			var config = new GameConfig();
+			var config   = new GameConfig();
 			var state = new GameState {
 				Upgrade = new UpgradeState {
 					Level = 1

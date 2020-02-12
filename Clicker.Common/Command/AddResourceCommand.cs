@@ -6,6 +6,12 @@ namespace Clicker.Common.Command {
 	public sealed class AddResourceCommand : ICommand<GameConfig, GameState> {
 		public int Amount { get; set; }
 
+		public AddResourceCommand() { }
+
+		public AddResourceCommand(int amount) {
+			Amount = amount;
+		}
+
 		public CommandResult Apply(GameConfig config, GameState state) {
 			if ( Amount <= 0 ) {
 				return CommandResult.BadCommand($"Invalid resources amount: {Amount.ToString()}");

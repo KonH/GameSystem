@@ -2,13 +2,13 @@ using System.Text;
 
 namespace Core.Common.Extension {
 	public static class BytesToStringExtension {
-		static StringBuilder _sb = new StringBuilder();
+		static readonly StringBuilder Sb = new StringBuilder();
 
 		public static string ToSizeString(this int totalBytes, bool includeAllDimensions = false) =>
-			ToSizeString((long)totalBytes, includeAllDimensions);
+			ToSizeString((long) totalBytes, includeAllDimensions);
 
 		public static string ToSizeString(this long totalBytes, bool includeAllDimensions = false) {
-			var sb = _sb.Clear();
+			var sb = Sb.Clear();
 
 			var bytes = totalBytes;
 			var anyGb = TryWriteGb(sb, ref bytes);

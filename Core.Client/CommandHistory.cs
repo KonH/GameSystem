@@ -5,7 +5,7 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Client {
-	public sealed class CommandHistory<TConfig, TState> where TConfig : IConfig where TState : IState {
+	sealed class CommandHistory<TConfig, TState> where TConfig : IConfig where TState : IState {
 		readonly List<ICommand<TConfig, TState>> _commands = new List<ICommand<TConfig, TState>>();
 
 		int _validCount = 0;

@@ -1,5 +1,4 @@
 using System;
-using Core.Common.Utils;
 
 namespace Core.Common.Utils {
 	public sealed class ConsoleLogger<T> : ILogger<T> {

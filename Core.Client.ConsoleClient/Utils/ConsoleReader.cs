@@ -9,7 +9,7 @@ namespace Core.Client.ConsoleClient.Utils {
 		};
 
 		public T Read<T>() {
-			return (T)Read(typeof(T));
+			return (T) Read(typeof(T));
 		}
 
 		public object Read(Type type) {

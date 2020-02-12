@@ -14,7 +14,7 @@ namespace ResourceMonitor {
 				await Task.Delay(Interval);
 				var curCpu = CpuInfoReader.Read();
 				var memory = MemoryInfoReader.Read();
-				var info = new SystemInfo(prevCpu, curCpu, memory);
+				var info   = new SystemInfo(prevCpu, curCpu, memory);
 				writer.Write(info);
 				prevCpu = curCpu;
 			}

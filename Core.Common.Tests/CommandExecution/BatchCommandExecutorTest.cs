@@ -142,7 +142,7 @@ namespace Core.Common.Tests.CommandExecution {
 		[Test]
 		public void IsVersionIncrementedForMainCommand() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>());
-			var state = new State();
+			var state    = new State();
 
 			executor.Apply(new Config(), state, new OkCommand());
 

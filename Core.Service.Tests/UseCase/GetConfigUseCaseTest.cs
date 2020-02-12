@@ -12,7 +12,7 @@ namespace Core.Service.Tests.UseCase {
 
 		[Test]
 		public void IsSingleConfigStrategyRequireNotNullVersion() {
-			var settings = new GetSingleConfigStrategy<Config>.Settings(null);
+			var settings   = new GetSingleConfigStrategy<Config>.Settings(null);
 			var repository = ConfigRepository<Config>.Create();
 
 			Assert.Throws<ArgumentNullException>(() => {

@@ -16,7 +16,7 @@ namespace Core.Common.CommandDependency {
 			public readonly Initializer Initializer;
 
 			public Dependency(Condition condition, Initializer initializer) {
-				Condition = condition;
+				Condition   = condition;
 				Initializer = initializer;
 			}
 		}
@@ -28,7 +28,8 @@ namespace Core.Common.CommandDependency {
 		public CommandQueue<TConfig, TState> AddDependency<TSource, TTarget>(Func<TSource, TTarget> initializer) =>
 			AddDependency(c => true, initializer);
 
-		public CommandQueue<TConfig, TState> AddDependency<TSource, TTarget>(Func<TConfig, TState, TSource, TTarget> initializer) =>
+		public CommandQueue<TConfig, TState> AddDependency<TSource, TTarget>(
+			Func<TConfig, TState, TSource, TTarget> initializer) =>
 			AddDependency(c => true, initializer);
 
 		public CommandQueue<TConfig, TState> AddDependency<TSource, TTarget>(

@@ -16,7 +16,7 @@ namespace Core.Common.CommandDependency {
 
 		public IReadOnlyCollection<ICommand<TConfig, TState>> GetDependentCommands(
 			TConfig config, TState state, ICommand<TConfig, TState> command) {
-			var commandType = command.GetType();
+			var commandType  = command.GetType();
 			var dependencies = _queue.Dependencies.GetValueOrDefault(commandType);
 			if ( dependencies == null ) {
 				return _noDependencies;

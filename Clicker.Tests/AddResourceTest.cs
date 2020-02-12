@@ -9,9 +9,9 @@ namespace Clicker.Tests {
 		[Test]
 		public void IsResourceAdded() {
 			var executor = Common.CreateExecutor();
-			var state = new GameState();
+			var state    = new GameState();
 
-			executor.Apply(new GameConfig(), state, new AddResourceCommand { Amount = 10 });
+			executor.Apply(new GameConfig(), state, new AddResourceCommand(10));
 
 			Assert.AreEqual(10, state.Resource.Resources);
 		}
@@ -29,7 +29,7 @@ namespace Clicker.Tests {
 		public void IsInvalidCountNotAdded() {
 			var executor = Common.CreateExecutor();
 
-			var result = executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand { Amount = -10 });
+			var result = executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand(-10));
 
 			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
 		}

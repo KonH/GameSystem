@@ -5,7 +5,7 @@ using Core.Service.Repository.Config;
 namespace Core.Service.Tests {
 	public static class ConfigRepository<TConfig> where TConfig : IConfig {
 		public static IConfigRepository<TConfig> Create(params TConfig[] configs) {
-			var settings = RepositoryDecoratorSettings.Create<TConfig>();
+			var settings   = JsonRepositoryDecoratorSettings.Create<TConfig>();
 			var repository = new InMemoryConfigRepository<TConfig>(settings);
 			foreach ( var config in configs ) {
 				repository.Add(config);

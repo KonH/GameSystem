@@ -38,7 +38,7 @@ namespace Core.Common.Tests.CommandExecution {
 		[Test]
 		public void IsVersionIncremented() {
 			var executor = CreateExecutor();
-			var state = new State();
+			var state    = new State();
 
 			executor.Apply(new Config(), state, new OkCommand());
 
@@ -58,7 +58,7 @@ namespace Core.Common.Tests.CommandExecution {
 		public void IsCommandNotAppliedIfNull() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(new Config(), new State(), (OkCommand)null);
+			var result = executor.Apply(new Config(), new State(), (OkCommand) null);
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}
@@ -67,7 +67,7 @@ namespace Core.Common.Tests.CommandExecution {
 		public void IsCommandNotAppliedIfStateNull() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(new Config(), null, (OkCommand)null);
+			var result = executor.Apply(new Config(), null, (OkCommand) null);
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}
@@ -76,7 +76,7 @@ namespace Core.Common.Tests.CommandExecution {
 		public void IsCommandNotAppliedIfConfigNull() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(null, new State(), (OkCommand)null);
+			var result = executor.Apply(null, new State(), (OkCommand) null);
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}

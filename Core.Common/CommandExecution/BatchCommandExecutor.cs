@@ -14,7 +14,7 @@ namespace Core.Common.CommandExecution {
 		readonly CommandHandler<TConfig, TState>                _handler;
 
 		public BatchCommandExecutor(LoggerFactory loggerFactory, CommandQueue<TConfig, TState> queue) {
-			_logger = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
+			_logger  = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
 			_handler = new CommandHandler<TConfig, TState>(queue);
 		}
 
@@ -27,7 +27,7 @@ namespace Core.Common.CommandExecution {
 				return new BatchCommandResult<TConfig, TState>.BadCommand(badCommand.Description);
 			}
 			var dependencies = _handler.GetDependentCommands(config, state, command);
-			var accum = new List<ICommand<TConfig, TState>>();
+			var accum        = new List<ICommand<TConfig, TState>>();
 			foreach ( var dependency in dependencies ) {
 				var dependencyResult = Apply(config, state, dependency);
 				if ( dependencyResult is BatchCommandResult<TConfig, TState>.BadCommand ) {

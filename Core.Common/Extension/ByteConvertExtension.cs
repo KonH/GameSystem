@@ -4,9 +4,9 @@ namespace Core.Common.Extension {
 		public const int BytesInMb = BytesInKb * 1024;
 		public const int BytesInGb = BytesInMb * 1024;
 
-		public static long Kb(this int count) => Kb((long)count);
-		public static long Mb(this int count) => Mb((long)count);
-		public static long Gb(this int count) => Gb((long)count);
+		public static long Kb(this int count) => Kb((long) count);
+		public static long Mb(this int count) => Mb((long) count);
+		public static long Gb(this int count) => Gb((long) count);
 
 		public static long Kb(this long count) {
 			return count * BytesInKb;
@@ -20,9 +20,9 @@ namespace Core.Common.Extension {
 			return count * BytesInGb;
 		}
 
-		public static long GetKbCount(this int count) => GetKbCount((long)count);
-		public static long GetMbCount(this int count) => GetMbCount((long)count);
-		public static long GetGbCount(this int count) => GetGbCount((long)count);
+		public static long GetKbCount(this int count) => GetKbCount((long) count);
+		public static long GetMbCount(this int count) => GetMbCount((long) count);
+		public static long GetGbCount(this int count) => GetGbCount((long) count);
 
 		public static long GetKbCount(this long bytes) {
 			return bytes / BytesInKb;

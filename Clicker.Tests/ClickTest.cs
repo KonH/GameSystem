@@ -8,7 +8,7 @@ namespace Clicker.Tests {
 		[Test]
 		public void IsClickCountIncreased() {
 			var executor = Common.CreateExecutor();
-			var state = new GameState();
+			var state    = new GameState();
 
 			executor.Apply(new GameConfig(), state, new ClickCommand());
 

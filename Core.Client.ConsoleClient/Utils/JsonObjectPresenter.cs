@@ -1,7 +1,7 @@
 using System.Text.Json;
 
 namespace Core.Client.ConsoleClient.Utils {
-	public sealed class JsonObjectPresenter {
+	sealed class JsonObjectPresenter {
 		readonly JsonSerializerOptions _serializerOptions;
 
 		public JsonObjectPresenter(JsonSerializerOptions serializerOptions) {

@@ -18,11 +18,11 @@ namespace Core.Client {
 		public StandaloneClient(
 			BatchCommandExecutor<TConfig, TState> batchExecutor,
 			TConfig config, StateFactory<TState> stateFactory) {
-			_config = config;
-			_stateFactory = stateFactory;
+			_config         = config;
+			_stateFactory   = stateFactory;
 			_singleExecutor = new CommandExecutor<TConfig, TState>();
-			_batchExecutor = batchExecutor;
-			State = _stateFactory.Create();
+			_batchExecutor  = batchExecutor;
+			State           = _stateFactory.Create();
 		}
 
 		public InitializationResult Initialize() => new InitializationResult.Ok();

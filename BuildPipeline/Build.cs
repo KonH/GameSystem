@@ -6,7 +6,6 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -19,25 +18,21 @@ class Build : NukeBuild {
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	[Solution]
-	readonly Solution Solution;
+	[Solution] readonly Solution Solution;
 
-	[Parameter("Project to work with")]
-	readonly string TargetProject;
+	[Parameter("Project to work with")] readonly string TargetProject;
 
-	[Parameter("Optional runtime to publish")]
-	readonly string TargetRuntime;
+	[Parameter("Optional runtime to publish")] readonly string TargetRuntime;
 
-	[Parameter("Self-contained for publish")]
-	readonly bool? SelfContained;
+	[Parameter("Self-contained for publish")] readonly bool? SelfContained;
 
-	[Parameter("Path to Pi deploy directory on local machine")]
-	readonly string LocalPiHome;
+	[Parameter("Path to Pi deploy directory on local machine")] readonly string LocalPiHome;
 
 	Target CleanDotNet => _ => _
 		.Requires(() => TargetProject)
 		.Before(RestoreDotNet)
-		.Executes(() => {
+		.Executes(() =>
+		{
 			DotNetClean(new DotNetCleanSettings()
 				.SetProject(GetTargetProject())
 				.SetConfiguration(Configuration));
@@ -45,7 +40,8 @@ class Build : NukeBuild {
 
 	Target RestoreDotNet => _ => _
 		.Requires(() => TargetProject)
-		.Executes(() => {
+		.Executes(() =>
+		{
 			DotNetRestore(new DotNetRestoreSettings()
 				.SetProjectFile(GetTargetProject()));
 		});
@@ -54,14 +50,16 @@ class Build : NukeBuild {
 		.Requires(() => TargetProject)
 		.DependsOn(CleanDotNet)
 		.DependsOn(RestoreDotNet)
-		.Executes(() => {
+		.Executes(() =>
+		{
 			DotNetBuild(new DotNetBuildSettings()
-					.SetProjectFile(GetTargetProject())
-					.SetConfiguration(Configuration));
+				.SetProjectFile(GetTargetProject())
+				.SetConfiguration(Configuration));
 		});
 
 	Target TestDotNet => _ => _
-		.Executes(() => {
+		.Executes(() =>
+		{
 			var testProject = Solution.GetProject("Core.Common.Tests");
 			DotNetTest(new DotNetTestSettings()
 				.SetProjectFile(testProject)
@@ -72,7 +70,8 @@ class Build : NukeBuild {
 		.Requires(() => TargetProject)
 		.DependsOn(CompileDotNet)
 		.DependsOn(TestDotNet)
-		.Executes(() => {
+		.Executes(() =>
+		{
 			var settings = new DotNetPublishSettings()
 				.SetProject(GetTargetProject())
 				.SetConfiguration(Configuration);
@@ -91,12 +90,13 @@ class Build : NukeBuild {
 		.Requires(() => TargetProject)
 		.Requires(() => LocalPiHome)
 		.DependsOn(PublishDotNet)
-		.Executes(() => {
-			var project = GetTargetProject();
+		.Executes(() =>
+		{
+			var project               = GetTargetProject();
 			var buildConfigurationDir = project.Directory / "bin" / Configuration;
-			var buildDir = GetBuildDir(buildConfigurationDir);
-			var targetPath = (AbsolutePath) LocalPiHome / TargetProject;
-			var sourceDirPath = GetPublishDir(buildDir);
+			var buildDir              = GetBuildDir(buildConfigurationDir);
+			var targetPath            = (AbsolutePath) LocalPiHome / TargetProject;
+			var sourceDirPath         = GetPublishDir(buildDir);
 			CopyDirectoryRecursively(sourceDirPath, targetPath,
 				DirectoryExistsPolicy.Merge, FileExistsPolicy.OverwriteIfNewer);
 		});
@@ -120,7 +120,8 @@ class Build : NukeBuild {
 			throw new InvalidOperationException($"No framework directories found at '{buildConfigurationDir}'");
 		}
 		if ( (frameworkDirs.Length > 1) ) {
-			throw new InvalidOperationException($"More than one framework directories found at '{buildConfigurationDir}'");
+			throw new InvalidOperationException(
+				$"More than one framework directories found at '{buildConfigurationDir}'");
 		}
 		return (AbsolutePath) frameworkDirs[0];
 	}
