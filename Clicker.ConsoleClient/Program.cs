@@ -9,20 +9,25 @@ using Core.Common.CommandExecution;
 using Core.Common.Utils;
 using Core.Client.ConsoleClient;
 using Core.Client.ConsoleClient.Utils;
+using Core.Common.Config;
+using Core.Service.Extension;
+using Core.Service.Model;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
+using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Clicker.ConsoleClient {
 	static class Program {
-		static readonly Dictionary<string, Action<ServiceCollection>> DependenciesByType =
-			new Dictionary<string, Action<ServiceCollection>> {
+		static readonly Dictionary<string, Func<ServiceCollection, ServiceProvider>> DependenciesByType =
+			new Dictionary<string, Func<ServiceCollection, ServiceProvider>> {
 				{ "embedded", AddEmbeddedDependencies }
 			};
 
 		static GameConfig Config => new GameConfig {
+			Version = new ConfigVersion("Config"),
 			Resource = new ResourceConfig {
 				ResourceByClick = 10
 			},
@@ -46,18 +51,16 @@ namespace Clicker.ConsoleClient {
 
 
 		static void Main(string[] args) {
-			var services = Configure((args.Length > 0) ? args[0] : string.Empty);
-			using var provider = services.BuildServiceProvider();
+			using var provider = Configure((args.Length > 0) ? args[0] : string.Empty);
 			Run(provider);
 		}
 
-		static ServiceCollection Configure(string mode) {
+		static ServiceProvider Configure(string mode) {
 			var services = new ServiceCollection();
 			AddCommonDependencies(services);
 			AddGameDependencies(services);
 			var addSpecificDependencies = DependenciesByType.GetValueOrDefault(mode) ?? AddStandaloneDependencies;
-			addSpecificDependencies(services);
-			return services;
+			return addSpecificDependencies(services);
 		}
 
 		static void Run(ServiceProvider serviceProvider) {
@@ -73,24 +76,35 @@ namespace Clicker.ConsoleClient {
 		}
 
 		static void AddGameDependencies(ServiceCollection services) {
-			services.AddSingleton(Config);
 			services.AddSingleton(new CommandProvider<GameConfig, GameState>(typeof(GameState).Assembly));
 			services.AddSingleton<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			services.AddSingleton(new StateFactory<GameState>(() => new GameState()));
 		}
 
-		static void AddStandaloneDependencies(ServiceCollection services) {
+		static ServiceProvider AddStandaloneDependencies(ServiceCollection services) {
+			services.AddSingleton(Config);
 			services.AddSingleton<IClient<GameConfig, GameState>, StandaloneClient<GameConfig, GameState>>();
+
+			return services.BuildServiceProvider();
 		}
 
-		static void AddEmbeddedDependencies(ServiceCollection services) {
+		static ServiceProvider AddEmbeddedDependencies(ServiceCollection services) {
 			services.AddSingleton(RepositoryDecoratorSettings.Create<GameConfig>());
 			services.AddSingleton<IConfigRepository<GameConfig>, InMemoryConfigRepository<GameConfig>>();
 			services.AddSingleton(RepositoryDecoratorSettings.Create<GameState>());
 			services.AddSingleton<IStateRepository<GameState>, InMemoryStateRepository<GameState>>();
+			services.AddSingleton(new GetSingleConfigStrategy<GameConfig>.Settings(new ConfigVersion("Config")));
+			services.AddSingleton<IGetConfigStrategy<GameConfig>, GetSingleConfigStrategy<GameConfig>>();
+			services.AddSingleton<GetConfigUseCase<GameConfig>>();
 			services.AddSingleton<GetStateUseCase<GameState>>();
 			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
 			services.AddSingleton<IClient<GameConfig, GameState>, EmbeddedServiceClient<GameConfig, GameState>>();
+
+			var provider = services.BuildServiceProvider();
+			provider.GetRequiredService<IConfigRepository<GameConfig>>().Add(Config);
+			provider.GetRequiredService<IStateRepository<GameState>>().AddForUserId(new UserId("UserId"), new GameState());
+
+			return provider;
 		}
 	}
 }

@@ -3,11 +3,13 @@ using Core.Service.Extension;
 using Core.Service.Repository.Config;
 
 namespace Core.Service.Tests {
-	public static class ConfigRepository<TConfig> where TConfig : IConfig, new() {
-		public static IConfigRepository<TConfig> Create() {
+	public static class ConfigRepository<TConfig> where TConfig : IConfig {
+		public static IConfigRepository<TConfig> Create(params TConfig[] configs) {
 			var settings = RepositoryDecoratorSettings.Create<TConfig>();
 			var repository = new InMemoryConfigRepository<TConfig>(settings);
-			repository.Add(new TConfig());
+			foreach ( var config in configs ) {
+				repository.Add(config);
+			}
 			return repository;
 		}
 	}
