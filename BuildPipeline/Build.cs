@@ -22,6 +22,8 @@ class Build : NukeBuild {
 
 	[Parameter("Project to work with")] readonly string TargetProject;
 
+	[Parameter("Project to test")] readonly string TestProject;
+
 	[Parameter("Optional runtime to publish")] readonly string TargetRuntime;
 
 	[Parameter("Self-contained for publish")] readonly bool? SelfContained;
@@ -60,6 +62,19 @@ class Build : NukeBuild {
 	Target TestDotNet => _ => _
 		.Executes(() =>
 		{
+			if ( string.IsNullOrEmpty(TestProject) ) {
+				Logger.Info("Skip: no TestProject specified");
+				return;
+			}
+			var testProject = Solution.GetProject(TestProject);
+			DotNetTest(new DotNetTestSettings()
+				.SetProjectFile(testProject)
+				.SetConfiguration(Configuration));
+		});
+
+	Target TestCommonDotNet => _ => _
+		.Executes(() =>
+		{
 			var testProject = Solution.GetProject("Core.Common.Tests");
 			DotNetTest(new DotNetTestSettings()
 				.SetProjectFile(testProject)
@@ -69,6 +84,7 @@ class Build : NukeBuild {
 	Target PublishDotNet => _ => _
 		.Requires(() => TargetProject)
 		.DependsOn(CompileDotNet)
+		.DependsOn(TestCommonDotNet)
 		.DependsOn(TestDotNet)
 		.Executes(() =>
 		{
