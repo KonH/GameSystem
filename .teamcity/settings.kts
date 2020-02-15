@@ -8,8 +8,8 @@ project {
 	subProject {
 		name = "ResourceMonitor"
 		id = RelativeId(name)
-		buildType(DeployResourceMonitor)
 		buildType(createSimpleBuildType("ResourceMonitor"))
+		buildType(createDeployBuildType("ResourceMonitor", "resource-monitor"))
 	}
 	subProject {
 		name = "Core"
@@ -28,26 +28,10 @@ project {
 	}
 }
 
-object DeployResourceMonitor : BuildType({
-	name = "Deploy"
-
-	vcs {
-		root(DslContext.settingsRoot)
-	}
-
-	steps {
-		exec {
-			name = "Deploy"
-			path = "nuke"
-			arguments = "--target DeployDotNet --targetProject ResourceMonitor --targetRuntime linux-arm --selfContained true --localPiHome %env.LOCAL_PI_DIRECTORY%"
-		}
-	}
-})
-
 fun createSimpleBuildType(projectName: String, testProjectName: String? = null): BuildType {
 	return BuildType {
 		name = "Build ($projectName)"
-		id = RelativeId(projectName.replace('.', '_'))
+		id = RelativeId("Build_${projectName.replace('.', '_')}")
 
 		vcs {
 			root(DslContext.settingsRoot)
@@ -70,6 +54,35 @@ fun createSimpleBuildType(projectName: String, testProjectName: String? = null):
 
 		triggers {
 			vcs {
+			}
+		}
+	}
+}
+
+fun createDeployBuildType(projectName: String, serviceName: String): BuildType {
+	return BuildType {
+		name = "Deploy ($projectName)"
+		id = RelativeId("Deploy_${projectName.replace('.', '_')}")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			exec {
+				name = "Stop Service"
+				path = "nuke"
+				arguments = "--target StopService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
+			}
+			exec {
+				name = "Deploy"
+				path = "nuke"
+				arguments = "--target DeployDotNet --targetProject $projectName --targetRuntime linux-arm --selfContained true --localPiHome %env.LOCAL_PI_DIRECTORY%"
+			}
+			exec {
+				name = "Start Service"
+				path = "nuke"
+				arguments = "--target StartService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
 			}
 		}
 	}
