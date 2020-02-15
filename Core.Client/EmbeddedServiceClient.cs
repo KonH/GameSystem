@@ -26,7 +26,7 @@ namespace Core.Client {
 		TConfig _config;
 
 		public EmbeddedServiceClient(
-			LoggerFactory loggerFactory,
+			ILoggerFactory loggerFactory,
 			GetConfigUseCase<TConfig> getConfigUseCase,
 			GetStateUseCase<TState> getStateUseCase,
 			UpdateStateUseCase<TConfig, TState> updateStateUseCase) {

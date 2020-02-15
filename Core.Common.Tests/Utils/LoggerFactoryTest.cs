@@ -5,7 +5,7 @@ namespace Core.Common.Tests.Utils {
 	public sealed class LoggerFactoryTest {
 		[Test]
 		public void IsLoggerCreated() {
-			var factory = new LoggerFactory(typeof(ConsoleLogger<>));
+			var factory = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 
 			Assert.NotNull(factory.Create<LoggerFactoryTest>());
 		}

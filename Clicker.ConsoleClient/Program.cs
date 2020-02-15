@@ -69,7 +69,7 @@ namespace Clicker.ConsoleClient {
 
 		static void AddCommonDependencies(ServiceCollection services) {
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
-			services.AddSingleton(new LoggerFactory(typeof(ConsoleLogger<>)));
+			services.AddSingleton(new TypeLoggerFactory(typeof(ConsoleLogger<>)));
 			services.AddSingleton<ConsoleReader>();
 			services.AddSingleton<ConsoleRunner<GameConfig, GameState>>();
 		}

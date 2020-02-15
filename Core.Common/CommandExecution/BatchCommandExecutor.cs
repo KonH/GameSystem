@@ -13,7 +13,7 @@ namespace Core.Common.CommandExecution {
 		readonly ILogger<BatchCommandExecutor<TConfig, TState>> _logger;
 		readonly CommandHandler<TConfig, TState>                _handler;
 
-		public BatchCommandExecutor(LoggerFactory loggerFactory, CommandQueue<TConfig, TState> queue) {
+		public BatchCommandExecutor(ILoggerFactory loggerFactory, CommandQueue<TConfig, TState> queue) {
 			_logger  = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
 			_handler = new CommandHandler<TConfig, TState>(queue);
 		}

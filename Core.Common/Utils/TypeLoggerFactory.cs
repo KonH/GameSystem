@@ -1,10 +1,10 @@
 using System;
 
 namespace Core.Common.Utils {
-	public sealed class LoggerFactory {
+	public sealed class TypeLoggerFactory : ILoggerFactory {
 		readonly Type _openType;
 
-		public LoggerFactory(Type openType) {
+		public TypeLoggerFactory(Type openType) {
 			_openType = openType;
 		}
 
