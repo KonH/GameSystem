@@ -13,6 +13,7 @@ namespace Core.Client.ConsoleClient.Setup {
 			}
 			switch ( args[0] ) {
 				case "embedded": return new EmbeddedClientSetup<TConfig, TState>(queue, config);
+				case "web":      return new WebClientSetup<TConfig, TState>(queue, args[1]);
 				default:         throw new InvalidOperationException("Unknown client type!");
 			}
 		}
