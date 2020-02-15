@@ -3,10 +3,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Core.Client.Abstractions;
 using Core.Common.Command;
 using Core.Common.Config;
 using Core.Common.State;
 using Core.Client.ConsoleClient.Utils;
+using Core.Client.Shared;
 
 namespace Core.Client.ConsoleClient {
 	public sealed class ConsoleRunner<TConfig, TState> where TConfig : IConfig where TState : IState {

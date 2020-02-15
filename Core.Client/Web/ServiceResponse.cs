@@ -1,4 +1,4 @@
-namespace Core.Client {
+namespace Core.Client.Web {
 	public abstract class ServiceResponse {
 		public sealed class Ok<T> : ServiceResponse {
 			public readonly T Result;

@@ -1,7 +1,7 @@
 using System;
 using Core.Common.State;
 
-namespace Core.Client {
+namespace Core.Client.Shared {
 	public sealed class StateFactory<TState> where TState : IState {
 		readonly Func<TState> _initializer;
 

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Core.Client.ConsoleClient.Utils;
+using Core.Client.Shared;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;

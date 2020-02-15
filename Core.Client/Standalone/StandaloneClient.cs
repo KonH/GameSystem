@@ -1,9 +1,11 @@
+using Core.Client.Abstractions;
+using Core.Client.Shared;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
 
-namespace Core.Client {
+namespace Core.Client.Standalone {
 	public sealed class StandaloneClient<TConfig, TState> : SyncClient<TConfig, TState>
 		where TConfig : IConfig where TState : IState {
 		readonly CommandExecutor<TConfig, TState>      _singleExecutor;

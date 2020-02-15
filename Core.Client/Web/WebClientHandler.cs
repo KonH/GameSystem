@@ -7,7 +7,7 @@ using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 
-namespace Core.Client {
+namespace Core.Client.Web {
 	public sealed class WebClientHandler {
 		readonly IRequestSerializer _serializer;
 		readonly IWebRequestHandler _handler;

@@ -1,4 +1,6 @@
 using System;
+using Core.Client.Abstractions;
+using Core.Client.Shared;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
@@ -9,7 +11,7 @@ using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 
-namespace Core.Client {
+namespace Core.Client.Embedded {
 	public sealed class EmbeddedServiceClient<TConfig, TState> : SyncClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
 		readonly UserId _userId = new UserId("UserId");

@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Core.Client.Abstractions;
+using Core.Client.Shared;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
@@ -10,7 +12,7 @@ using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 
-namespace Core.Client {
+namespace Core.Client.Web {
 	public sealed class WebServiceClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
 		public TState State { get; private set; }

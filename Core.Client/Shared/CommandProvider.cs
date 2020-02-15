@@ -6,7 +6,7 @@ using Core.Common.Config;
 using Core.Common.State;
 using Core.Common.Utils;
 
-namespace Core.Client {
+namespace Core.Client.Shared {
 	public sealed class CommandProvider<TConfig, TState> where TConfig : IConfig where TState : IState {
 		public readonly IReadOnlyList<Type> CommandTypes;
 

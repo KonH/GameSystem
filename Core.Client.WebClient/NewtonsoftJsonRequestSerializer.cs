@@ -1,3 +1,4 @@
+using Core.Client.Web;
 using Newtonsoft.Json;
 
 namespace Core.Client.WebClient {

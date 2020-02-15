@@ -1,4 +1,4 @@
-namespace Core.Client {
+namespace Core.Client.Shared {
 	public abstract class InitializationResult {
 		public sealed class Ok : InitializationResult { }
 

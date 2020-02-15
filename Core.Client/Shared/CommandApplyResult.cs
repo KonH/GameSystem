@@ -1,4 +1,4 @@
-namespace Core.Client {
+namespace Core.Client.Shared {
 	public abstract class CommandApplyResult {
 		public sealed class Ok : CommandApplyResult { }
 

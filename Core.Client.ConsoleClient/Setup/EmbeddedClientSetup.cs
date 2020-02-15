@@ -1,3 +1,6 @@
+using Core.Client.Abstractions;
+using Core.Client.Embedded;
+using Core.Client.Shared;
 using Core.Common.CommandDependency;
 using Core.Common.Config;
 using Core.Common.State;
