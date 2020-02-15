@@ -15,7 +15,7 @@ namespace Clicker.WebService.Controllers {
 			_getConfigUseCase = getConfigUseCase;
 		}
 
-		[HttpGet]
+		[HttpPost("get")]
 		public WebResponse Get([FromBody] GetConfigRequest request) {
 			_logger.LogTrace($"Request config for user: '{request.UserId?.Value}'.");
 			var response = _getConfigUseCase.Handle(request);

@@ -21,7 +21,7 @@ namespace Clicker.WebService.Controllers {
 			_updateStateUseCase = updateStateUseCase;
 		}
 
-		[HttpGet]
+		[HttpPost("get")]
 		public WebResponse Get([FromBody] GetStateRequest request) {
 			_logger.LogTrace($"Get state for user: '{request.UserId?.Value}'.");
 			var response = _getStateUseCase.Handle(request);
@@ -29,7 +29,7 @@ namespace Clicker.WebService.Controllers {
 			return new WebResponse(response);
 		}
 
-		[HttpPost]
+		[HttpPost("update")]
 		public WebResponse Update([FromBody] UpdateStateRequest<GameConfig, GameState> request) {
 			_logger.LogTrace($"Update state for user: '{request.UserId?.Value}'.");
 			var response = _updateStateUseCase.Handle(request);
