@@ -1,0 +1,13 @@
+[Unit]
+Description=LED resource monitor
+
+[Service]
+ExecStart=/share/Clicker.WebService/Clicker.WebService
+WorkingDirectory=/share/Clicker.WebService
+User=root
+Group=root
+Restart=on-failure
+SyslogIdentifier=clicker-web-service
+
+[Install]
+WantedBy=multi-user.target

@@ -25,6 +25,7 @@ project {
 		buildType(createSimpleBuildType("Clicker.Common", "Clicker.Tests"))
 		buildType(createSimpleBuildType("Clicker.ConsoleClient"))
 		buildType(createSimpleBuildType("Clicker.WebService"))
+		buildType(createDeployBuildType("Clicker.WebService", "clicker-web-service", "Clicker.Tests"))
 	}
 }
 
@@ -59,7 +60,7 @@ fun createSimpleBuildType(projectName: String, testProjectName: String? = null):
 	}
 }
 
-fun createDeployBuildType(projectName: String, serviceName: String): BuildType {
+fun createDeployBuildType(projectName: String, serviceName: String, testProjectName: String? = null): BuildType {
 	return BuildType {
 		name = "Deploy ($projectName)"
 		id = RelativeId("Deploy_${projectName.replace('.', '_')}")
@@ -74,10 +75,14 @@ fun createDeployBuildType(projectName: String, serviceName: String): BuildType {
 				path = "nuke"
 				arguments = "--target StopService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
 			}
+			var deployArgs = "--target DeployDotNet --targetProject $projectName --targetRuntime linux-arm --selfContained true --localPiHome %env.LOCAL_PI_DIRECTORY%"
+			if ( testProjectName != null ) {
+				deployArgs += " --testProject $testProjectName"
+			}
 			exec {
 				name = "Deploy"
 				path = "nuke"
-				arguments = "--target DeployDotNet --targetProject $projectName --targetRuntime linux-arm --selfContained true --localPiHome %env.LOCAL_PI_DIRECTORY%"
+				arguments = deployArgs
 			}
 			exec {
 				name = "Start Service"
