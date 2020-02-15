@@ -45,7 +45,7 @@ object DeployResourceMonitor : BuildType({
 })
 
 fun createSimpleBuildType(projectName: String, testProjectName: String? = null): BuildType {
-	return BuildType({
+	return BuildType {
 		name = "Build ($projectName)"
 		id = RelativeId(projectName.replace('.', '_'))
 
@@ -72,5 +72,5 @@ fun createSimpleBuildType(projectName: String, testProjectName: String? = null):
 			vcs {
 			}
 		}
-	})
+	}
 }
