@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
@@ -28,19 +29,19 @@ namespace Core.Client {
 			_webClientHandler = webClientHandler;
 		}
 
-		public InitializationResult Initialize() {
+		public async Task<InitializationResult> Initialize() {
 			try {
-				UpdateConfig();
-				UpdateState();
+				await UpdateConfig();
+				await UpdateState();
 			} catch ( Exception e ) {
 				return new InitializationResult.Error(e.ToString());
 			}
 			return new InitializationResult.Ok();
 		}
 
-		public CommandApplyResult Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
-			var response = _webClientHandler.UpdateState(request);
+			var response = await _webClientHandler.UpdateState(request);
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
 					_singleExecutor.Apply(_config, State, command);
@@ -61,10 +62,10 @@ namespace Core.Client {
 			}
 		}
 
-		void UpdateConfig() {
+		async Task UpdateConfig() {
 			_logger.LogTrace($"Update config for '{_userId}'");
 			var request  = new GetConfigRequest(_userId);
-			var response = _webClientHandler.GetConfig(request);
+			var response = await _webClientHandler.GetConfig(request);
 			switch ( response ) {
 				case GetConfigResponse.Found<TConfig> found: {
 					_config = found.Config;
@@ -79,10 +80,10 @@ namespace Core.Client {
 			}
 		}
 
-		void UpdateState() {
+		async Task UpdateState() {
 			_logger.LogTrace($"Update state for '{_userId}'");
 			var request  = new GetStateRequest(_userId);
-			var response = _webClientHandler.GetState<TState>(request);
+			var response = await _webClientHandler.GetState(request);
 			switch ( response ) {
 				case GetStateResponse.Found<TState> found: {
 					State = found.State;

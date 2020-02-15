@@ -4,10 +4,8 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Client {
-	public sealed class StandaloneClient<TConfig, TState> : IClient<TConfig, TState>
+	public sealed class StandaloneClient<TConfig, TState> : SyncClient<TConfig, TState>
 		where TConfig : IConfig where TState : IState {
-		public TState State { get; private set; }
-
 		readonly CommandExecutor<TConfig, TState>      _singleExecutor;
 		readonly BatchCommandExecutor<TConfig, TState> _batchExecutor;
 		readonly TConfig                               _config;
@@ -25,9 +23,9 @@ namespace Core.Client {
 			State           = _stateFactory.Create();
 		}
 
-		public InitializationResult Initialize() => new InitializationResult.Ok();
+		protected override InitializationResult Initialize() => new InitializationResult.Ok();
 
-		CommandApplyResult IClient<TConfig, TState>.Apply(ICommand<TConfig, TState> command) {
+		protected override CommandApplyResult Apply(ICommand<TConfig, TState> command) {
 			var result = _batchExecutor.Apply(_config, State, command);
 			switch ( result ) {
 				case BatchCommandResult.Ok<TConfig, TState> okResult: {

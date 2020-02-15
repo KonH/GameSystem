@@ -10,10 +10,8 @@ using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 
 namespace Core.Client {
-	public sealed class EmbeddedServiceClient<TConfig, TState> : IClient<TConfig, TState>
+	public sealed class EmbeddedServiceClient<TConfig, TState> : SyncClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
-		public TState State { get; private set; }
-
 		readonly UserId _userId = new UserId("UserId");
 
 		readonly ILogger<EmbeddedServiceClient<TConfig, TState>> _logger;
@@ -37,7 +35,7 @@ namespace Core.Client {
 			_singleExecutor     = new CommandExecutor<TConfig, TState>();
 		}
 
-		public InitializationResult Initialize() {
+		protected override InitializationResult Initialize() {
 			try {
 				UpdateConfig();
 				UpdateState();
@@ -47,7 +45,7 @@ namespace Core.Client {
 			return new InitializationResult.Ok();
 		}
 
-		public CommandApplyResult Apply(ICommand<TConfig, TState> command) {
+		protected override CommandApplyResult Apply(ICommand<TConfig, TState> command) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
 			var response = _updateStateUseCase.Handle(request);
 			switch ( response ) {

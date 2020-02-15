@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Core.Client.WebClient {
-	// TODO: async
 	public sealed class StandardWebRequestHandler : IWebRequestHandler {
 		readonly System.Net.WebClient _webClient;
 
@@ -12,10 +12,10 @@ namespace Core.Client.WebClient {
 			};
 		}
 
-		public ServiceResponse Post(string url, string body) {
+		public async Task<ServiceResponse> Post(string url, string body) {
 			_webClient.Headers.Add("Content-Type", "application/json");
 			try {
-				var result = _webClient.UploadString(url, HttpMethod.Post.ToString(), body);
+				var result = await _webClient.UploadStringTaskAsync(url, HttpMethod.Post.ToString(), body);
 				return new ServiceResponse.Ok<string>(result);
 			} catch ( WebException e ) {
 				return new ServiceResponse.Error(e.ToString());

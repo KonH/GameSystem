@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Client.ConsoleClient.Utils;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
@@ -27,9 +28,9 @@ namespace Core.Client.ConsoleClient.Setup {
 
 		public abstract void Initialize(ServiceProvider provider);
 
-		public virtual void Run(ServiceProvider provider) {
+		public virtual async Task Run(ServiceProvider provider) {
 			var client = provider.GetRequiredService<ConsoleRunner<TConfig, TState>>();
-			client.Run();
+			await client.Run();
 		}
 	}
 }

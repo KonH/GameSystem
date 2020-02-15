@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.Config;
 using Core.Common.State;
@@ -24,21 +25,21 @@ namespace Core.Client.ConsoleClient {
 			_client          = client;
 		}
 
-		public void Run() {
-			var initializeResult = _client.Initialize();
+		public async Task Run() {
+			var initializeResult = await _client.Initialize();
 			if ( initializeResult is InitializationResult.Error e ) {
 				Console.WriteLine($"Initialization failed with '{e.Description}'");
 				return;
 			}
 			while ( true ) {
-				var finished = UpdateLoop();
+				var finished = await UpdateLoop();
 				if ( finished ) {
 					return;
 				}
 			}
 		}
 
-		bool UpdateLoop() {
+		async Task<bool> UpdateLoop() {
 			DrawState();
 			DrawCommands();
 			var selection = ReadSelection();
@@ -46,15 +47,15 @@ namespace Core.Client.ConsoleClient {
 				return true;
 			}
 			if ( selection > 0 ) {
-				ExecuteCommand(selection - 1);
+				await ExecuteCommand(selection - 1);
 			}
 			Console.WriteLine();
 			return false;
 		}
 
-		void ExecuteCommand(int index) {
+		async Task ExecuteCommand(int index) {
 			var command = CreateCommand(index);
-			var result = _client.Apply(command);
+			var result  = await _client.Apply(command);
 			if ( result is CommandApplyResult.Error error ) {
 				Console.WriteLine($"Error: '{error.Description}'");
 			}

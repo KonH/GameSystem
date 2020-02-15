@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
+
 namespace Core.Client {
 	public interface IWebRequestHandler {
-		ServiceResponse Post(string url, string body);
+		Task<ServiceResponse> Post(string url, string body);
 	}
 }

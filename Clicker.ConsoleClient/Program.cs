@@ -1,4 +1,5 @@
-﻿using Clicker.Common;
+﻿using System.Threading.Tasks;
+using Clicker.Common;
 using Clicker.Common.Config;
 using Clicker.Common.State;
 using Core.Client.ConsoleClient.Setup;
@@ -30,13 +31,13 @@ namespace Clicker.ConsoleClient {
 			}
 		};
 
-		static void Main(string[] args) {
+		static async Task Main(string[] args) {
 			var setup = SetupFactory<GameConfig, GameState>.CreateByArguments(new CommandQueue(), Config, args);
 			var services = new ServiceCollection();
 			setup.Configure(services);
 			var provider = services.BuildServiceProvider();
 			setup.Initialize(provider);
-			setup.Run(provider);
+			await setup.Run(provider);
 		}
 	}
 }
