@@ -54,7 +54,10 @@ namespace Core.Client.ConsoleClient {
 
 		void ExecuteCommand(int index) {
 			var command = CreateCommand(index);
-			_client.Apply(command);
+			var result = _client.Apply(command);
+			if ( result is CommandApplyResult.Error error ) {
+				Console.WriteLine($"Error: '{error.Description}'");
+			}
 		}
 
 		void DrawState() {
