@@ -29,6 +29,14 @@ namespace BuildPipeline {
 
 		[Parameter("Path to Pi deploy directory on local machine")] readonly string LocalPiHome;
 
+		[Parameter("Service to work with")] readonly string ServiceName;
+
+		[Parameter("Ssh host for service management")] readonly string SshHost;
+
+		[Parameter("Ssh user for service management")] readonly string SshUserName;
+
+		[Parameter("Ssh password for service management")] readonly string SshPassword;
+
 		Target CleanDotNet => _ => _
 			.Requires(() => TargetProject)
 			.Before(RestoreDotNet)
@@ -114,6 +122,30 @@ namespace BuildPipeline {
 				var sourceDirPath         = DeployTarget.GetPublishDir(TargetRuntime, buildDir);
 				CopyDirectoryRecursively(sourceDirPath, targetPath,
 					DirectoryExistsPolicy.Merge, FileExistsPolicy.OverwriteIfNewer);
+			});
+
+		Target StopService => _ => _
+			.Description("Stop related service")
+			.Requires(() => SshHost)
+			.Requires(() => SshUserName)
+			.Requires(() => SshPassword)
+			.Requires(() => ServiceName)
+			.Executes(() =>
+			{
+				var context = new ServiceTarget.ExecutionContext(SshHost, SshUserName, SshPassword);
+				ServiceTarget.StopService(context, ServiceName);
+			});
+
+		Target StartService => _ => _
+			.Description("Start related service")
+			.Requires(() => ServiceName)
+			.Requires(() => SshHost)
+			.Requires(() => SshUserName)
+			.Requires(() => SshPassword)
+			.Executes(() =>
+			{
+				var context = new ServiceTarget.ExecutionContext(SshHost, SshUserName, SshPassword);
+				ServiceTarget.StartService(context, ServiceName);
 			});
 	}
 }
