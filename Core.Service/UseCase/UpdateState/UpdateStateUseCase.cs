@@ -44,7 +44,7 @@ namespace Core.Service.UseCase.UpdateState {
 			if ( request.Command == null ) {
 				return BadRequest("null command");
 			}
-			state = _stateRepository.GetByUserId(request.UserId);
+			state = _stateRepository.Get(request.UserId);
 			if ( state == null ) {
 				return NotFound();
 			}
@@ -62,7 +62,7 @@ namespace Core.Service.UseCase.UpdateState {
 			UserId userId, TState state, BatchCommandResult<TConfig, TState> result) {
 			switch ( result ) {
 				case BatchCommandResult<TConfig, TState>.Ok okResult: {
-					_stateRepository.UpdateForUserId(userId, state);
+					_stateRepository.Update(userId, state);
 					var newVersion = state.Version;
 					return Updated(newVersion, okResult.NextCommands);
 				}

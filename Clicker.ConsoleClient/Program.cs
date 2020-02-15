@@ -49,7 +49,6 @@ namespace Clicker.ConsoleClient {
 			}
 		};
 
-
 		static void Main(string[] args) {
 			using var provider = Configure((args.Length > 0) ? args[0] : string.Empty);
 			Run(provider);
@@ -104,7 +103,7 @@ namespace Clicker.ConsoleClient {
 			provider.GetRequiredService<IConfigRepository<GameConfig>>()
 				.Add(Config);
 			provider.GetRequiredService<IStateRepository<GameState>>()
-				.AddForUserId(new UserId("UserId"), new GameState());
+				.Add(new UserId("UserId"), new GameState());
 
 			return provider;
 		}

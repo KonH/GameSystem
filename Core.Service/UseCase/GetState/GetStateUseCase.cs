@@ -16,7 +16,7 @@ namespace Core.Service.UseCase.GetState {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var state = _stateRepository.GetByUserId(request.UserId);
+			var state = _stateRepository.Get(request.UserId);
 			return (state != null) ? Found(state) : NotFound();
 		}
 

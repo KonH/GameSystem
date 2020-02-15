@@ -12,7 +12,7 @@ namespace Core.Service.Tests {
 		public static IStateRepository<TState> Create() {
 			var settings   = JsonRepositoryDecoratorSettings.Create<TState>();
 			var repository = new InMemoryStateRepository<TState>(settings);
-			repository.AddForUserId(StateRepository.ValidUserId, new TState());
+			repository.Add(StateRepository.ValidUserId, new TState());
 			return repository;
 		}
 	}
