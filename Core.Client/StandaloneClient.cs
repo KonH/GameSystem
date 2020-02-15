@@ -30,7 +30,7 @@ namespace Core.Client {
 		CommandApplyResult IClient<TConfig, TState>.Apply(ICommand<TConfig, TState> command) {
 			var result = _batchExecutor.Apply(_config, State, command);
 			switch ( result ) {
-				case BatchCommandResult<TConfig, TState>.Ok okResult: {
+				case BatchCommandResult.Ok<TConfig, TState> okResult: {
 					_history.AddCommand(command, true);
 					_history.AddCommands(okResult.NextCommands, true);
 					return new CommandApplyResult.Ok();

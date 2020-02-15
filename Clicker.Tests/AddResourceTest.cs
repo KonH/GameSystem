@@ -22,7 +22,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
+			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
 
 		[Test]
@@ -31,7 +31,7 @@ namespace Clicker.Tests {
 
 			var result = executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand(-10));
 
-			Assert.IsInstanceOf<BatchCommandResult<GameConfig, GameState>.BadCommand>(result);
+			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
 	}
 }

@@ -4,8 +4,9 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Common.CommandExecution {
-	public abstract class BatchCommandResult<TConfig, TState> where TConfig : IConfig where TState : IState {
-		public sealed class Ok : BatchCommandResult<TConfig, TState> {
+	public abstract class BatchCommandResult {
+		public sealed class Ok<TConfig, TState> : BatchCommandResult
+			where TConfig : IConfig where TState : IState {
 			public List<ICommand<TConfig, TState>> NextCommands { get; set; } = new List<ICommand<TConfig, TState>>();
 
 			public Ok() { }
@@ -15,7 +16,7 @@ namespace Core.Common.CommandExecution {
 			}
 		}
 
-		public class BadCommand : BatchCommandResult<TConfig, TState> {
+		public class BadCommand : BatchCommandResult {
 			public string Description { get; set; }
 
 			public BadCommand() { }

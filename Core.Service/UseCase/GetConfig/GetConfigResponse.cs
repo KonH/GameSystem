@@ -1,8 +1,8 @@
 using Core.Common.Config;
 
 namespace Core.Service.UseCase.GetConfig {
-	public abstract class GetConfigResponse<TConfig> where TConfig : IConfig {
-		public sealed class Found : GetConfigResponse<TConfig> {
+	public abstract class GetConfigResponse {
+		public sealed class Found<TConfig> : GetConfigResponse where TConfig : IConfig {
 			public TConfig Config { get; set; }
 
 			public Found() { }
@@ -12,9 +12,9 @@ namespace Core.Service.UseCase.GetConfig {
 			}
 		}
 
-		public sealed class NotFound : GetConfigResponse<TConfig> { }
+		public sealed class NotFound : GetConfigResponse { }
 
-		public sealed class BadRequest : GetConfigResponse<TConfig> {
+		public sealed class BadRequest : GetConfigResponse {
 			public string Description { get; set; }
 
 			public BadRequest() { }

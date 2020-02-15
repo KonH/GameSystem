@@ -1,5 +1,5 @@
 namespace Core.Client {
 	public interface IWebRequestHandler {
-		ServiceResponse<string> Post(string url, string body);
+		ServiceResponse Post(string url, string body);
 	}
 }

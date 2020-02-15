@@ -11,7 +11,7 @@ using Core.Service.Repository.State;
 namespace Core.Service.UseCase.UpdateState {
 	public sealed class
 		UpdateStateUseCase<TConfig, TState> :
-			IUseCase<UpdateStateRequest<TConfig, TState>, UpdateStateResponse<TConfig, TState>>
+			IUseCase<UpdateStateRequest<TConfig, TState>, UpdateStateResponse>
 		where TConfig : IConfig where TState : IState {
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
@@ -25,7 +25,7 @@ namespace Core.Service.UseCase.UpdateState {
 			_commandExecutor  = commandExecutor;
 		}
 
-		public UpdateStateResponse<TConfig, TState> Handle(UpdateStateRequest<TConfig, TState> request) {
+		public UpdateStateResponse Handle(UpdateStateRequest<TConfig, TState> request) {
 			var validateError = Validate(request, out var config, out var state);
 			if ( validateError != null ) {
 				return validateError;
@@ -34,7 +34,7 @@ namespace Core.Service.UseCase.UpdateState {
 			return HandleResult(request.UserId, state, result);
 		}
 
-		UpdateStateResponse<TConfig, TState> Validate(
+		UpdateStateResponse Validate(
 			UpdateStateRequest<TConfig, TState> request, out TConfig config, out TState state) {
 			state  = default;
 			config = default;
@@ -58,16 +58,16 @@ namespace Core.Service.UseCase.UpdateState {
 			return null;
 		}
 
-		UpdateStateResponse<TConfig, TState> HandleResult(
-			UserId userId, TState state, BatchCommandResult<TConfig, TState> result) {
+		UpdateStateResponse HandleResult(
+			UserId userId, TState state, BatchCommandResult result) {
 			switch ( result ) {
-				case BatchCommandResult<TConfig, TState>.Ok okResult: {
+				case BatchCommandResult.Ok<TConfig, TState> okResult: {
 					_stateRepository.Update(userId, state);
 					var newVersion = state.Version;
 					return Updated(newVersion, okResult.NextCommands);
 				}
 
-				case BatchCommandResult<TConfig, TState>.BadCommand badResult: {
+				case BatchCommandResult.BadCommand badResult: {
 					return Rejected(badResult.Description);
 				}
 
@@ -77,25 +77,25 @@ namespace Core.Service.UseCase.UpdateState {
 			}
 		}
 
-		static UpdateStateResponse<TConfig, TState> NotFound() {
-			return new UpdateStateResponse<TConfig, TState>.NotFound();
+		static UpdateStateResponse NotFound() {
+			return new UpdateStateResponse.NotFound();
 		}
 
-		static UpdateStateResponse<TConfig, TState> Outdated() {
-			return new UpdateStateResponse<TConfig, TState>.Outdated();
+		static UpdateStateResponse Outdated() {
+			return new UpdateStateResponse.Outdated();
 		}
 
-		static UpdateStateResponse<TConfig, TState> Updated(
+		static UpdateStateResponse Updated(
 			StateVersion newVersion, List<ICommand<TConfig, TState>> nextCommands) {
-			return new UpdateStateResponse<TConfig, TState>.Updated(newVersion, nextCommands);
+			return new UpdateStateResponse.Updated<TConfig, TState>(newVersion, nextCommands);
 		}
 
-		static UpdateStateResponse<TConfig, TState> Rejected(string description) {
-			return new UpdateStateResponse<TConfig, TState>.Rejected(description);
+		static UpdateStateResponse Rejected(string description) {
+			return new UpdateStateResponse.Rejected(description);
 		}
 
-		static UpdateStateResponse<TConfig, TState> BadRequest(string description = "") {
-			return new UpdateStateResponse<TConfig, TState>.BadRequest(description);
+		static UpdateStateResponse BadRequest(string description = "") {
+			return new UpdateStateResponse.BadRequest(description);
 		}
 	}
 }

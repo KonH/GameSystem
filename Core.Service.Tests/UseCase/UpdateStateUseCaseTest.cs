@@ -37,7 +37,7 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<UpdateStateResponse<Config, State>.Updated>(resp);
+			Assert.IsInstanceOf<UpdateStateResponse.Updated<Config, State>>(resp);
 		}
 
 		[Test]
@@ -47,7 +47,7 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<UpdateStateResponse<Config, State>.Rejected>(resp);
+			Assert.IsInstanceOf<UpdateStateResponse.Rejected>(resp);
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<UpdateStateResponse<Config, State>.NotFound>(resp);
+			Assert.IsInstanceOf<UpdateStateResponse.NotFound>(resp);
 		}
 
 		[Test]
@@ -67,7 +67,7 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<UpdateStateResponse<Config, State>.Outdated>(resp);
+			Assert.IsInstanceOf<UpdateStateResponse.Outdated>(resp);
 		}
 
 		UpdateStateUseCase<Config, State> GetUseCase() {

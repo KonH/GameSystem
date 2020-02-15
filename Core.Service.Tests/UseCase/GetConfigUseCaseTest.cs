@@ -39,8 +39,8 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<GetConfigResponse<Config>.Found>(resp);
-			Assert.NotNull(((GetConfigResponse<Config>.Found) resp).Config);
+			Assert.IsInstanceOf<GetConfigResponse.Found<Config>>(resp);
+			Assert.NotNull(((GetConfigResponse.Found<Config>) resp).Config);
 		}
 
 		[Test]
@@ -50,7 +50,7 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<GetConfigResponse<Config>.NotFound>(resp);
+			Assert.IsInstanceOf<GetConfigResponse.NotFound>(resp);
 		}
 
 		GetConfigUseCase<Config> GetUseCase(ConfigVersion configVersion, params Config[] configs) {

@@ -51,7 +51,7 @@ namespace Core.Client {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
 			var response = _updateStateUseCase.Handle(request);
 			switch ( response ) {
-				case UpdateStateResponse<TConfig, TState>.Updated updated: {
+				case UpdateStateResponse.Updated<TConfig, TState> updated: {
 					_singleExecutor.Apply(_config, State, command);
 					foreach ( var cmd in updated.NextCommands ) {
 						_singleExecutor.Apply(_config, State, cmd);
@@ -75,7 +75,7 @@ namespace Core.Client {
 			var request  = new GetConfigRequest(_userId);
 			var response = _getConfigUseCase.Handle(request);
 			switch ( response ) {
-				case GetConfigResponse<TConfig>.Found found: {
+				case GetConfigResponse.Found<TConfig> found: {
 					_config = found.Config;
 					_logger.LogTrace("Config found");
 					break;
@@ -93,7 +93,7 @@ namespace Core.Client {
 			var request  = new GetStateRequest(_userId);
 			var response = _getStateUseCase.Handle(request);
 			switch ( response ) {
-				case GetStateResponse<TState>.Found found: {
+				case GetStateResponse.Found<TState> found: {
 					State = found.State;
 					_logger.LogTrace("State found");
 					break;

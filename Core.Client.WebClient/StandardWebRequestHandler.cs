@@ -12,13 +12,13 @@ namespace Core.Client.WebClient {
 			};
 		}
 
-		public ServiceResponse<string> Post(string url, string body) {
+		public ServiceResponse Post(string url, string body) {
 			_webClient.Headers.Add("Content-Type", "application/json");
 			try {
 				var result = _webClient.UploadString(url, HttpMethod.Post.ToString(), body);
-				return new ServiceResponse<string>.Ok(result);
+				return new ServiceResponse.Ok<string>(result);
 			} catch ( WebException e ) {
-				return new ServiceResponse<string>.Error(e.ToString());
+				return new ServiceResponse.Error(e.ToString());
 			}
 		}
 	}

@@ -3,7 +3,7 @@ using Core.Service.Extension;
 using Core.Service.Repository.State;
 
 namespace Core.Service.UseCase.GetState {
-	public sealed class GetStateUseCase<TState> : IUseCase<GetStateRequest, GetStateResponse<TState>>
+	public sealed class GetStateUseCase<TState> : IUseCase<GetStateRequest, GetStateResponse>
 		where TState : IState {
 		readonly IStateRepository<TState> _stateRepository;
 
@@ -11,7 +11,7 @@ namespace Core.Service.UseCase.GetState {
 			_stateRepository = stateRepository;
 		}
 
-		public GetStateResponse<TState> Handle(GetStateRequest request) {
+		public GetStateResponse Handle(GetStateRequest request) {
 			var validateError = Validate(request);
 			if ( validateError != null ) {
 				return validateError;
@@ -20,23 +20,23 @@ namespace Core.Service.UseCase.GetState {
 			return (state != null) ? Found(state) : NotFound();
 		}
 
-		GetStateResponse<TState> Validate(GetStateRequest request) {
+		GetStateResponse Validate(GetStateRequest request) {
 			if ( request == null ) {
 				return BadRequest("null request");
 			}
 			return null;
 		}
 
-		static GetStateResponse<TState>.BadRequest BadRequest(string description) {
-			return new GetStateResponse<TState>.BadRequest(description);
+		static GetStateResponse.BadRequest BadRequest(string description) {
+			return new GetStateResponse.BadRequest(description);
 		}
 
-		static GetStateResponse<TState>.NotFound NotFound() {
-			return new GetStateResponse<TState>.NotFound();
+		static GetStateResponse.NotFound NotFound() {
+			return new GetStateResponse.NotFound();
 		}
 
-		static GetStateResponse<TState> Found(TState state) {
-			return new GetStateResponse<TState>.Found(state);
+		static GetStateResponse Found(TState state) {
+			return new GetStateResponse.Found<TState>(state);
 		}
 	}
 }

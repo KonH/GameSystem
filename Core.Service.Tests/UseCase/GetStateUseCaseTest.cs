@@ -16,8 +16,8 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<GetStateResponse<State>.Found>(resp);
-			Assert.NotNull(((GetStateResponse<State>.Found) resp).State);
+			Assert.IsInstanceOf<GetStateResponse.Found<State>>(resp);
+			Assert.NotNull(((GetStateResponse.Found<State>) resp).State);
 		}
 
 		[Test]
@@ -27,7 +27,7 @@ namespace Core.Service.Tests.UseCase {
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<GetStateResponse<State>.NotFound>(resp);
+			Assert.IsInstanceOf<GetStateResponse.NotFound>(resp);
 		}
 
 		GetStateUseCase<State> GetUseCase() {

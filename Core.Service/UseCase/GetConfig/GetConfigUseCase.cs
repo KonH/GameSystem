@@ -1,7 +1,7 @@
 using Core.Common.Config;
 
 namespace Core.Service.UseCase.GetConfig {
-	public sealed class GetConfigUseCase<TConfig> : IUseCase<GetConfigRequest, GetConfigResponse<TConfig>>
+	public sealed class GetConfigUseCase<TConfig> : IUseCase<GetConfigRequest, GetConfigResponse>
 		where TConfig : IConfig {
 		readonly IGetConfigStrategy<TConfig> _strategy;
 
@@ -9,7 +9,7 @@ namespace Core.Service.UseCase.GetConfig {
 			_strategy = strategy;
 		}
 
-		public GetConfigResponse<TConfig> Handle(GetConfigRequest request) {
+		public GetConfigResponse Handle(GetConfigRequest request) {
 			var validateError = Validate(request);
 			if ( validateError != null ) {
 				return validateError;
@@ -18,7 +18,7 @@ namespace Core.Service.UseCase.GetConfig {
 			return (config != null) ? Found(config) : NotFound();
 		}
 
-		GetConfigResponse<TConfig> Validate(GetConfigRequest request) {
+		GetConfigResponse Validate(GetConfigRequest request) {
 			if ( request == null ) {
 				return BadRequest("null request");
 			}
@@ -28,16 +28,16 @@ namespace Core.Service.UseCase.GetConfig {
 			return null;
 		}
 
-		static GetConfigResponse<TConfig>.BadRequest BadRequest(string description) {
-			return new GetConfigResponse<TConfig>.BadRequest(description);
+		static GetConfigResponse.BadRequest BadRequest(string description) {
+			return new GetConfigResponse.BadRequest(description);
 		}
 
-		static GetConfigResponse<TConfig>.NotFound NotFound() {
-			return new GetConfigResponse<TConfig>.NotFound();
+		static GetConfigResponse.NotFound NotFound() {
+			return new GetConfigResponse.NotFound();
 		}
 
-		static GetConfigResponse<TConfig> Found(TConfig config) {
-			return new GetConfigResponse<TConfig>.Found(config);
+		static GetConfigResponse Found(TConfig config) {
+			return new GetConfigResponse.Found<TConfig>(config);
 		}
 	}
 }

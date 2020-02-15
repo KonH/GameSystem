@@ -1,6 +1,6 @@
 namespace Core.Client {
-	public abstract class ServiceResponse<T> {
-		public sealed class Ok : ServiceResponse<T> {
+	public abstract class ServiceResponse {
+		public sealed class Ok<T> : ServiceResponse {
 			public readonly T Result;
 
 			public Ok(T result) {
@@ -8,7 +8,7 @@ namespace Core.Client {
 			}
 		}
 
-		public sealed class Error : ServiceResponse<T> {
+		public sealed class Error : ServiceResponse {
 			public readonly string Description;
 
 			public Error(string description) {

@@ -70,7 +70,7 @@ namespace Core.Common.Tests.CommandExecution {
 
 			var result = executor.Apply(new Config(), state, new BadCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<Config, State>.BadCommand>(result);
+			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
 
 		[Test]
@@ -81,10 +81,10 @@ namespace Core.Common.Tests.CommandExecution {
 
 			var result = executor.Apply(new Config(), state, new OkCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<Config, State>.Ok>(result);
+			Assert.IsInstanceOf<BatchCommandResult.Ok<Config, State>>(result);
 			Assert.AreEqual(
 				state.AppliedCommands.Count - 1,
-				((BatchCommandResult<Config, State>.Ok) result).NextCommands.Count);
+				((BatchCommandResult.Ok<Config, State>) result).NextCommands.Count);
 
 			Assert.Contains("Dependency", state.AppliedCommands);
 		}
@@ -97,10 +97,10 @@ namespace Core.Common.Tests.CommandExecution {
 
 			var result = executor.Apply(new Config(), state, new OkCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<Config, State>.Ok>(result);
+			Assert.IsInstanceOf<BatchCommandResult.Ok<Config, State>>(result);
 			Assert.AreEqual(
 				state.AppliedCommands.Count - 1,
-				((BatchCommandResult<Config, State>.Ok) result).NextCommands.Count);
+				((BatchCommandResult.Ok<Config, State>) result).NextCommands.Count);
 
 			Assert.AreEqual("Main", state.AppliedCommands[0]);
 			Assert.AreEqual("Dependency", state.AppliedCommands[1]);
@@ -125,10 +125,10 @@ namespace Core.Common.Tests.CommandExecution {
 
 			var result = executor.Apply(new Config(), state, new OkCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<Config, State>.Ok>(result);
+			Assert.IsInstanceOf<BatchCommandResult.Ok<Config, State>>(result);
 			Assert.AreEqual(
 				state.AppliedCommands.Count - 1,
-				((BatchCommandResult<Config, State>.Ok) result).NextCommands.Count);
+				((BatchCommandResult.Ok<Config, State>) result).NextCommands.Count);
 
 			Assert.AreEqual("Main", state.AppliedCommands[0]);
 			Assert.AreEqual("Dependency1", state.AppliedCommands[1]);
@@ -179,7 +179,7 @@ namespace Core.Common.Tests.CommandExecution {
 
 			var result = executor.Apply(new Config(), state, new OkCommand());
 
-			Assert.IsInstanceOf<BatchCommandResult<Config, State>.BadCommand>(result);
+			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
 
 		BatchCommandExecutor<Config, State> CreateExecutor(CommandQueue<Config, State> queue) {

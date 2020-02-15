@@ -1,8 +1,8 @@
 using Core.Common.State;
 
 namespace Core.Service.UseCase.GetState {
-	public abstract class GetStateResponse<TState> where TState : IState {
-		public sealed class Found : GetStateResponse<TState> {
+	public abstract class GetStateResponse {
+		public sealed class Found<TState> : GetStateResponse where TState : IState {
 			public TState State { get; set; }
 
 			public Found() { }
@@ -12,9 +12,9 @@ namespace Core.Service.UseCase.GetState {
 			}
 		}
 
-		public sealed class NotFound : GetStateResponse<TState> { }
+		public sealed class NotFound : GetStateResponse { }
 
-		public sealed class BadRequest : GetStateResponse<TState> {
+		public sealed class BadRequest : GetStateResponse {
 			public string Description { get; set; }
 
 			public BadRequest() { }
