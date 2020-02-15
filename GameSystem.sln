@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Service", "Core.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Service.Tests", "Core.Service.Tests\Core.Service.Tests.csproj", "{0C52CED9-A378-48AA-B9C4-C84189C65073}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clicker.WebService", "Clicker.WebService\Clicker.WebService.csproj", "{06068B29-CFD3-4A44-8121-03B462ABE4A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C52CED9-A378-48AA-B9C4-C84189C65073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06068B29-CFD3-4A44-8121-03B462ABE4A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06068B29-CFD3-4A44-8121-03B462ABE4A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06068B29-CFD3-4A44-8121-03B462ABE4A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06068B29-CFD3-4A44-8121-03B462ABE4A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
