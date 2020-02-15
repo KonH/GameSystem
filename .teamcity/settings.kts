@@ -24,6 +24,7 @@ project {
 		id = RelativeId(name)
 		buildType(createSimpleBuildType("Clicker.Common", "Clicker.Tests"))
 		buildType(createSimpleBuildType("Clicker.ConsoleClient"))
+		buildType(createSimpleBuildType("Clicker.WebService"))
 	}
 }
 
