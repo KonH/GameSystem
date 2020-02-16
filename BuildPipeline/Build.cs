@@ -43,7 +43,6 @@ namespace BuildPipeline {
 
 		Target CleanDotNet => _ => _
 			.Requires(() => TargetProject)
-			.Before(RestoreDotNet)
 			.Executes(() => {
 				DotNetClean(new DotNetCleanSettings()
 					.SetProject(TargetProject)
@@ -59,8 +58,7 @@ namespace BuildPipeline {
 
 		Target CompileDotNet => _ => _
 			.Requires(() => TargetProject)
-			.DependsOn(CleanDotNet)
-			.DependsOn(RestoreDotNet)
+			.DependsOn(CleanDotNet, RestoreDotNet)
 			.Executes(() => {
 				DotNetBuild(new DotNetBuildSettings()
 					.SetProjectFile(TargetProject)
