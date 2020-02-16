@@ -1,7 +1,6 @@
 using Nuke.Common;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -9,82 +8,80 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace BuildPipeline {
-	[CheckBuildProjectConfigurations]
 	[UnsetVisualStudioEnvironmentVariables]
 	class Build : NukeBuild {
-		public static int Main() => Execute<Build>(x => x.DeployDotNet);
+		public static int Main() => Execute<Build>(x => x.TestCommonDotNet);
 
 		[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-		readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+		public readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-		[Solution] readonly Solution Solution;
+		[Parameter("Project to work with")] public readonly string TargetProject;
 
-		[Parameter("Project to work with")] readonly string TargetProject;
+		[Parameter("Project to test")] public readonly string TestProject;
 
-		[Parameter("Project to test")] readonly string TestProject;
+		[Parameter("Optional runtime to publish")]
+		public readonly string TargetRuntime;
 
-		[Parameter("Optional runtime to publish")] readonly string TargetRuntime;
+		[Parameter("Self-contained for publish")]
+		public readonly bool? SelfContained;
 
-		[Parameter("Self-contained for publish")] readonly bool? SelfContained;
+		[Parameter("Path to Pi deploy directory on local machine")]
+		public readonly string LocalPiHome;
 
-		[Parameter("Path to Pi deploy directory on local machine")] readonly string LocalPiHome;
+		[Parameter("Service to work with")] public readonly string ServiceName;
 
-		[Parameter("Service to work with")] readonly string ServiceName;
+		[Parameter("Ssh host for service management")]
+		public readonly string SshHost;
 
-		[Parameter("Ssh host for service management")] readonly string SshHost;
+		[Parameter("Ssh user for service management")]
+		public readonly string SshUserName;
 
-		[Parameter("Ssh user for service management")] readonly string SshUserName;
+		[Parameter("Ssh password for service management")]
+		public readonly string SshPassword;
 
-		[Parameter("Ssh password for service management")] readonly string SshPassword;
+		[Parameter("Unity build target")] public readonly string TargetBuildTarget;
 
 		Target CleanDotNet => _ => _
 			.Requires(() => TargetProject)
 			.Before(RestoreDotNet)
-			.Executes(() =>
-			{
+			.Executes(() => {
 				DotNetClean(new DotNetCleanSettings()
-					.SetProject(Solution.GetTargetProject(TargetProject))
+					.SetProject(TargetProject)
 					.SetConfiguration(Configuration));
 			});
 
 		Target RestoreDotNet => _ => _
 			.Requires(() => TargetProject)
-			.Executes(() =>
-			{
+			.Executes(() => {
 				DotNetRestore(new DotNetRestoreSettings()
-					.SetProjectFile(Solution.GetTargetProject(TargetProject)));
+					.SetProjectFile(TargetProject));
 			});
 
 		Target CompileDotNet => _ => _
 			.Requires(() => TargetProject)
 			.DependsOn(CleanDotNet)
 			.DependsOn(RestoreDotNet)
-			.Executes(() =>
-			{
+			.Executes(() => {
 				DotNetBuild(new DotNetBuildSettings()
-					.SetProjectFile(Solution.GetTargetProject(TargetProject))
+					.SetProjectFile(TargetProject)
 					.SetConfiguration(Configuration));
 			});
 
 		Target TestDotNet => _ => _
-			.Executes(() =>
-			{
+			.Executes(() => {
 				if ( string.IsNullOrEmpty(TestProject) ) {
 					Logger.Info("Skip: no TestProject specified");
 					return;
 				}
-				var testProject = Solution.GetProject(TestProject);
 				DotNetTest(new DotNetTestSettings()
-					.SetProjectFile(testProject)
+					.SetProjectFile(TestProject)
 					.SetConfiguration(Configuration));
 			});
 
 		Target TestCommonDotNet => _ => _
-			.Executes(() =>
-			{
-				var testProject = Solution.GetProject("Core.Common.Tests");
+			.Executes(() => {
 				DotNetTest(new DotNetTestSettings()
-					.SetProjectFile(testProject)
+					.SetProjectFile("Core.Common.Tests")
 					.SetConfiguration(Configuration));
 			});
 
@@ -93,10 +90,9 @@ namespace BuildPipeline {
 			.DependsOn(CompileDotNet)
 			.DependsOn(TestCommonDotNet)
 			.DependsOn(TestDotNet)
-			.Executes(() =>
-			{
+			.Executes(() => {
 				var settings = new DotNetPublishSettings()
-					.SetProject(Solution.GetTargetProject(TargetProject))
+					.SetProject(TargetProject)
 					.SetConfiguration(Configuration);
 				if ( TargetRuntime != null ) {
 					settings = settings.SetRuntime(TargetRuntime);
@@ -113,10 +109,8 @@ namespace BuildPipeline {
 			.Requires(() => TargetProject)
 			.Requires(() => LocalPiHome)
 			.DependsOn(PublishDotNet)
-			.Executes(() =>
-			{
-				var project               = Solution.GetTargetProject(TargetProject);
-				var buildConfigurationDir = project.Directory / "bin" / Configuration;
+			.Executes(() => {
+				var buildConfigurationDir = RootDirectory / TargetProject / "bin" / Configuration;
 				var buildDir              = DeployTarget.GetBuildDir(buildConfigurationDir);
 				var targetPath            = (AbsolutePath) LocalPiHome / TargetProject;
 				var sourceDirPath         = DeployTarget.GetPublishDir(TargetRuntime, buildDir);
@@ -130,8 +124,7 @@ namespace BuildPipeline {
 			.Requires(() => SshUserName)
 			.Requires(() => SshPassword)
 			.Requires(() => ServiceName)
-			.Executes(() =>
-			{
+			.Executes(() => {
 				var context = new ServiceTarget.ExecutionContext(SshHost, SshUserName, SshPassword);
 				ServiceTarget.StopService(context, ServiceName);
 			});
@@ -142,10 +135,28 @@ namespace BuildPipeline {
 			.Requires(() => SshHost)
 			.Requires(() => SshUserName)
 			.Requires(() => SshPassword)
-			.Executes(() =>
-			{
+			.Executes(() => {
 				var context = new ServiceTarget.ExecutionContext(SshHost, SshUserName, SshPassword);
 				ServiceTarget.StartService(context, ServiceName);
+			});
+
+		Target BuildUnity => _ => _
+			.Description("Build Unity project")
+			.Requires(() => TargetProject)
+			.Requires(() => TargetBuildTarget)
+			.DependsOn(TestDotNet)
+			.Executes(() => { UnityTarget.Build(RootDirectory / TargetProject, TargetBuildTarget); });
+
+		Target DeployUnity => _ => _
+			.Description("Deploy Unity project build to target Pi static directory")
+			.Requires(() => TargetProject)
+			.Requires(() => LocalPiHome)
+			.DependsOn(BuildUnity)
+			.Executes(() => {
+				var buildDir   = RootDirectory / TargetProject / "Build";
+				var targetPath = (AbsolutePath) LocalPiHome / "Static" / TargetProject;
+				CopyDirectoryRecursively(buildDir, targetPath,
+					DirectoryExistsPolicy.Merge, FileExistsPolicy.OverwriteIfNewer);
 			});
 	}
 }

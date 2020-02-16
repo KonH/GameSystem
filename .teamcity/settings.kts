@@ -26,6 +26,8 @@ project {
 		buildType(createSimpleBuildType("Clicker.ConsoleClient"))
 		buildType(createSimpleBuildType("Clicker.WebService"))
 		buildType(createDeployBuildType("Clicker.WebService", "clicker-web-service", "Clicker.Tests"))
+		buildType(createUnityBuildType("ClickerUnityClient", "WebGL", "Clicker.Tests"))
+		buildType(createUnityDeployType("ClickerUnityClient", "WebGL", "Clicker.Tests"))
 	}
 }
 
@@ -88,6 +90,52 @@ fun createDeployBuildType(projectName: String, serviceName: String, testProjectN
 				name = "Start Service"
 				path = "nuke"
 				arguments = "--target StartService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
+			}
+		}
+	}
+}
+
+fun createUnityBuildType(projectName: String, buildTarget: String, testProjectName: String? = null): BuildType {
+	return BuildType {
+		name = "Unity Build ($projectName, $buildTarget)"
+		id = RelativeId("Build_${projectName.replace('.', '_')}_$buildTarget")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			var args = "--target BuildUnity --targetProject $projectName --targetBuildTarget $buildTarget"
+			if ( testProjectName != null ) {
+				args += " --testProject $testProjectName"
+			}
+			exec {
+				name = "Build"
+				path = "nuke"
+				arguments = args
+			}
+		}
+	}
+}
+
+fun createUnityDeployType(projectName: String, buildTarget: String, testProjectName: String? = null): BuildType {
+	return BuildType {
+		name = "Unity Deploy ($projectName, $buildTarget)"
+		id = RelativeId("Deploy_${projectName.replace('.', '_')}_$buildTarget")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			var args = "--target DeployUnity --targetProject $projectName --targetBuildTarget $buildTarget --localPiHome %env.LOCAL_PI_DIRECTORY%"
+			if ( testProjectName != null ) {
+				args += " --testProject $testProjectName"
+			}
+			exec {
+				name = "Deploy"
+				path = "nuke"
+				arguments = args
 			}
 		}
 	}
