@@ -1,25 +1,28 @@
+using System;
 using System.Diagnostics;
 
 namespace Core.Common.Utils {
 	public static class ProgramRunner {
-		public static string StartAndReadOutput(string fileName, string arguments) {
+		public static (int, string) Start(string fileName, string arguments, string workDir) {
 			var startInfo = new ProcessStartInfo {
-				FileName = fileName,
-				Arguments = arguments,
+				FileName               = fileName,
+				Arguments              = arguments,
+				WorkingDirectory       = workDir,
+				UseShellExecute        = false,
 				RedirectStandardOutput = true,
-				CreateNoWindow = true,
+				RedirectStandardError  = true,
 			};
-			var process = Process.Start(startInfo);
-			if ( process == null ) {
-				return string.Empty;
+			using ( var process = Process.Start(startInfo) ) {
+				if ( process == null ) {
+					throw new InvalidOperationException("Failed to start process!");
+				}
+				process.WaitForExit();
+				var exitCode = process.ExitCode;
+				var output   = process.StandardOutput.ReadToEnd();
+				var error    = process.StandardError.ReadToEnd();
+				var message  = $"Output:\n{output}\nError:\n{error}";
+				return (exitCode, message);
 			}
-			var output = process.StandardOutput.ReadToEnd();
-			process.WaitForExit();
-			return output;
-		}
-
-		public static string[] StartAndReadLines(string fileName, string arguments) {
-			return StartAndReadOutput(fileName, arguments).Split('\n');
 		}
 	}
 }

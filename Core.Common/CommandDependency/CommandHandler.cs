@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Common.Command;
 using Core.Common.Config;
+using Core.Common.Extension;
 using Core.Common.State;
 
 namespace Core.Common.CommandDependency {
@@ -17,7 +18,7 @@ namespace Core.Common.CommandDependency {
 		public IReadOnlyCollection<ICommand<TConfig, TState>> GetDependentCommands(
 			TConfig config, TState state, ICommand<TConfig, TState> command) {
 			var commandType  = command.GetType();
-			var dependencies = _queue.Dependencies.GetValueOrDefault(commandType);
+			var dependencies = _queue.Dependencies.GetOrDefault(commandType);
 			if ( dependencies == null ) {
 				return _noDependencies;
 			}

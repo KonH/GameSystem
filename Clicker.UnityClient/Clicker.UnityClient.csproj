@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Clicker.Common\Clicker.Common.csproj" />
+	  <ProjectReference Include="..\Core.Client.UnityClient.CustomBuildPipeline\Core.Client.UnityClient.CustomBuildPipeline.csproj" />
+	  <ProjectReference Include="..\Core.Client.UnityClient.ExternalCompiler\Core.Client.UnityClient.ExternalCompiler.csproj" />
+	  <ProjectReference Include="..\Core.Client.UnityClient\Core.Client.UnityClient.csproj" />
+	</ItemGroup>
+
+</Project>

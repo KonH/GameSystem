@@ -37,7 +37,7 @@ namespace Core.Common.CommandExecution {
 				accum.Add(dependency);
 				var okResult = (BatchCommandResult.Ok<TConfig, TState>) dependencyResult;
 				_logger.LogTrace(
-					$"Add dependencies from command: '{dependency}' = {string.Join(',', okResult.NextCommands)}");
+					$"Add dependencies from command: '{dependency}' = {string.Join(",", okResult.NextCommands)}");
 				accum.AddRange(okResult.NextCommands);
 			}
 			return new BatchCommandResult.Ok<TConfig, TState>(accum);
