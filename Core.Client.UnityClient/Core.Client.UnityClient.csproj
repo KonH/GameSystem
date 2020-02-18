@@ -16,4 +16,9 @@
 	  </Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Core.Client\Core.Client.csproj" />
+	  <ProjectReference Include="..\Core.Service\Core.Service.csproj" />
+	</ItemGroup>
+
 </Project>
