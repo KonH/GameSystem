@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 
-namespace Core.Client.ConsoleClient.Utils {
-	sealed class JsonObjectPresenter {
+namespace Core.Client.Utils {
+	public sealed class JsonObjectPresenter {
 		readonly JsonSerializerSettings _serializerSettings;
 
 		public JsonObjectPresenter(JsonSerializerSettings serializerSettings) {

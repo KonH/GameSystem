@@ -8,6 +8,7 @@ using Core.Common.Config;
 using Core.Common.State;
 using Core.Client.ConsoleClient.Utils;
 using Core.Client.Shared;
+using Core.Client.Utils;
 using Newtonsoft.Json;
 
 namespace Core.Client.ConsoleClient {
