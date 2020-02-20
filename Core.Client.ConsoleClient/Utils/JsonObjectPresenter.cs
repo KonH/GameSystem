@@ -1,15 +1,15 @@
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Core.Client.ConsoleClient.Utils {
 	sealed class JsonObjectPresenter {
-		readonly JsonSerializerOptions _serializerOptions;
+		readonly JsonSerializerSettings _serializerSettings;
 
-		public JsonObjectPresenter(JsonSerializerOptions serializerOptions) {
-			_serializerOptions = serializerOptions;
+		public JsonObjectPresenter(JsonSerializerSettings serializerSettings) {
+			_serializerSettings = serializerSettings;
 		}
 
 		public string Format(object obj) {
-			return JsonSerializer.Serialize(obj, _serializerOptions);
+			return JsonConvert.SerializeObject(obj, _serializerSettings);
 		}
 	}
 }

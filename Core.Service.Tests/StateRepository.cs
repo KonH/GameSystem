@@ -1,6 +1,7 @@
 using Core.Common.State;
 using Core.Service.Extension;
 using Core.Service.Model;
+using Core.Service.Repository;
 using Core.Service.Repository.State;
 
 namespace Core.Service.Tests {

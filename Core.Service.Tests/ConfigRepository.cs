@@ -1,5 +1,6 @@
 using Core.Common.Config;
 using Core.Service.Extension;
+using Core.Service.Repository;
 using Core.Service.Repository.Config;
 
 namespace Core.Service.Tests {

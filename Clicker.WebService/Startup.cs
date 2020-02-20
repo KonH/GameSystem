@@ -7,6 +7,7 @@ using Core.Common.Config;
 using Core.Common.Utils;
 using Core.Service.Extension;
 using Core.Service.Model;
+using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
 using Core.Service.UseCase.GetConfig;
