@@ -1,0 +1,24 @@
+{
+  "Version": {
+    "Value": "Config"
+  },
+  "Resource": {
+    "ResourceByClick": 10
+  },
+  "Upgrade": {
+    "Levels": [
+      {
+        "Cost": 30,
+        "Power": 2.0
+      },
+      {
+        "Cost": 100,
+        "Power": 3.0
+      },
+      {
+        "Cost": 200,
+        "Power": 5.0
+      }
+    ]
+  }
+}
