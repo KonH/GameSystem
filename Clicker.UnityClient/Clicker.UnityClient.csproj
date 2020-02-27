@@ -11,4 +11,10 @@
 	  <ProjectReference Include="..\Core.Client.UnityClient\Core.Client.UnityClient.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+	    <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
 </Project>
