@@ -1,7 +1,16 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Core.Client.UnityClient.Threading {
 	public static class AsyncCoroutineExtension {
+		public static BackgroundThreadAwaiter GetAwaiter(this WaitForBackgroundThread _) {
+			if ( Application.platform == RuntimePlatform.WebGLPlayer ) {
+				return new BackgroundThreadAwaiter(Async.WaitForUpdate.GetAwaiter());
+			}
+			var awaiter = Task.Run(() => {}).ConfigureAwait(false).GetAwaiter();
+			return new BackgroundThreadAwaiter(awaiter);
+		}
+
 		public static CoroutineAwaiter GetAwaiter(this WaitForUpdate instruction) {
 			return GetAwaiterReturnVoid(instruction);
 		}
