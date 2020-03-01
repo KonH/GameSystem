@@ -6,5 +6,10 @@ namespace Core.Client.UnityClient.Threading {
 			yield return instruction;
 			awaiter.Complete(null);
 		}
+
+		public static IEnumerator Self<T>(CoroutineAwaiter<T> awaiter, T instruction) {
+			yield return instruction;
+			awaiter.Complete(instruction, null);
+		}
 	}
 }
