@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: -1346988676, guid: 639cb352189d74830becf6ffdc3dff39, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  _mode: 1
+  _mode: 2
   _configPath: Config
+  _baseUrl: https://konhit.xyz/clicker_service/
