@@ -138,11 +138,17 @@ namespace BuildPipeline {
 				ServiceTarget.StartService(context, ServiceName);
 			});
 
+		Target CleanUnity => _ => _
+			.Description("Remove Build directory")
+			.Requires(() => TargetProject)
+			.Executes(() => { DeleteDirectory(RootDirectory / TargetProject / "Build"); });
+
 		Target BuildUnity => _ => _
 			.Description("Build Unity project")
 			.Requires(() => TargetProject)
 			.Requires(() => TargetBuildTarget)
 			.DependsOn(TestDotNet)
+			.DependsOn(CleanUnity)
 			.Executes(() => { UnityTarget.Build(RootDirectory / TargetProject, TargetBuildTarget); });
 
 		Target DeployUnity => _ => _
