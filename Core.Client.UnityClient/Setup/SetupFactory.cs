@@ -17,6 +17,11 @@ namespace Core.Client.UnityClient {
 					return provider.CreateService<StandaloneClientSetup<TConfig, TState>>();
 				}
 
+				case ClientMode.Embedded: {
+					provider.AddJsonFromResourcesAsService<TConfig>(settings.ConfigPath);
+					return provider.CreateService<EmbeddedClientSetup<TConfig, TState>>();
+				}
+
 				default:
 					throw new ArgumentOutOfRangeException(
 						nameof(settings.Mode), settings.Mode, "Unknown client type!");

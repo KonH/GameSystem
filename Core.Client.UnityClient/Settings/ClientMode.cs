@@ -1,5 +1,6 @@
 namespace Core.Client.UnityClient.Settings {
 	public enum ClientMode {
-		Standalone
+		Standalone,
+		Embedded,
 	}
 }
