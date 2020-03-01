@@ -9,18 +9,23 @@ using UnityEngine.UI;
 
 namespace Clicker.UnityClient {
 	public sealed class ClickerRunner : UnityRunner<GameConfig, GameState> {
-		[SerializeField] GameObject _stateView     = null;
-		[SerializeField] TMP_Text   _resourcesText = null;
-		[SerializeField] Button     _clickButton   = null;
+		[SerializeField] GameObject _stateView        = null;
+		[SerializeField] TMP_Text   _resourcesText    = null;
+		[SerializeField] TMP_Text   _upgradeLevelText = null;
+		[SerializeField] Button     _clickButton      = null;
+		[SerializeField] Button     _upgradeButton    = null;
 
 		void OnValidate() {
 			Debug.Assert(_stateView);
 			Debug.Assert(_resourcesText);
+			Debug.Assert(_upgradeLevelText);
 			Debug.Assert(_clickButton);
+			Debug.Assert(_upgradeButton);
 		}
 
 		async void Awake() {
 			_clickButton.onClick.AddListener(HandleClick);
+			_upgradeButton.onClick.AddListener(HandleUpgrade);
 			DisableStateView();
 			await Initialize();
 		}
@@ -64,11 +69,16 @@ namespace Clicker.UnityClient {
 		}
 
 		void UpdateState() {
-			_resourcesText.text = State.Resource.Resources.ToString();
+			_resourcesText.text    = State.Resource.Resources.ToString();
+			_upgradeLevelText.text = State.Upgrade.Level.ToString();
 		}
 
 		void HandleClick() {
 			EnqueueCommand(new ClickCommand());
+		}
+
+		void HandleUpgrade() {
+			EnqueueCommand(new UpgradeCommand());
 		}
 	}
 }
