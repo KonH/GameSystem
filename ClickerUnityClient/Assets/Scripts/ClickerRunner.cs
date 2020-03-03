@@ -1,33 +1,54 @@
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
+using Clicker.UnityClient.Handlers;
 using Core.Client.Shared;
 using Core.Client.UnityClient;
+using Core.Client.UnityClient.DependencyInjection;
+using Core.Common.CommandExecution;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Clicker.UnityClient {
 	public sealed class ClickerRunner : UnityRunner<GameConfig, GameState> {
-		[SerializeField] GameObject _stateView        = null;
-		[SerializeField] TMP_Text   _resourcesText    = null;
-		[SerializeField] TMP_Text   _upgradeLevelText = null;
-		[SerializeField] Button     _clickButton      = null;
-		[SerializeField] Button     _upgradeButton    = null;
+		[SerializeField] GameObject _stateView = null;
+
+		[Header("Resources")]
+		[SerializeField] TMP_Text _resourcesText    = null;
+		[SerializeField] TMP_Text _addResourcesText = null;
+
+		[Header("Upgrades")]
+		[SerializeField] TMP_Text _upgradeLevelText = null;
+		[SerializeField] TMP_Text _addUpgradeText   = null;
+
+		[Header("Controls")]
+		[SerializeField] Button _clickButton   = null;
+		[SerializeField] Button _upgradeButton = null;
 
 		void OnValidate() {
-			Debug.Assert(_stateView);
-			Debug.Assert(_resourcesText);
-			Debug.Assert(_upgradeLevelText);
-			Debug.Assert(_clickButton);
-			Debug.Assert(_upgradeButton);
+			Debug.Assert(_stateView, nameof(_stateView));
+			Debug.Assert(_resourcesText, nameof(_resourcesText));
+			Debug.Assert(_addResourcesText, nameof(_addResourcesText));
+			Debug.Assert(_upgradeLevelText, nameof(_upgradeLevelText));
+			Debug.Assert(_addUpgradeText, nameof(_addUpgradeText));
+			Debug.Assert(_clickButton, nameof(_clickButton));
+			Debug.Assert(_upgradeButton, nameof(_upgradeButton));
 		}
 
 		async void Awake() {
+			AddHandlers();
 			_clickButton.onClick.AddListener(HandleClick);
 			_upgradeButton.onClick.AddListener(HandleUpgrade);
 			DisableStateView();
 			await Initialize();
+		}
+
+		void AddHandlers() {
+			var serviceProvider = ServiceProvider.Instance;
+			var executor        = serviceProvider.GetService<CommandExecutor<GameConfig, GameState>>();
+			executor.AddHandler(new AddResourceCommandHandler(_resourcesText, _addResourcesText));
+			executor.AddHandler(new UpgradeCommandHandler(_upgradeLevelText, _addUpgradeText));
 		}
 
 		protected override void HandleInitialization(InitializationResult result) {
