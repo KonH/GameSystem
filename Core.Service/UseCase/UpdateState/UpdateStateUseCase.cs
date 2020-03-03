@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
@@ -11,7 +12,7 @@ using Core.Service.Repository.State;
 namespace Core.Service.UseCase.UpdateState {
 	public sealed class
 		UpdateStateUseCase<TConfig, TState> :
-			IUseCase<UpdateStateRequest<TConfig, TState>, UpdateStateResponse>
+			IUseCase<UpdateStateRequest<TConfig, TState>, Task<UpdateStateResponse>>
 		where TConfig : IConfig where TState : IState {
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
@@ -25,12 +26,12 @@ namespace Core.Service.UseCase.UpdateState {
 			_commandExecutor  = commandExecutor;
 		}
 
-		public UpdateStateResponse Handle(UpdateStateRequest<TConfig, TState> request) {
+		public async Task<UpdateStateResponse> Handle(UpdateStateRequest<TConfig, TState> request) {
 			var validateError = Validate(request, out var config, out var state);
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var result = _commandExecutor.Apply(config, state, request.Command);
+			var result = await _commandExecutor.Apply(config, state, request.Command, false);
 			return HandleResult(request.UserId, state, result);
 		}
 

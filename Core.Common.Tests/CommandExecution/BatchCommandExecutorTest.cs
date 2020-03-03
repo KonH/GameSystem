@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
@@ -74,12 +75,12 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		[Test]
-		public void IsDependencyApplied() {
+		public async Task IsDependencyApplied() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new DependencyCommand("Dependency")));
 			var state = new State();
 
-			var result = executor.Apply(new Config(), state, new OkCommand());
+			var result = await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.Ok<Config, State>>(result);
 			Assert.AreEqual(
@@ -90,12 +91,12 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		[Test]
-		public void IsDependencyAppliedAfterMainCommand() {
+		public async Task IsDependencyAppliedAfterMainCommand() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new DependencyCommand("Dependency")));
 			var state = new State();
 
-			var result = executor.Apply(new Config(), state, new OkCommand());
+			var result = await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.Ok<Config, State>>(result);
 			Assert.AreEqual(
@@ -107,7 +108,7 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		[Test]
-		public void IsDependenciesAppliedInCorrectOrder() {
+		public async Task IsDependenciesAppliedInCorrectOrder() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new DependencyCommand("Dependency1"))
 				.AddDependency(
@@ -123,7 +124,7 @@ namespace Core.Common.Tests.CommandExecution {
 				.AddDependency((OkCommand c) => new DependencyCommand("Dependency3")));
 			var state = new State();
 
-			var result = executor.Apply(new Config(), state, new OkCommand());
+			var result = await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.Ok<Config, State>>(result);
 			Assert.AreEqual(
@@ -184,7 +185,8 @@ namespace Core.Common.Tests.CommandExecution {
 
 		BatchCommandExecutor<Config, State> CreateExecutor(CommandQueue<Config, State> queue) {
 			var loggerFactory = new TypeLoggerFactory(typeof(ConsoleLogger<>));
-			return new BatchCommandExecutor<Config, State>(loggerFactory, queue);
+			var commandExecutor = new CommandExecutor<Config, State>();
+			return new BatchCommandExecutor<Config, State>(loggerFactory, commandExecutor, queue);
 		}
 	}
 }

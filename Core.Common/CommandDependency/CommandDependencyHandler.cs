@@ -6,12 +6,12 @@ using Core.Common.Extension;
 using Core.Common.State;
 
 namespace Core.Common.CommandDependency {
-	public sealed class CommandHandler<TConfig, TState> where TConfig : IConfig where TState : IState {
+	public sealed class CommandDependencyHandler<TConfig, TState> where TConfig : IConfig where TState : IState {
 		readonly CommandQueue<TConfig, TState> _queue;
 
 		readonly IReadOnlyCollection<ICommand<TConfig, TState>> _noDependencies = new ICommand<TConfig, TState>[0];
 
-		public CommandHandler(CommandQueue<TConfig, TState> queue) {
+		public CommandDependencyHandler(CommandQueue<TConfig, TState> queue) {
 			_queue = queue;
 		}
 

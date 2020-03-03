@@ -25,9 +25,11 @@ namespace Core.Client.Web {
 
 		TConfig _config;
 
-		public WebServiceClient(ILoggerFactory loggerFactory, WebClientHandler webClientHandler) {
+		public WebServiceClient(
+			ILoggerFactory loggerFactory, CommandExecutor<TConfig, TState> commandExecutor,
+			WebClientHandler webClientHandler) {
 			_logger           = loggerFactory.Create<WebServiceClient<TConfig, TState>>();
-			_singleExecutor   = new CommandExecutor<TConfig, TState>();
+			_singleExecutor   = commandExecutor;
 			_webClientHandler = webClientHandler;
 		}
 
@@ -46,9 +48,9 @@ namespace Core.Client.Web {
 			var response = await _webClientHandler.UpdateState(request);
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					_singleExecutor.Apply(_config, State, command);
+					await _singleExecutor.Apply(_config, State, command, true);
 					foreach ( var cmd in updated.NextCommands ) {
-						_singleExecutor.Apply(_config, State, cmd);
+						await _singleExecutor.Apply(_config, State, cmd, true);
 					}
 					State.Version = updated.NewVersion;
 					return new CommandApplyResult.Ok();

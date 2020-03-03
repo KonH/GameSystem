@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Client.Abstractions;
 using Core.Client.Shared;
 using Core.Common.Command;
@@ -12,7 +13,7 @@ using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 
 namespace Core.Client.Embedded {
-	public sealed class EmbeddedServiceClient<TConfig, TState> : SyncClient<TConfig, TState>
+	public sealed class EmbeddedServiceClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
 		readonly UserId _userId = new UserId("UserId");
 
@@ -25,8 +26,11 @@ namespace Core.Client.Embedded {
 
 		TConfig _config;
 
+		public TState State { get; private set; }
+
 		public EmbeddedServiceClient(
 			ILoggerFactory loggerFactory,
+			CommandExecutor<TConfig, TState> commandExecutor,
 			GetConfigUseCase<TConfig> getConfigUseCase,
 			GetStateUseCase<TState> getStateUseCase,
 			UpdateStateUseCase<TConfig, TState> updateStateUseCase) {
@@ -34,27 +38,29 @@ namespace Core.Client.Embedded {
 			_getConfigUseCase   = getConfigUseCase;
 			_getStateUseCase    = getStateUseCase;
 			_updateStateUseCase = updateStateUseCase;
-			_singleExecutor     = new CommandExecutor<TConfig, TState>();
+			_singleExecutor     = commandExecutor;
 		}
 
-		protected override InitializationResult Initialize() {
+		public Task<InitializationResult> Initialize() {
 			try {
 				UpdateConfig();
 				UpdateState();
 			} catch ( Exception e ) {
-				return new InitializationResult.Error(e.ToString());
+				return Task.FromResult<InitializationResult>(
+					new InitializationResult.Error(e.ToString()));
 			}
-			return new InitializationResult.Ok();
+			return Task.FromResult<InitializationResult>(
+				new InitializationResult.Ok());
 		}
 
-		protected override CommandApplyResult Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
-			var response = _updateStateUseCase.Handle(request);
+			var response = await _updateStateUseCase.Handle(request);
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					_singleExecutor.Apply(_config, State, command);
+					await _singleExecutor.Apply(_config, State, command, true);
 					foreach ( var cmd in updated.NextCommands ) {
-						_singleExecutor.Apply(_config, State, cmd);
+						await _singleExecutor.Apply(_config, State, cmd, true);
 					}
 					State.Version = updated.NewVersion;
 					return new CommandApplyResult.Ok();

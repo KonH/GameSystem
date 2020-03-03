@@ -85,8 +85,8 @@ namespace Core.Common.Tests.CommandDependency {
 			Assert.IsEmpty(result);
 		}
 
-		CommandHandler<Config, State> CreateHandler(CommandQueue<Config, State> queue) {
-			return new CommandHandler<Config, State>(queue);
+		CommandDependencyHandler<Config, State> CreateHandler(CommandQueue<Config, State> queue) {
+			return new CommandDependencyHandler<Config, State>(queue);
 		}
 	}
 }

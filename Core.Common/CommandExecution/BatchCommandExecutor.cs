@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandDependency;
 using Core.Common.Config;
@@ -8,28 +9,31 @@ using Core.Common.Utils;
 namespace Core.Common.CommandExecution {
 	public sealed class BatchCommandExecutor<TConfig, TState>
 		where TState : IState where TConfig : IConfig {
-		readonly CommandExecutor<TConfig, TState> _executor = new CommandExecutor<TConfig, TState>();
-
 		readonly ILogger<BatchCommandExecutor<TConfig, TState>> _logger;
-		readonly CommandHandler<TConfig, TState>                _handler;
+		readonly CommandExecutor<TConfig, TState>               _executor;
+		readonly CommandDependencyHandler<TConfig, TState>      _dependencyHandler;
 
-		public BatchCommandExecutor(ILoggerFactory loggerFactory, CommandQueue<TConfig, TState> queue) {
-			_logger  = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
-			_handler = new CommandHandler<TConfig, TState>(queue);
+		public BatchCommandExecutor(
+			ILoggerFactory loggerFactory, CommandExecutor<TConfig, TState> commandExecutor,
+			CommandQueue<TConfig, TState> queue) {
+			_logger            = loggerFactory.Create<BatchCommandExecutor<TConfig, TState>>();
+			_executor          = commandExecutor;
+			_dependencyHandler = new CommandDependencyHandler<TConfig, TState>(queue);
 		}
 
-		public BatchCommandResult Apply<TCommand>(TConfig config, TState state, TCommand command)
+		public async Task<BatchCommandResult> Apply<TCommand>(
+			TConfig config, TState state, TCommand command, bool foreground = false)
 			where TCommand : ICommand<TConfig, TState> {
 			_logger.LogTrace($"Applying command: '{command}'");
-			var commandResult = _executor.Apply(config, state, command);
+			var commandResult = await _executor.Apply(config, state, command, foreground);
 			if ( commandResult is CommandResult.BadCommandResult badCommand ) {
 				_logger.LogWarning($"Command '{command}' failed: '{badCommand.Description}'");
 				return new BatchCommandResult.BadCommand(badCommand.Description);
 			}
-			var dependencies = _handler.GetDependentCommands(config, state, command);
+			var dependencies = _dependencyHandler.GetDependentCommands(config, state, command);
 			var accum        = new List<ICommand<TConfig, TState>>();
 			foreach ( var dependency in dependencies ) {
-				var dependencyResult = Apply(config, state, dependency);
+				var dependencyResult = await Apply(config, state, dependency, foreground);
 				if ( dependencyResult is BatchCommandResult.BadCommand ) {
 					return dependencyResult;
 				}

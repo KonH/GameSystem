@@ -12,6 +12,7 @@ namespace Core.Client.UnityClient.Setup {
 		public virtual void Configure(ServiceProvider provider) {
 			provider.AddService<ILoggerFactory>(new TypeLoggerFactory(typeof(UnityLogger<>)));
 			provider.AddService(new CommandProvider<TConfig, TState>(typeof(TState).Assembly));
+			provider.AddService<CommandExecutor<TConfig, TState>>();
 			provider.AddService<BatchCommandExecutor<TConfig, TState>>();
 		}
 	}

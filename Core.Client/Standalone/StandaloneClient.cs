@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Client.Abstractions;
 using Core.Client.Shared;
 using Core.Common.Command;
@@ -6,7 +7,7 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Client.Standalone {
-	public sealed class StandaloneClient<TConfig, TState> : SyncClient<TConfig, TState>
+	public sealed class StandaloneClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : IState {
 		readonly CommandExecutor<TConfig, TState>      _singleExecutor;
 		readonly BatchCommandExecutor<TConfig, TState> _batchExecutor;
@@ -15,20 +16,24 @@ namespace Core.Client.Standalone {
 
 		CommandHistory<TConfig, TState> _history = new CommandHistory<TConfig, TState>();
 
+		public TState State { get; private set; }
+
 		public StandaloneClient(
+			CommandExecutor<TConfig, TState> commandExecutor,
 			BatchCommandExecutor<TConfig, TState> batchExecutor,
 			TConfig config, StateFactory<TState> stateFactory) {
 			_config         = config;
 			_stateFactory   = stateFactory;
-			_singleExecutor = new CommandExecutor<TConfig, TState>();
+			_singleExecutor = commandExecutor;
 			_batchExecutor  = batchExecutor;
 			State           = _stateFactory.Create();
 		}
 
-		protected override InitializationResult Initialize() => new InitializationResult.Ok();
+		public Task<InitializationResult> Initialize() =>
+			Task.FromResult<InitializationResult>(new InitializationResult.Ok());
 
-		protected override CommandApplyResult Apply(ICommand<TConfig, TState> command) {
-			var result = _batchExecutor.Apply(_config, State, command);
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
+			var result = await _batchExecutor.Apply(_config, State, command, true);
 			switch ( result ) {
 				case BatchCommandResult.Ok<TConfig, TState> okResult: {
 					_history.AddCommand(command, true);
@@ -49,7 +54,7 @@ namespace Core.Client.Standalone {
 			var validCommands = _history.ValidCommands;
 			_history = new CommandHistory<TConfig, TState>();
 			foreach ( var command in validCommands ) {
-				_singleExecutor.Apply(_config, State, command);
+				_singleExecutor.Apply(_config, State, command, false);
 			}
 			_history.AddCommands(validCommands, true);
 		}

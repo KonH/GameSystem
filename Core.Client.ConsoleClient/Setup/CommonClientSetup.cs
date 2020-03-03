@@ -24,6 +24,7 @@ namespace Core.Client.ConsoleClient.Setup {
 
 			services.AddSingleton(_queue);
 			services.AddSingleton(new CommandProvider<TConfig, TState>(typeof(TState).Assembly));
+			services.AddSingleton<CommandExecutor<TConfig, TState>>();
 			services.AddSingleton<BatchCommandExecutor<TConfig, TState>>();
 		}
 

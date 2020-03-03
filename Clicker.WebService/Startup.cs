@@ -72,6 +72,7 @@ namespace Clicker.WebService {
 
 			services.AddSingleton<ILoggerFactory, WebServiceLoggerFactory>();
 			services.AddSingleton<CommandQueue<GameConfig, GameState>, CommandQueue>();
+			services.AddSingleton<CommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
 		}
