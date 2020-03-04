@@ -2,11 +2,11 @@ using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
 using Clicker.UnityClient.Handler;
+using Clicker.UnityClient.View;
 using Core.Client.Shared;
 using Core.Client.UnityClient;
 using Core.Client.UnityClient.DependencyInjection;
 using Core.Common.CommandExecution;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,12 +15,10 @@ namespace Clicker.UnityClient {
 		[SerializeField] GameObject _stateView = null;
 
 		[Header("Resources")]
-		[SerializeField] TMP_Text _resourcesText    = null;
-		[SerializeField] TMP_Text _addResourcesText = null;
+		[SerializeField] ResourceView _resourceView = null;
 
 		[Header("Upgrades")]
-		[SerializeField] TMP_Text _upgradeLevelText = null;
-		[SerializeField] TMP_Text _addUpgradeText   = null;
+		[SerializeField] UpgradeLevelView _upgradeLevelView = null;
 
 		[Header("Controls")]
 		[SerializeField] Button _clickButton   = null;
@@ -28,10 +26,8 @@ namespace Clicker.UnityClient {
 
 		void OnValidate() {
 			Debug.Assert(_stateView, nameof(_stateView));
-			Debug.Assert(_resourcesText, nameof(_resourcesText));
-			Debug.Assert(_addResourcesText, nameof(_addResourcesText));
-			Debug.Assert(_upgradeLevelText, nameof(_upgradeLevelText));
-			Debug.Assert(_addUpgradeText, nameof(_addUpgradeText));
+			Debug.Assert(_resourceView, nameof(_resourceView));
+			Debug.Assert(_upgradeLevelView, nameof(_upgradeLevelView));
 			Debug.Assert(_clickButton, nameof(_clickButton));
 			Debug.Assert(_upgradeButton, nameof(_upgradeButton));
 		}
@@ -47,8 +43,9 @@ namespace Clicker.UnityClient {
 		void AddHandlers() {
 			var serviceProvider = ServiceProvider.Instance;
 			var executor        = serviceProvider.GetService<CommandExecutor<GameConfig, GameState>>();
-			executor.AddHandler(new AddResourceCommandHandler(_resourcesText, _addResourcesText));
-			executor.AddHandler(new UpgradeCommandHandler(_upgradeLevelText, _addUpgradeText));
+			executor.AddHandler(new AddResourceCommandHandler(_resourceView));
+			executor.AddHandler(new RemoveResourceCommandHandler(_resourceView));
+			executor.AddHandler(new UpgradeCommandHandler(_upgradeLevelView));
 		}
 
 		protected override void HandleInitialization(InitializationResult result) {
@@ -56,7 +53,7 @@ namespace Clicker.UnityClient {
 				case InitializationResult.Ok _: {
 					IsReadyForCommand = true;
 					EnableStateView();
-					UpdateState();
+					InitViews();
 					break;
 				}
 
@@ -68,16 +65,8 @@ namespace Clicker.UnityClient {
 		}
 
 		protected override void HandleCommandResult(CommandApplyResult result) {
-			switch ( result ) {
-				case CommandApplyResult.Ok _: {
-					UpdateState();
-					break;
-				}
-
-				case CommandApplyResult.Error error: {
-					Debug.LogError(error.Description);
-					break;
-				}
+			if ( result is CommandApplyResult.Error error ) {
+				Debug.LogError(error.Description);
 			}
 		}
 
@@ -89,9 +78,9 @@ namespace Clicker.UnityClient {
 			_stateView.SetActive(true);
 		}
 
-		void UpdateState() {
-			_resourcesText.text    = State.Resource.Resources.ToString();
-			_upgradeLevelText.text = State.Upgrade.Level.ToString();
+		void InitViews() {
+			_resourceView.Init(State);
+			_upgradeLevelView.Init(null, State);
 		}
 
 		void HandleClick() {
