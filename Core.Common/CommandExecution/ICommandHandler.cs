@@ -8,7 +8,7 @@ namespace Core.Common.CommandExecution {
 		where TConfig : IConfig
 		where TState : IState
 		where TCommand : ICommand<TConfig, TState> {
-		Task Before(TState state, TCommand command);
-		Task After(TState state, TCommand command);
+		Task Before(TConfig config, TState state, TCommand command);
+		Task After(TConfig config, TState state, TCommand command);
 	}
 }

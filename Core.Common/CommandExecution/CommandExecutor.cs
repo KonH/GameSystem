@@ -21,7 +21,7 @@ namespace Core.Common.CommandExecution {
 			}
 		}
 
-		readonly object[] _args = new object[2];
+		readonly object[] _args = new object[3];
 
 		readonly Dictionary<Type, Handler> _handlers = new Dictionary<Type, Handler>();
 
@@ -51,37 +51,39 @@ namespace Core.Common.CommandExecution {
 				return CommandResult.BadCommand("Command is invalid");
 			}
 			if ( foreground ) {
-				await HandleBefore(state, command);
+				await HandleBefore(config, state, command);
 			}
 			var commandResult = command.Apply(config, state);
 			if ( commandResult is CommandResult.OkResult ) {
 				if ( foreground ) {
-					await HandleAfter(state, command);
+					await HandleAfter(config, state, command);
 				}
 				state.Version = new StateVersion(state.Version.Value + 1);
 			}
 			return commandResult;
 		}
 
-		async Task HandleBefore<TCommand>(TState state, TCommand command)
+		async Task HandleBefore<TCommand>(TConfig config, TState state, TCommand command)
 			where TCommand : ICommand<TConfig, TState> {
 			if ( _handlers.TryGetValue(command.GetType(), out var handler) ) {
 				var method = handler.BeforeMethod;
 				foreach ( object instance in handler.Instances ) {
-					_args[0] = state;
-					_args[1] = command;
+					_args[0] = config;
+					_args[1] = state;
+					_args[2] = command;
 					await (Task)method.Invoke(instance, _args);
 				}
 			}
 		}
 
-		async Task HandleAfter<TCommand>(TState state, TCommand command)
+		async Task HandleAfter<TCommand>(TConfig config, TState state, TCommand command)
 			where TCommand : ICommand<TConfig, TState> {
 			if ( _handlers.TryGetValue(command.GetType(), out var handler) ) {
 				var method = handler.AfterMethod;
 				foreach ( object instance in handler.Instances ) {
-					_args[0] = state;
-					_args[1] = command;
+					_args[0] = config;
+					_args[1] = state;
+					_args[2] = command;
 					await (Task)method.Invoke(instance, _args);
 				}
 			}

@@ -12,18 +12,22 @@ namespace Core.Client.UnityClient.CommandExecution {
 		where TState : IState
 		where TCommand : ICommand<TConfig, TState> {
 
-		public async Task Before(TState state, TCommand command) {
+		public async Task Before(TConfig config, TState state, TCommand command) {
 			await Async.WaitForUpdate;
-			await BeforeOnMainThread(state, command);
+			await BeforeOnMainThread(config, state, command);
 		}
 
-		public abstract Task BeforeOnMainThread(TState state, TCommand command);
-
-		public async Task After(TState state, TCommand command) {
-			await Async.WaitForUpdate;
-			await AfterOnMainThread(state, command);
+		public virtual Task BeforeOnMainThread(TConfig config, TState state, TCommand command) {
+			return Task.CompletedTask;
 		}
 
-		public abstract Task AfterOnMainThread(TState state, TCommand command);
+		public async Task After(TConfig config, TState state, TCommand command) {
+			await Async.WaitForUpdate;
+			await AfterOnMainThread(config, state, command);
+		}
+
+		public virtual Task AfterOnMainThread(TConfig config, TState state, TCommand command) {
+			return Task.CompletedTask;
+		}
 	}
 }
