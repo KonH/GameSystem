@@ -7,7 +7,7 @@ using Core.Client.UnityClient.Extension;
 using TMPro;
 using UnityEngine;
 
-namespace Clicker.UnityClient.Handlers {
+namespace Clicker.UnityClient.Handler {
 	public sealed class AddResourceCommandHandler : UnityCommandHandler<GameConfig, GameState, AddResourceCommand> {
 		readonly Animation _appearAnim;
 		readonly TMP_Text  _appearText;

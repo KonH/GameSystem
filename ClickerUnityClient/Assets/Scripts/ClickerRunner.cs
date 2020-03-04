@@ -1,7 +1,7 @@
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
-using Clicker.UnityClient.Handlers;
+using Clicker.UnityClient.Handler;
 using Core.Client.Shared;
 using Core.Client.UnityClient;
 using Core.Client.UnityClient.DependencyInjection;
