@@ -12,8 +12,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-	    <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
+	  <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+	    <HintPath>..\Dependencies\UnityEngine.CoreModule.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
