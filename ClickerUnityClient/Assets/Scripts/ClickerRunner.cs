@@ -1,7 +1,7 @@
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
-using Clicker.UnityClient.Handler;
+using Clicker.UnityClient.Reaction;
 using Clicker.UnityClient.View;
 using Core.Client.Shared;
 using Core.Client.UnityClient;
@@ -18,7 +18,8 @@ namespace Clicker.UnityClient {
 		[SerializeField] ResourceView _resourceView = null;
 
 		[Header("Upgrades")]
-		[SerializeField] UpgradeLevelView _upgradeLevelView = null;
+		[SerializeField] UpgradeButtonView _upgradeButtonView = null;
+		[SerializeField] UpgradeLevelView  _upgradeLevelView  = null;
 
 		[Header("Controls")]
 		[SerializeField] Button _clickButton   = null;
@@ -27,25 +28,26 @@ namespace Clicker.UnityClient {
 		void OnValidate() {
 			Debug.Assert(_stateView, nameof(_stateView));
 			Debug.Assert(_resourceView, nameof(_resourceView));
+			Debug.Assert(_upgradeButtonView, nameof(_upgradeButtonView));
 			Debug.Assert(_upgradeLevelView, nameof(_upgradeLevelView));
 			Debug.Assert(_clickButton, nameof(_clickButton));
 			Debug.Assert(_upgradeButton, nameof(_upgradeButton));
 		}
 
 		async void Awake() {
-			AddHandlers();
+			AddReactions();
 			_clickButton.onClick.AddListener(HandleClick);
 			_upgradeButton.onClick.AddListener(HandleUpgrade);
 			DisableStateView();
 			await Initialize();
 		}
 
-		void AddHandlers() {
+		void AddReactions() {
 			var serviceProvider = ServiceProvider.Instance;
 			var executor        = serviceProvider.GetService<CommandExecutor<GameConfig, GameState>>();
-			executor.AddHandler(new AddResourceCommandHandler(_resourceView));
-			executor.AddHandler(new RemoveResourceCommandHandler(_resourceView));
-			executor.AddHandler(new UpgradeCommandHandler(_upgradeLevelView));
+			executor.AddReaction(new AddResourceCommandReaction(_resourceView, _upgradeButtonView));
+			executor.AddReaction(new RemoveResourceCommandReaction(_resourceView, _upgradeButtonView));
+			executor.AddReaction(new UpgradeCommandReaction(_upgradeLevelView));
 		}
 
 		protected override void HandleInitialization(InitializationResult result) {
@@ -80,7 +82,8 @@ namespace Clicker.UnityClient {
 
 		void InitViews() {
 			_resourceView.Init(State);
-			_upgradeLevelView.Init(null, State);
+			_upgradeLevelView.Init(Config, State);
+			_upgradeButtonView.Init(Config, State);
 		}
 
 		void HandleClick() {

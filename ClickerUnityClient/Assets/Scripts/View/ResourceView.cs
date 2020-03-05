@@ -5,16 +5,19 @@ using UnityEngine;
 
 namespace Clicker.UnityClient.View {
 	public sealed class ResourceView : AnimatedTextView {
-		[SerializeField] AnimatedTextView _appearText = null;
+		[SerializeField] AnimatedTextView _incrementText = null;
+		[SerializeField] AnimatedTextView _decrementText = null;
 
 		public void Init(GameState state) {
 			base.Init();
-			_appearText.Init(0);
+			_incrementText.Init();
+			_decrementText.Init();
 			UpdateValue(state);
 		}
 
 		public Task AppearValue(int amount) {
-			return _appearText.AnimateValue(amount);
+			var view = (amount >= 0) ? _incrementText : _decrementText;
+			return view.AnimateValue(Mathf.Abs(amount));
 		}
 
 		public Task AnimateValue(GameState state) {

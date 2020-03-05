@@ -5,20 +5,20 @@ using Core.Client.UnityClient.Component.View;
 using UnityEngine;
 
 namespace Clicker.UnityClient.View {
-	// TODO
 	public sealed class UpgradeLevelView : AnimatedTextView {
 		[SerializeField] AnimatedTextView  _appearText    = null;
 		[SerializeField] UpgradeButtonView _upgradeButton = null;
 
 		public void Init(GameConfig config, GameState state) {
 			base.Init();
-			_appearText.Init(0);
-			_upgradeButton.Init(true);
+			_appearText.Init();
+			_upgradeButton.Init();
 			UpdateValue(config, state);
 		}
 
-		public Task AnimateValue(GameConfig config, GameState state) {
-			return Task.CompletedTask;
+		public async Task AnimateValue(GameConfig config, GameState state) {
+			await _appearText.AnimateValue(1);
+			await base.AnimateValue(state.Upgrade.Level);
 		}
 
 		void UpdateValue(GameConfig config, GameState state) {
