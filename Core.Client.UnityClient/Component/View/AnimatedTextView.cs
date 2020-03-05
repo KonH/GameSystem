@@ -14,7 +14,7 @@ namespace Core.Client.UnityClient.Component.View {
 			UpdateValue(value);
 		}
 
-		protected override void Init() {
+		public override void Init() {
 			_animation = GetComponent<Animation>();
 			base.Init();
 		}

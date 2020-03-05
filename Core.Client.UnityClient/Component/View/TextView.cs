@@ -13,7 +13,7 @@ namespace Core.Client.UnityClient.Component.View {
 			UpdateValue(value);
 		}
 
-		protected virtual void Init() {
+		public virtual void Init() {
 			_text = GetComponent<TMP_Text>();
 		}
 

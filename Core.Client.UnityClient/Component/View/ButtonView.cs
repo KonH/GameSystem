@@ -11,7 +11,7 @@ namespace Core.Client.UnityClient.Component.View {
 			UpdateState(isActive);
 		}
 
-		protected virtual void Init() {
+		public virtual void Init() {
 			_button = GetComponent<Button>();
 		}
 
