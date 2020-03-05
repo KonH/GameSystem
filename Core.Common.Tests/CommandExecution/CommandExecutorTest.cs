@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
@@ -27,56 +28,56 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		[Test]
-		public void IsCommandApplied() {
+		public async Task IsCommandApplied() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(new Config(), new State(), new OkCommand());
+			var result = await executor.Apply(new Config(), new State(), new OkCommand());
 
 			Assert.IsInstanceOf<CommandResult.OkResult>(result);
 		}
 
 		[Test]
-		public void IsVersionIncremented() {
+		public async Task IsVersionIncremented() {
 			var executor = CreateExecutor();
 			var state    = new State();
 
-			executor.Apply(new Config(), state, new OkCommand());
+			await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.AreEqual(1, state.Version.Value);
 		}
 
 		[Test]
-		public void IsCommandNotAppliedIfInvalid() {
+		public async Task IsCommandNotAppliedIfInvalid() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(new Config(), new State(), new BadCommand());
+			var result = await executor.Apply(new Config(), new State(), new BadCommand());
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}
 
 		[Test]
-		public void IsCommandNotAppliedIfNull() {
+		public async Task IsCommandNotAppliedIfNull() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(new Config(), new State(), (OkCommand) null);
+			var result = await executor.Apply(new Config(), new State(), (OkCommand) null);
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}
 
 		[Test]
-		public void IsCommandNotAppliedIfStateNull() {
+		public async Task IsCommandNotAppliedIfStateNull() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(new Config(), null, (OkCommand) null);
+			var result = await executor.Apply(new Config(), null, (OkCommand) null);
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}
 
 		[Test]
-		public void IsCommandNotAppliedIfConfigNull() {
+		public async Task IsCommandNotAppliedIfConfigNull() {
 			var executor = CreateExecutor();
 
-			var result = executor.Apply(null, new State(), (OkCommand) null);
+			var result = await executor.Apply(null, new State(), (OkCommand) null);
 
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}

@@ -53,23 +53,23 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		[Test]
-		public void IsMainCommandApplied() {
+		public async Task IsMainCommandApplied() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new DependencyCommand()));
 			var state = new State();
 
-			executor.Apply(new Config(), state, new OkCommand());
+			await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.Contains("Main", state.AppliedCommands);
 		}
 
 		[Test]
-		public void IsBadResultIfMainCommandInvalid() {
+		public async Task IsBadResultIfMainCommandInvalid() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new DependencyCommand()));
 			var state = new State();
 
-			var result = executor.Apply(new Config(), state, new BadCommand());
+			var result = await executor.Apply(new Config(), state, new BadCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
@@ -141,44 +141,44 @@ namespace Core.Common.Tests.CommandExecution {
 		}
 
 		[Test]
-		public void IsVersionIncrementedForMainCommand() {
+		public async Task IsVersionIncrementedForMainCommand() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>());
 			var state    = new State();
 
-			executor.Apply(new Config(), state, new OkCommand());
+			await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.AreEqual(1, state.Version.Value);
 		}
 
 		[Test]
-		public void IsVersionIncrementedForDependency() {
+		public async Task IsVersionIncrementedForDependency() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new DependencyCommand()));
 			var state = new State();
 
-			executor.Apply(new Config(), state, new OkCommand());
+			await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.AreEqual(2, state.Version.Value);
 		}
 
 		[Test]
-		public void IsVersionNotIncrementedIfDependencyFailed() {
+		public async Task IsVersionNotIncrementedIfDependencyFailed() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new BadCommand()));
 			var state = new State();
 
-			executor.Apply(new Config(), state, new OkCommand());
+			await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.AreEqual(1, state.Version.Value);
 		}
 
 		[Test]
-		public void IsBadResultIfDependencyFailed() {
+		public async Task IsBadResultIfDependencyFailed() {
 			var executor = CreateExecutor(new CommandQueue<Config, State>()
 				.AddDependency((OkCommand c) => new BadCommand()));
 			var state = new State();
 
-			var result = executor.Apply(new Config(), state, new OkCommand());
+			var result = await executor.Apply(new Config(), state, new OkCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}

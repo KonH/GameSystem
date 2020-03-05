@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
@@ -6,17 +7,17 @@ using NUnit.Framework;
 namespace Clicker.Tests {
 	public sealed class ClickTest {
 		[Test]
-		public void IsClickCountIncreased() {
+		public async Task IsClickCountIncreased() {
 			var executor = Common.CreateExecutor();
 			var state    = new GameState();
 
-			executor.Apply(new GameConfig(), state, new ClickCommand());
+			await executor.Apply(new GameConfig(), state, new ClickCommand());
 
 			Assert.AreEqual(1, state.Click.Clicks);
 		}
 
 		[Test]
-		public void IsResourceAdded() {
+		public async Task IsResourceAdded() {
 			var executor = Common.CreateExecutor();
 			var config = new GameConfig {
 				Resource = new ResourceConfig {
@@ -25,13 +26,13 @@ namespace Clicker.Tests {
 			};
 			var state = new GameState();
 
-			executor.Apply(config, state, new ClickCommand());
+			await executor.Apply(config, state, new ClickCommand());
 
 			Assert.AreEqual(10, state.Resource.Resources);
 		}
 
 		[Test]
-		public void IsUpgradeLevelIncreaseResourceCount() {
+		public async Task IsUpgradeLevelIncreaseResourceCount() {
 			var executor = Common.CreateExecutor();
 			var config = new GameConfig {
 				Resource = new ResourceConfig {
@@ -51,7 +52,7 @@ namespace Clicker.Tests {
 				}
 			};
 
-			executor.Apply(config, state, new ClickCommand());
+			await executor.Apply(config, state, new ClickCommand());
 
 			Assert.AreEqual(20, state.Resource.Resources);
 		}

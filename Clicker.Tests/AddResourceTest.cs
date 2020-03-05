@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
@@ -7,29 +8,29 @@ using NUnit.Framework;
 namespace Clicker.Tests {
 	public sealed class AddResourceTest {
 		[Test]
-		public void IsResourceAdded() {
+		public async Task IsResourceAdded() {
 			var executor = Common.CreateExecutor();
 			var state    = new GameState();
 
-			executor.Apply(new GameConfig(), state, new AddResourceCommand(10));
+			await executor.Apply(new GameConfig(), state, new AddResourceCommand(10));
 
 			Assert.AreEqual(10, state.Resource.Resources);
 		}
 
 		[Test]
-		public void IsZeroCountNotAdded() {
+		public async Task IsZeroCountNotAdded() {
 			var executor = Common.CreateExecutor();
 
-			var result = executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand());
+			var result = await executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
 
 		[Test]
-		public void IsInvalidCountNotAdded() {
+		public async Task IsInvalidCountNotAdded() {
 			var executor = Common.CreateExecutor();
 
-			var result = executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand(-10));
+			var result = await executor.Apply(new GameConfig(), new GameState(), new AddResourceCommand(-10));
 
 			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}

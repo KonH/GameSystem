@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
@@ -31,41 +32,41 @@ namespace Core.Service.Tests.UseCase {
 		}
 
 		[Test]
-		public void IsStateUpdated() {
+		public async Task IsStateUpdated() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<UpdateStateResponse.Updated<Config, State>>(resp);
 		}
 
 		[Test]
-		public void IsStateRejected() {
+		public async Task IsStateRejected() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(0), new BadCommand());
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<UpdateStateResponse.Rejected>(resp);
 		}
 
 		[Test]
-		public void IsStateNotFound() {
+		public async Task IsStateNotFound() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(new UserId("InvalidUserId"), new StateVersion(0));
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<UpdateStateResponse.NotFound>(resp);
 		}
 
 		[Test]
-		public void IsStateOutdated() {
+		public async Task IsStateOutdated() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(-1));
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<UpdateStateResponse.Outdated>(resp);
 		}

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
@@ -7,7 +8,7 @@ using NUnit.Framework;
 namespace Clicker.Tests {
 	public sealed class UpgradeTest {
 		[Test]
-		public void IsUpgradeIncreaseUpgradeLevel() {
+		public async Task IsUpgradeIncreaseUpgradeLevel() {
 			var executor = Common.CreateExecutor();
 			var config   = CreateConfig();
 			var state = new GameState {
@@ -16,13 +17,13 @@ namespace Clicker.Tests {
 				}
 			};
 
-			executor.Apply(config, state, new UpgradeCommand());
+			await executor.Apply(config, state, new UpgradeCommand());
 
 			Assert.AreEqual(1, state.Upgrade.Level);
 		}
 
 		[Test]
-		public void IsUpgradeDecreaseResources() {
+		public async Task IsUpgradeDecreaseResources() {
 			var executor = Common.CreateExecutor();
 			var config   = CreateConfig();
 			var state = new GameState {
@@ -31,24 +32,24 @@ namespace Clicker.Tests {
 				}
 			};
 
-			executor.Apply(config, state, new UpgradeCommand());
+			await executor.Apply(config, state, new UpgradeCommand());
 
 			Assert.AreEqual(0, state.Resource.Resources);
 		}
 
 		[Test]
-		public void IsUpgradeFailedIfNotEnoughResources() {
+		public async Task IsUpgradeFailedIfNotEnoughResources() {
 			var executor = Common.CreateExecutor();
 			var config   = CreateConfig();
 
-			var result = executor.Apply(config, new GameState(), new UpgradeCommand());
+			var result = await executor.Apply(config, new GameState(), new UpgradeCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
 
 
 		[Test]
-		public void CantUpgradeToUnknownLevel() {
+		public async Task CantUpgradeToUnknownLevel() {
 			var executor = Common.CreateExecutor();
 			var config   = new GameConfig();
 			var state = new GameState {
@@ -57,7 +58,7 @@ namespace Clicker.Tests {
 				}
 			};
 
-			var result = executor.Apply(config, state, new UpgradeCommand());
+			var result = await executor.Apply(config, state, new UpgradeCommand());
 
 			Assert.IsInstanceOf<BatchCommandResult.BadCommand>(result);
 		}
