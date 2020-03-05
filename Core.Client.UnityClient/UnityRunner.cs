@@ -12,6 +12,7 @@ using UnityEngine;
 namespace Core.Client.UnityClient {
 	public abstract class UnityRunner<TConfig, TState> : MonoBehaviour where TConfig : IConfig where TState : IState {
 		public TState State => _client.State;
+		public TConfig Config => _client.Config;
 
 		public bool IsReadyForCommand { get; protected set; }
 

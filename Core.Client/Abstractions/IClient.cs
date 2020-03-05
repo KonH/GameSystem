@@ -7,6 +7,7 @@ using Core.Common.State;
 namespace Core.Client.Abstractions {
 	public interface IClient<TConfig, TState> where TConfig : IConfig where TState : IState {
 		TState State { get; }
+		TConfig Config { get; }
 		Task<InitializationResult> Initialize();
 		Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command);
 	}

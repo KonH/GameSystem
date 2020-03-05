@@ -15,15 +15,14 @@ using Core.Service.UseCase.UpdateState;
 namespace Core.Client.Web {
 	public sealed class WebServiceClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
-		public TState State { get; private set; }
-
 		readonly UserId _userId = new UserId("UserId");
 
 		readonly ILogger<WebServiceClient<TConfig, TState>> _logger;
 		readonly CommandExecutor<TConfig, TState>           _singleExecutor;
 		readonly WebClientHandler                           _webClientHandler;
 
-		TConfig _config;
+		public TState  State  { get; private set; }
+		public TConfig Config { get; private set; }
 
 		public WebServiceClient(
 			ILoggerFactory loggerFactory, CommandExecutor<TConfig, TState> commandExecutor,
@@ -44,13 +43,13 @@ namespace Core.Client.Web {
 		}
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
-			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
+			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
 			var response = await _webClientHandler.UpdateState(request);
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					await _singleExecutor.Apply(_config, State, command, true);
+					await _singleExecutor.Apply(Config, State, command, true);
 					foreach ( var cmd in updated.NextCommands ) {
-						await _singleExecutor.Apply(_config, State, cmd, true);
+						await _singleExecutor.Apply(Config, State, cmd, true);
 					}
 					State.Version = updated.NewVersion;
 					return new CommandApplyResult.Ok();
@@ -72,7 +71,7 @@ namespace Core.Client.Web {
 			var response = await _webClientHandler.GetConfig(request);
 			switch ( response ) {
 				case GetConfigResponse.Found<TConfig> found: {
-					_config = found.Config;
+					Config = found.Config;
 					_logger.LogTrace("Config found");
 					break;
 				}

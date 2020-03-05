@@ -24,9 +24,8 @@ namespace Core.Client.Embedded {
 		readonly GetStateUseCase<TState>             _getStateUseCase;
 		readonly UpdateStateUseCase<TConfig, TState> _updateStateUseCase;
 
-		TConfig _config;
-
-		public TState State { get; private set; }
+		public TState  State  { get; private set; }
+		public TConfig Config { get; private set; }
 
 		public EmbeddedServiceClient(
 			ILoggerFactory loggerFactory,
@@ -54,13 +53,13 @@ namespace Core.Client.Embedded {
 		}
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
-			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, _config.Version, command);
+			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
 			var response = await _updateStateUseCase.Handle(request);
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					await _singleExecutor.Apply(_config, State, command, true);
+					await _singleExecutor.Apply(Config, State, command, true);
 					foreach ( var cmd in updated.NextCommands ) {
-						await _singleExecutor.Apply(_config, State, cmd, true);
+						await _singleExecutor.Apply(Config, State, cmd, true);
 					}
 					State.Version = updated.NewVersion;
 					return new CommandApplyResult.Ok();
@@ -82,7 +81,7 @@ namespace Core.Client.Embedded {
 			var response = _getConfigUseCase.Handle(request);
 			switch ( response ) {
 				case GetConfigResponse.Found<TConfig> found: {
-					_config = found.Config;
+					Config = found.Config;
 					_logger.LogTrace("Config found");
 					break;
 				}

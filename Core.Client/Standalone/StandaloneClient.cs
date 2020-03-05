@@ -11,21 +11,21 @@ namespace Core.Client.Standalone {
 		where TConfig : IConfig where TState : IState {
 		readonly CommandExecutor<TConfig, TState>      _singleExecutor;
 		readonly BatchCommandExecutor<TConfig, TState> _batchExecutor;
-		readonly TConfig                               _config;
 		readonly StateFactory<TState>                  _stateFactory;
 
 		CommandHistory<TConfig, TState> _history = new CommandHistory<TConfig, TState>();
 
-		public TState State { get; private set; }
+		public TState  State  { get; private set; }
+		public TConfig Config { get; private set; }
 
 		public StandaloneClient(
 			CommandExecutor<TConfig, TState> commandExecutor,
 			BatchCommandExecutor<TConfig, TState> batchExecutor,
 			TConfig config, StateFactory<TState> stateFactory) {
-			_config         = config;
 			_stateFactory   = stateFactory;
 			_singleExecutor = commandExecutor;
 			_batchExecutor  = batchExecutor;
+			Config          = config;
 			State           = _stateFactory.Create();
 		}
 
@@ -33,7 +33,7 @@ namespace Core.Client.Standalone {
 			Task.FromResult<InitializationResult>(new InitializationResult.Ok());
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
-			var result = await _batchExecutor.Apply(_config, State, command, true);
+			var result = await _batchExecutor.Apply(Config, State, command, true);
 			switch ( result ) {
 				case BatchCommandResult.Ok<TConfig, TState> okResult: {
 					_history.AddCommand(command, true);
@@ -54,7 +54,7 @@ namespace Core.Client.Standalone {
 			var validCommands = _history.ValidCommands;
 			_history = new CommandHistory<TConfig, TState>();
 			foreach ( var command in validCommands ) {
-				_singleExecutor.Apply(_config, State, command, false);
+				_singleExecutor.Apply(Config, State, command, false);
 			}
 			_history.AddCommands(validCommands, true);
 		}
