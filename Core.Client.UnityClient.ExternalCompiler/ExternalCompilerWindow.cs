@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -13,10 +14,12 @@ namespace Core.Client.UnityClient.ExternalCompiler {
 		CompilerSettings _settings = null;
 
 		public void OnGUI() {
-			EnsureSettings();
-			TryShowNextResult();
-			DrawLibraries();
-			DrawFooterControls();
+			try {
+				EnsureSettings();
+				TryShowNextResult();
+				DrawLibraries();
+				DrawFooterControls();
+			} catch ( ArgumentException ) {}
 		}
 
 		void EnsureSettings() {
