@@ -9,12 +9,12 @@ using Core.Common.State;
 namespace Core.Common.CommandExecution {
 	public sealed class CommandExecutor<TConfig, TState>
 		where TState : IState where TConfig : IConfig {
-		struct Handler {
+		struct Reaction {
 			public readonly MethodInfo   BeforeMethod;
 			public readonly MethodInfo   AfterMethod;
 			public readonly List<object> Instances;
 
-			public Handler(MethodInfo beforeMethod, MethodInfo afterMethod) {
+			public Reaction(MethodInfo beforeMethod, MethodInfo afterMethod) {
 				BeforeMethod = beforeMethod;
 				AfterMethod  = afterMethod;
 				Instances    = new List<object>();
@@ -23,19 +23,19 @@ namespace Core.Common.CommandExecution {
 
 		readonly object[] _args = new object[3];
 
-		readonly Dictionary<Type, Handler> _handlers = new Dictionary<Type, Handler>();
+		readonly Dictionary<Type, Reaction> _reactions = new Dictionary<Type, Reaction>();
 
-		public void AddHandler<TCommand>(ICommandHandler<TConfig, TState, TCommand> handler)
+		public void AddReaction<TCommand>(ICommandReaction<TConfig, TState, TCommand> reaction)
 			where TCommand : ICommand<TConfig, TState> {
 			var commandType = typeof(TCommand);
-			if ( !_handlers.TryGetValue(commandType, out var handlerData) ) {
-				var handlerType = handler.GetType();
-				var before = handlerType.GetMethod(nameof(handler.Before));
-				var after  = handlerType.GetMethod(nameof(handler.After));
-				handlerData = new Handler(before, after);
-				_handlers.Add(commandType, handlerData);
+			if ( !_reactions.TryGetValue(commandType, out var reactionData) ) {
+				var reactionType = reaction.GetType();
+				var before = reactionType.GetMethod(nameof(reaction.Before));
+				var after  = reactionType.GetMethod(nameof(reaction.After));
+				reactionData = new Reaction(before, after);
+				_reactions.Add(commandType, reactionData);
 			}
-			handlerData.Instances.Add(handler);
+			reactionData.Instances.Add(reaction);
 		}
 
 		public async Task<CommandResult> Apply<TCommand>(
@@ -65,9 +65,9 @@ namespace Core.Common.CommandExecution {
 
 		async Task HandleBefore<TCommand>(TConfig config, TState state, TCommand command)
 			where TCommand : ICommand<TConfig, TState> {
-			if ( _handlers.TryGetValue(command.GetType(), out var handler) ) {
-				var method = handler.BeforeMethod;
-				foreach ( object instance in handler.Instances ) {
+			if ( _reactions.TryGetValue(command.GetType(), out var reaction) ) {
+				var method = reaction.BeforeMethod;
+				foreach ( object instance in reaction.Instances ) {
 					_args[0] = config;
 					_args[1] = state;
 					_args[2] = command;
@@ -78,9 +78,9 @@ namespace Core.Common.CommandExecution {
 
 		async Task HandleAfter<TCommand>(TConfig config, TState state, TCommand command)
 			where TCommand : ICommand<TConfig, TState> {
-			if ( _handlers.TryGetValue(command.GetType(), out var handler) ) {
-				var method = handler.AfterMethod;
-				foreach ( object instance in handler.Instances ) {
+			if ( _reactions.TryGetValue(command.GetType(), out var reaction) ) {
+				var method = reaction.AfterMethod;
+				foreach ( object instance in reaction.Instances ) {
 					_args[0] = config;
 					_args[1] = state;
 					_args[2] = command;

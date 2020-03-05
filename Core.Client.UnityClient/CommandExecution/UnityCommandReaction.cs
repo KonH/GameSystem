@@ -6,8 +6,8 @@ using Core.Common.Config;
 using Core.Common.State;
 
 namespace Core.Client.UnityClient.CommandExecution {
-	public abstract class UnityCommandHandler<TConfig, TState, TCommand> :
-		ICommandHandler<TConfig, TState, TCommand>
+	public abstract class UnityCommandReaction<TConfig, TState, TCommand> :
+		ICommandReaction<TConfig, TState, TCommand>
 		where TConfig : IConfig
 		where TState : IState
 		where TCommand : ICommand<TConfig, TState> {
