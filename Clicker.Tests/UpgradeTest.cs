@@ -54,7 +54,7 @@ namespace Clicker.Tests {
 			var config   = new GameConfig();
 			var state = new GameState {
 				Upgrade = new UpgradeState {
-					Level = 1
+					Level = 0
 				}
 			};
 

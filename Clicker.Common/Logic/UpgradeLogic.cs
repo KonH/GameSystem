@@ -6,7 +6,7 @@ namespace Clicker.Common.Logic {
 		public static bool HasNextUpgradeLevel(GameConfig config, GameState state) {
 			var levelCount   = config.Upgrade.Levels.Length;
 			var currentLevel = state.Upgrade.Level;
-			return (currentLevel <= levelCount);
+			return (currentLevel < levelCount);
 		}
 
 		public static int GetCurrentUpgradeCost(GameConfig config, GameState state) {
