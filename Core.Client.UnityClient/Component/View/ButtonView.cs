@@ -16,7 +16,7 @@ namespace Core.Client.UnityClient.Component.View {
 		}
 
 		public void UpdateState(bool isActive) {
-			_button.enabled = isActive;
+			_button.interactable = isActive;
 		}
 	}
 }
