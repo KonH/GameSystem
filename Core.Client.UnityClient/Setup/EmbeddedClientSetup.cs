@@ -2,10 +2,10 @@ using Core.Client.Abstractions;
 using Core.Client.Embedded;
 using Core.Client.Shared;
 using Core.Client.UnityClient.DependencyInjection;
+using Core.Client.UnityClient.Shared;
 using Core.Common.Config;
 using Core.Common.State;
 using Core.Service.Extension;
-using Core.Service.Model;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
@@ -35,14 +35,15 @@ namespace Core.Client.UnityClient.Setup {
 
 			provider.AddService<UpdateStateUseCase<TConfig, TState>>();
 
+			provider.AddService<ISettingsSource, PersistentSettingsSource>();
+			provider.AddService<UserIdGenerator>();
+			provider.AddService<UserIdSource>();
 			provider.AddService<IClient<TConfig, TState>, EmbeddedServiceClient<TConfig, TState>>();
 
 			provider.AddService(new StateFactory<TState>(() => new TState()));
 
 			provider.GetService<IConfigRepository<TConfig>>()
 				.Add(config);
-			provider.GetService<IStateRepository<TState>>()
-				.Add(new UserId("UserId"), new TState());
 		}
 	}
 }
