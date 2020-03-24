@@ -21,13 +21,13 @@ namespace Core.Service.Tests.UseCase {
 		}
 
 		[Test]
-		public void IsStateNotFound() {
+		public void IsStateCreatedIfNotFound() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(new UserId("InvalidUserId"));
 
 			var resp = useCase.Handle(req);
 
-			Assert.IsInstanceOf<GetStateResponse.NotFound>(resp);
+			Assert.IsInstanceOf<GetStateResponse.Found<State>>(resp);
 		}
 
 		GetStateUseCase<State> GetUseCase() {

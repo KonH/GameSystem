@@ -6,7 +6,6 @@ using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.Utils;
 using Core.Service.Extension;
-using Core.Service.Model;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
@@ -87,9 +86,6 @@ namespace Clicker.WebService {
 
 			var configRepository = app.ApplicationServices.GetRequiredService<IConfigRepository<GameConfig>>();
 			configRepository.Add(Config);
-
-			var stateRepository = app.ApplicationServices.GetRequiredService<IStateRepository<GameState>>();
-			stateRepository.Add(new UserId("UserId"), new GameState());
 		}
 	}
 }

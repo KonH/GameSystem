@@ -12,8 +12,6 @@ namespace Core.Service.UseCase.GetState {
 			}
 		}
 
-		public sealed class NotFound : GetStateResponse { }
-
 		public sealed class BadRequest : GetStateResponse {
 			public string Description { get; set; }
 

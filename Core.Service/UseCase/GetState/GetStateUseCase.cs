@@ -4,7 +4,7 @@ using Core.Service.Repository.State;
 
 namespace Core.Service.UseCase.GetState {
 	public sealed class GetStateUseCase<TState> : IUseCase<GetStateRequest, GetStateResponse>
-		where TState : IState {
+		where TState : IState, new() {
 		readonly IStateRepository<TState> _stateRepository;
 
 		public GetStateUseCase(IStateRepository<TState> stateRepository) {
@@ -17,7 +17,7 @@ namespace Core.Service.UseCase.GetState {
 				return validateError;
 			}
 			var state = _stateRepository.Get(request.UserId);
-			return (state != null) ? Found(state) : NotFound();
+			return (state != null) ? Found(state) : Found(CreateState());
 		}
 
 		GetStateResponse Validate(GetStateRequest request) {
@@ -27,12 +27,10 @@ namespace Core.Service.UseCase.GetState {
 			return null;
 		}
 
+		TState CreateState() => new TState();
+
 		static GetStateResponse.BadRequest BadRequest(string description) {
 			return new GetStateResponse.BadRequest(description);
-		}
-
-		static GetStateResponse.NotFound NotFound() {
-			return new GetStateResponse.NotFound();
 		}
 
 		static GetStateResponse Found(TState state) {

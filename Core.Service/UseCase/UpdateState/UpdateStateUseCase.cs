@@ -13,7 +13,7 @@ namespace Core.Service.UseCase.UpdateState {
 	public sealed class
 		UpdateStateUseCase<TConfig, TState> :
 			IUseCase<UpdateStateRequest<TConfig, TState>, Task<UpdateStateResponse>>
-		where TConfig : IConfig where TState : IState {
+		where TConfig : IConfig where TState : class, IState, new() {
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
 		readonly BatchCommandExecutor<TConfig, TState> _commandExecutor;
@@ -31,7 +31,7 @@ namespace Core.Service.UseCase.UpdateState {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var result = await _commandExecutor.Apply(config, state, request.Command, false);
+			var result = await _commandExecutor.Apply(config, state, request.Command);
 			return HandleResult(request.UserId, state, result);
 		}
 
@@ -45,10 +45,7 @@ namespace Core.Service.UseCase.UpdateState {
 			if ( request.Command == null ) {
 				return BadRequest("null command");
 			}
-			state = _stateRepository.Get(request.UserId);
-			if ( state == null ) {
-				return NotFound();
-			}
+			state = _stateRepository.Get(request.UserId) ?? new TState();
 			if ( state.Version > request.StateVersion ) {
 				return Outdated();
 			}
@@ -76,10 +73,6 @@ namespace Core.Service.UseCase.UpdateState {
 					return BadRequest();
 				}
 			}
-		}
-
-		static UpdateStateResponse NotFound() {
-			return new UpdateStateResponse.NotFound();
 		}
 
 		static UpdateStateResponse Outdated() {

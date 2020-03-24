@@ -28,8 +28,6 @@ namespace Core.Service.UseCase.UpdateState {
 			}
 		}
 
-		public sealed class NotFound : UpdateStateResponse { }
-
 		public sealed class Outdated : UpdateStateResponse { }
 
 		public sealed class BadRequest : UpdateStateResponse {

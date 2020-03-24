@@ -52,13 +52,13 @@ namespace Core.Service.Tests.UseCase {
 		}
 
 		[Test]
-		public async Task IsStateNotFound() {
+		public async Task IsStateCreatedIfNotFound() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(new UserId("InvalidUserId"), new StateVersion(0));
 
 			var resp = await useCase.Handle(req);
 
-			Assert.IsInstanceOf<UpdateStateResponse.NotFound>(resp);
+			Assert.IsInstanceOf<UpdateStateResponse.Updated<Config, State>>(resp);
 		}
 
 		[Test]

@@ -48,8 +48,6 @@ namespace Core.Client.ConsoleClient.Setup {
 		public override void Initialize(ServiceProvider provider) {
 			provider.GetRequiredService<IConfigRepository<TConfig>>()
 				.Add(_config);
-			provider.GetRequiredService<IStateRepository<TState>>()
-				.Add(new UserId("UserId"), new TState());
 		}
 	}
 }
