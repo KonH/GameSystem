@@ -1,11 +1,11 @@
 using Core.Client.Abstractions;
+using Core.Client.ConsoleClient.Shared;
 using Core.Client.Embedded;
 using Core.Client.Shared;
 using Core.Common.CommandDependency;
 using Core.Common.Config;
 using Core.Common.State;
 using Core.Service.Extension;
-using Core.Service.Model;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
@@ -40,6 +40,9 @@ namespace Core.Client.ConsoleClient.Setup {
 
 			services.AddSingleton<UpdateStateUseCase<TConfig, TState>>();
 
+			services.AddSingleton<ISettingsSource, FileSettingsSource>();
+			services.AddSingleton<UserIdGenerator>();
+			services.AddSingleton<UserIdSource>();
 			services.AddSingleton<IClient<TConfig, TState>, EmbeddedServiceClient<TConfig, TState>>();
 
 			services.AddSingleton(new StateFactory<TState>(() => new TState()));

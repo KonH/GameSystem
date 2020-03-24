@@ -1,4 +1,6 @@
 using Core.Client.Abstractions;
+using Core.Client.ConsoleClient.Shared;
+using Core.Client.Shared;
 using Core.Client.Utils;
 using Core.Client.Web;
 using Core.Client.WebClient;
@@ -25,6 +27,9 @@ namespace Core.Client.ConsoleClient.Setup {
 			services.AddSingleton<IWebRequestHandler>(new StandardWebRequestHandler(_baseUrl));
 			services.AddSingleton<WebClientHandler>();
 
+			services.AddSingleton<ISettingsSource, FileSettingsSource>();
+			services.AddSingleton<UserIdGenerator>();
+			services.AddSingleton<UserIdSource>();
 			services.AddSingleton<IClient<TConfig, TState>, WebServiceClient<TConfig, TState>>();
 		}
 
