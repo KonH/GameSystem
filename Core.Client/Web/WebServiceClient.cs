@@ -15,7 +15,7 @@ using Core.Service.UseCase.UpdateState;
 namespace Core.Client.Web {
 	public sealed class WebServiceClient<TConfig, TState> : IClient<TConfig, TState>
 		where TConfig : IConfig where TState : class, IState {
-		readonly UserId _userId = new UserId("UserId");
+		readonly UserId _userId;
 
 		readonly ILogger<WebServiceClient<TConfig, TState>> _logger;
 		readonly CommandExecutor<TConfig, TState>           _singleExecutor;
@@ -26,7 +26,8 @@ namespace Core.Client.Web {
 
 		public WebServiceClient(
 			ILoggerFactory loggerFactory, CommandExecutor<TConfig, TState> commandExecutor,
-			WebClientHandler webClientHandler) {
+			WebClientHandler webClientHandler, UserIdSource userIdSource) {
+			_userId           = userIdSource.GetOrCreateUserId();
 			_logger           = loggerFactory.Create<WebServiceClient<TConfig, TState>>();
 			_singleExecutor   = commandExecutor;
 			_webClientHandler = webClientHandler;

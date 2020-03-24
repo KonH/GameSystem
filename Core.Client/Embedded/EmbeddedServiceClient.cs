@@ -14,8 +14,8 @@ using Core.Service.UseCase.UpdateState;
 
 namespace Core.Client.Embedded {
 	public sealed class EmbeddedServiceClient<TConfig, TState> : IClient<TConfig, TState>
-		where TConfig : IConfig where TState : class, IState {
-		readonly UserId _userId = new UserId("UserId");
+		where TConfig : IConfig where TState : class, IState, new() {
+		readonly UserId _userId;
 
 		readonly ILogger<EmbeddedServiceClient<TConfig, TState>> _logger;
 		readonly CommandExecutor<TConfig, TState>                _singleExecutor;
@@ -32,7 +32,9 @@ namespace Core.Client.Embedded {
 			CommandExecutor<TConfig, TState> commandExecutor,
 			GetConfigUseCase<TConfig> getConfigUseCase,
 			GetStateUseCase<TState> getStateUseCase,
-			UpdateStateUseCase<TConfig, TState> updateStateUseCase) {
+			UpdateStateUseCase<TConfig, TState> updateStateUseCase,
+			UserIdSource userIdSource) {
+			_userId             = userIdSource.GetOrCreateUserId();
 			_logger             = loggerFactory.Create<EmbeddedServiceClient<TConfig, TState>>();
 			_getConfigUseCase   = getConfigUseCase;
 			_getStateUseCase    = getStateUseCase;
