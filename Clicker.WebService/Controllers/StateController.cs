@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Clicker.Common.Config;
 using Clicker.Common.State;
 using Core.Common.Utils;
@@ -30,9 +31,9 @@ namespace Clicker.WebService.Controllers {
 		}
 
 		[HttpPost("update")]
-		public WebResponse Update([FromBody] UpdateStateRequest<GameConfig, GameState> request) {
+		public async Task<WebResponse> Update([FromBody] UpdateStateRequest<GameConfig, GameState> request) {
 			_logger.LogTrace($"Update state for user: '{request.UserId?.Value}'.");
-			var response = _updateStateUseCase.Handle(request);
+			var response = await _updateStateUseCase.Handle(request);
 			_logger.LogTrace($"Response is '{response.GetType().Name}'.");
 			return new WebResponse(response);
 		}
