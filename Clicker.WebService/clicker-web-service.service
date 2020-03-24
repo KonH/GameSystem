@@ -1,5 +1,5 @@
 [Unit]
-Description=LED resource monitor
+Description=Clicker Web Service
 
 [Service]
 ExecStart=/share/Clicker.WebService/Clicker.WebService
