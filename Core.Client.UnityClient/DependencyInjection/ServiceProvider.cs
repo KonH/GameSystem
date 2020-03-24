@@ -88,6 +88,19 @@ namespace Core.Client.UnityClient.DependencyInjection {
 			return entry.Instance;
 		}
 
+		bool TryGetService(Type type, out object value) {
+			var entry = _services.GetOrDefault(type);
+			if ( entry == null ) {
+				value = null;
+				return false;
+			}
+			if ( entry.Instance == null ) {
+				entry.Instance = CreateService(entry.ImplementationType);
+			}
+			value = entry.Instance;
+			return true;
+		}
+
 		object CreateService(Type type) {
 			try {
 				var constructors = type.GetConstructors();
@@ -101,7 +114,7 @@ namespace Core.Client.UnityClient.DependencyInjection {
 				var parameters = constructor.GetParameters();
 				var instances  = new object[parameters.Length];
 				for ( var i = 0; i < parameters.Length; i++ ) {
-					instances[i] = GetService(parameters[i].ParameterType);
+					instances[i] = ResolveParameter(parameters[i]);
 				}
 				return constructor.Invoke(instances);
 			} catch ( Exception e ) {
@@ -132,6 +145,16 @@ namespace Core.Client.UnityClient.DependencyInjection {
 					return null;
 				}
 			}
+		}
+
+		object ResolveParameter(ParameterInfo parameter) {
+			if ( parameter.IsOptional ) {
+				if ( TryGetService(parameter.ParameterType, out var value) ) {
+					return value;
+				}
+				return parameter.DefaultValue;
+			}
+			return GetService(parameter.ParameterType);
 		}
 	}
 }
