@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
@@ -30,6 +32,10 @@ namespace Core.Service.UseCase.UpdateState {
 			var validateError = Validate(request, out var config, out var state);
 			if ( validateError != null ) {
 				return validateError;
+			}
+			var commandType = request.Command.GetType();
+			if ( !IsTrustedCommand(commandType) ) {
+				return Rejected($"Command of type '{commandType.FullName}' isn't trusted");
 			}
 			var result = await _commandExecutor.Apply(config, state, request.Command);
 			return HandleResult(request.UserId, state, result);
@@ -90,6 +96,10 @@ namespace Core.Service.UseCase.UpdateState {
 
 		static UpdateStateResponse BadRequest(string description = "") {
 			return new UpdateStateResponse.BadRequest(description);
+		}
+
+		static bool IsTrustedCommand(Type type) {
+			return type.GetCustomAttribute<TrustedCommandAttribute>() != null;
 		}
 	}
 }

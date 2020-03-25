@@ -19,12 +19,20 @@ namespace Core.Service.Tests.UseCase {
 			public StateVersion Version { get; set; } = new StateVersion();
 		}
 
+		[TrustedCommand]
 		sealed class OkCommand : ICommand<Config, State> {
 			public CommandResult Apply(Config config, State state) {
 				return CommandResult.Ok();
 			}
 		}
 
+		sealed class NonThrustedCommand : ICommand<Config, State> {
+			public CommandResult Apply(Config config, State state) {
+				return CommandResult.Ok();
+			}
+		}
+
+		[TrustedCommand]
 		sealed class BadCommand : ICommand<Config, State> {
 			public CommandResult Apply(Config config, State state) {
 				return CommandResult.BadCommand("");
@@ -39,6 +47,16 @@ namespace Core.Service.Tests.UseCase {
 			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<UpdateStateResponse.Updated<Config, State>>(resp);
+		}
+
+		[Test]
+		public async Task IsStateRejectedForNonTrustedCommand() {
+			var useCase = GetUseCase();
+			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(0), new NonThrustedCommand());
+
+			var resp = await useCase.Handle(req);
+
+			Assert.IsInstanceOf<UpdateStateResponse.Rejected>(resp);
 		}
 
 		[Test]
