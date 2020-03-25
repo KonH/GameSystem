@@ -56,6 +56,14 @@ namespace Core.Client.Web {
 					return new CommandApplyResult.Ok();
 				}
 
+				case UpdateStateResponse.Rejected rejected: {
+					return new CommandApplyResult.Error($"Command rejected: '{rejected.Description}'");
+				}
+
+				case UpdateStateResponse.BadRequest badRequest: {
+					return new CommandApplyResult.Error($"Command is invalid: '{badRequest.Description}'");
+				}
+
 				case object value: {
 					return new CommandApplyResult.Error($"Result is '{value.GetType()}', force update state");
 				}
