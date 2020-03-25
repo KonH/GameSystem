@@ -3,6 +3,7 @@ using Clicker.Common.State;
 using Core.Common.Command;
 
 namespace Clicker.Common.Command {
+	[TrustedCommand]
 	public sealed class ClickCommand : ICommand<GameConfig, GameState> {
 		public CommandResult Apply(GameConfig config, GameState state) {
 			state.Click.Clicks++;

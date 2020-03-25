@@ -4,6 +4,7 @@ using Clicker.Common.State;
 using Core.Common.Command;
 
 namespace Clicker.Common.Command {
+	[TrustedCommand]
 	public sealed class UpgradeCommand : ICommand<GameConfig, GameState> {
 		public CommandResult Apply(GameConfig config, GameState state) {
 			if ( !UpgradeLogic.HasNextUpgradeLevel(config, state) ) {
