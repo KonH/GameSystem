@@ -6,11 +6,8 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Clicker.Common\Clicker.Common.csproj" />
+	  <ProjectReference Include="..\Core.Service.WebService\Core.Service.WebService.csproj" />
 	  <ProjectReference Include="..\Core.Service\Core.Service.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
 	</ItemGroup>
 
 
