@@ -103,6 +103,11 @@ namespace Core.Client.Web {
 					break;
 				}
 
+				case GetStateResponse.BadRequest badRequest: {
+					_logger.LogError($"Failed to get state: '{badRequest.Description}'");
+					throw new InvalidOperationException();
+				}
+
 				case object value: {
 					_logger.LogError($"Result is '{value.GetType()}'");
 					throw new InvalidOperationException();
