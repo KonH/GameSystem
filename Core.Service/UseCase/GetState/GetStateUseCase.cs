@@ -17,7 +17,11 @@ namespace Core.Service.UseCase.GetState {
 				return validateError;
 			}
 			var state = _stateRepository.Get(request.UserId);
-			return (state != null) ? Found(state) : Found(CreateState());
+			if ( state == null ) {
+				state = CreateState();
+				_stateRepository.Add(request.UserId, state);
+			}
+			return Found(state);
 		}
 
 		GetStateResponse Validate(GetStateRequest request) {
