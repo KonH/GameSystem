@@ -12,6 +12,8 @@ using Core.Service.Repository.State;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
+using Core.Service.WebService.Configuration;
+using Core.Service.WebService.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -51,6 +53,9 @@ namespace Clicker.WebService {
 		};
 
 		public void ConfigureServices(IServiceCollection services) {
+			var settings = Configuration.GetSection(typeof(Settings).Name).Get<Settings>();
+			services.AddSingleton(settings);
+
 			services
 				.AddControllers()
 				.AddNewtonsoftJson(opts => {
@@ -60,8 +65,19 @@ namespace Clicker.WebService {
 			services.AddSingleton(JsonRepositoryDecoratorSettings.Create<GameConfig>());
 			services.AddSingleton<IConfigRepository<GameConfig>, InMemoryConfigRepository<GameConfig>>();
 
-			services.AddSingleton(JsonRepositoryDecoratorSettings.Create<GameState>());
-			services.AddSingleton<IStateRepository<GameState>, InMemoryStateRepository<GameState>>();
+			switch ( settings.RepositoryMode ) {
+				case RepositoryMode.Embedded: {
+					services.AddSingleton(JsonRepositoryDecoratorSettings.Create<GameState>());
+					services.AddSingleton<IStateRepository<GameState>, InMemoryStateRepository<GameState>>();
+					break;
+				}
+
+				case RepositoryMode.MongoDb: {
+					services.AddSingleton<IStateRepository<GameState>, MongoStateRepository<GameState>>();
+					break;
+				}
+			}
+
 
 			services.AddSingleton(new GetSingleConfigStrategy<GameConfig>.Settings(Config.Version));
 			services.AddSingleton<IGetConfigStrategy<GameConfig>, GetSingleConfigStrategy<GameConfig>>();
