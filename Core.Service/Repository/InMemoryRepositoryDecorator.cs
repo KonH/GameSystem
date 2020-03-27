@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Core.Service.Repository {
 	public class InMemoryRepositoryDecorator<TModel, TStorage> : IRepository<TModel> {
 		public delegate TStorage ConvertToStorage(TModel model);
@@ -22,13 +24,14 @@ namespace Core.Service.Repository {
 			_settings = settings;
 		}
 
-		public void Add(string id, TModel model) {
+		public Task Add(string id, TModel model) {
 			var storage = _settings.ConvertToStorage(model);
 			_repository.Add(id, storage);
+			return Task.CompletedTask;
 		}
 
-		public TModel Get(string id) {
-			var storage = _repository.Get(id);
+		public async Task<TModel> Get(string id) {
+			var storage = await _repository.Get(id);
 			if ( storage == null ) {
 				return default;
 			}
@@ -36,9 +39,10 @@ namespace Core.Service.Repository {
 			return model;
 		}
 
-		public void Update(string id, TModel model) {
+		public Task Update(string id, TModel model) {
 			var storage = _settings.ConvertToStorage(model);
 			_repository.Update(id, storage);
+			return Task.CompletedTask;
 		}
 	}
 }

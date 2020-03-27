@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.State;
 using Core.Service.Repository.State;
 using Core.Service.WebService.Configuration;
@@ -16,29 +17,29 @@ namespace Core.Service.WebService.Repository {
 			_items = database.GetCollection<MongoState>("State");
 		}
 
-		public void Add(string id, TState model) {
+		public Task Add(string id, TState model) {
 			var state = CreateState(id, model);
-			Add(state);
+			return Add(state);
 		}
 
-		public TState Get(string id) {
-			var state = _items.Find(s => s.Id == id).Limit(0).FirstOrDefault();
+		public async Task<TState> Get(string id) {
+			var state = (await _items.FindAsync(s => s.Id == id)).FirstOrDefault();
 			if ( state == null ) {
 				return default;
 			}
 			return JsonConvert.DeserializeObject<TState>(state.Body);
 		}
 
-		public void Update(string id, TState model) {
+		public async Task Update(string id, TState model) {
 			var state  = CreateState(id, model);
-			var result = _items.ReplaceOne(s => s.Id == id, state);
+			var result = await _items.ReplaceOneAsync(s => s.Id == id, state);
 			if ( result.ModifiedCount == 0 ) {
-				Add(state);
+				await Add(state);
 			}
 		}
 
-		void Add(MongoState state) {
-			_items.InsertOne(state);
+		Task Add(MongoState state) {
+			return _items.InsertOneAsync(state);
 		}
 
 		MongoState CreateState(string id, TState model) {

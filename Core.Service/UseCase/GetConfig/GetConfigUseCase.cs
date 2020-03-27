@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.Config;
 
 namespace Core.Service.UseCase.GetConfig {
@@ -9,12 +10,12 @@ namespace Core.Service.UseCase.GetConfig {
 			_strategy = strategy;
 		}
 
-		public GetConfigResponse Handle(GetConfigRequest request) {
+		public async Task<GetConfigResponse> Handle(GetConfigRequest request) {
 			var validateError = Validate(request);
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var config = _strategy.GetUserConfig(request.UserId);
+			var config = await _strategy.GetUserConfig(request.UserId);
 			return (config != null) ? Found(config) : NotFound();
 		}
 

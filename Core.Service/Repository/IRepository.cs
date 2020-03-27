@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Core.Service.Repository {
 	public interface IRepository<TModel> {
-		void Add(string id, TModel model);
-		TModel Get(string id);
-		void Update(string id, TModel model);
+		Task Add(string id, TModel model);
+		Task<TModel> Get(string id);
+		Task Update(string id, TModel model);
 	}
 }

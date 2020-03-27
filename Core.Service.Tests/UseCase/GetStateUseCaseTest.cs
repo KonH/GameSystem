@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.State;
 using Core.Service.Model;
 using Core.Service.UseCase.GetState;
@@ -10,22 +11,22 @@ namespace Core.Service.Tests.UseCase {
 		}
 
 		[Test]
-		public void IsStateFound() {
+		public async Task IsStateFound() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(StateRepository.ValidUserId);
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<GetStateResponse.Found<State>>(resp);
 			Assert.NotNull(((GetStateResponse.Found<State>) resp).State);
 		}
 
 		[Test]
-		public void IsStateCreatedIfNotFound() {
+		public async Task IsStateCreatedIfNotFound() {
 			var useCase = GetUseCase();
 			var req     = GetRequest(new UserId("InvalidUserId"));
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<GetStateResponse.Found<State>>(resp);
 		}

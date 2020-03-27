@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Common.Config;
 using Core.Service.Model;
 using Core.Service.UseCase.GetConfig;
@@ -31,24 +32,24 @@ namespace Core.Service.Tests.UseCase {
 		}
 
 		[Test]
-		public void IsConfigFound() {
+		public async Task IsConfigFound() {
 			var useCase = GetUseCase(
 				new ConfigVersion("TestVersion"),
 				new Config { Version = new ConfigVersion("TestVersion") });
 			var req = GetRequest();
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<GetConfigResponse.Found<Config>>(resp);
 			Assert.NotNull(((GetConfigResponse.Found<Config>) resp).Config);
 		}
 
 		[Test]
-		public void IsConfigNotFound() {
+		public async Task IsConfigNotFound() {
 			var useCase = GetUseCase(new ConfigVersion("TestVersion"));
 			var req     = GetRequest();
 
-			var resp = useCase.Handle(req);
+			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<GetConfigResponse.NotFound>(resp);
 		}

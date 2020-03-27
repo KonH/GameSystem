@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.State;
 using Core.Service.Extension;
 using Core.Service.Repository.State;
@@ -11,15 +12,15 @@ namespace Core.Service.UseCase.GetState {
 			_stateRepository = stateRepository;
 		}
 
-		public GetStateResponse Handle(GetStateRequest request) {
+		public async Task<GetStateResponse> Handle(GetStateRequest request) {
 			var validateError = Validate(request);
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var state = _stateRepository.Get(request.UserId);
+			var state = await _stateRepository.Get(request.UserId);
 			if ( state == null ) {
 				state = CreateState();
-				_stateRepository.Add(request.UserId, state);
+				await _stateRepository.Add(request.UserId, state);
 			}
 			return Found(state);
 		}

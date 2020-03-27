@@ -14,7 +14,7 @@ using Core.Service.Repository.State;
 namespace Core.Service.UseCase.UpdateState {
 	public sealed class
 		UpdateStateUseCase<TConfig, TState> :
-			IUseCase<UpdateStateRequest<TConfig, TState>, Task<UpdateStateResponse>>
+			IUseCase<UpdateStateRequest<TConfig, TState>, UpdateStateResponse>
 		where TConfig : IConfig where TState : class, IState, new() {
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
@@ -29,7 +29,7 @@ namespace Core.Service.UseCase.UpdateState {
 		}
 
 		public async Task<UpdateStateResponse> Handle(UpdateStateRequest<TConfig, TState> request) {
-			var validateError = Validate(request, out var config, out var state);
+			var (validateError, (config, state)) = await Validate(request);
 			if ( validateError != null ) {
 				return validateError;
 			}
@@ -41,25 +41,26 @@ namespace Core.Service.UseCase.UpdateState {
 			return HandleResult(request.UserId, state, result);
 		}
 
-		UpdateStateResponse Validate(
-			UpdateStateRequest<TConfig, TState> request, out TConfig config, out TState state) {
-			state  = default;
-			config = default;
+		async Task<(UpdateStateResponse failed, (TConfig config, TState state))> Validate(
+			UpdateStateRequest<TConfig, TState> request) {
+			(UpdateStateResponse, (TConfig, TState)) Failed(UpdateStateResponse error) {
+				return (error, (default, default));
+			}
 			if ( request == null ) {
-				return BadRequest("null request");
+				return Failed(BadRequest("null request"));
 			}
 			if ( request.Command == null ) {
-				return BadRequest("null command");
+				return Failed(BadRequest("null command"));
 			}
-			state = _stateRepository.Get(request.UserId) ?? new TState();
+			var state = await _stateRepository.Get(request.UserId) ?? new TState();
 			if ( state.Version > request.StateVersion ) {
-				return Outdated();
+				return Failed(Outdated());
 			}
-			config = _configRepository.Get(request.ConfigVersion);
+			var config = await _configRepository.Get(request.ConfigVersion);
 			if ( config == null ) {
-				return BadRequest($"Config '{request.ConfigVersion}' isn't found");
+				return Failed(BadRequest($"Config '{request.ConfigVersion}' isn't found"));
 			}
-			return null;
+			return (null, (config, state));
 		}
 
 		UpdateStateResponse HandleResult(

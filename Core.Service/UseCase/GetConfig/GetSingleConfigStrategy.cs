@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Common.Config;
 using Core.Service.Extension;
 using Core.Service.Model;
@@ -26,7 +27,7 @@ namespace Core.Service.UseCase.GetConfig {
 			_configRepository = configRepository;
 		}
 
-		public TConfig GetUserConfig(UserId userId) {
+		public Task<TConfig> GetUserConfig(UserId userId) {
 			return _configRepository.Get(_settings.Version);
 		}
 	}
