@@ -23,9 +23,9 @@ namespace Clicker.WebService.Controllers {
 		}
 
 		[HttpPost("get")]
-		public WebResponse Get([FromBody] GetStateRequest request) {
+		public async Task<WebResponse> Get([FromBody] GetStateRequest request) {
 			_logger.LogTrace($"Get state for user: '{request.UserId?.Value}'.");
-			var response = _getStateUseCase.Handle(request);
+			var response = await _getStateUseCase.Handle(request);
 			_logger.LogTrace($"Response is '{response.GetType().Name}'.");
 			return new WebResponse(response);
 		}

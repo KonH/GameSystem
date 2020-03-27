@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Clicker.Common.Config;
 using Core.Common.Utils;
 using Core.Service.UseCase.GetConfig;
@@ -16,9 +17,9 @@ namespace Clicker.WebService.Controllers {
 		}
 
 		[HttpPost("get")]
-		public WebResponse Get([FromBody] GetConfigRequest request) {
+		public async Task<WebResponse> Get([FromBody] GetConfigRequest request) {
 			_logger.LogTrace($"Request config for user: '{request.UserId?.Value}'.");
-			var response = _getConfigUseCase.Handle(request);
+			var response = await _getConfigUseCase.Handle(request);
 			_logger.LogTrace($"Response is '{response.GetType().Name}'.");
 			return new WebResponse(response);
 		}
