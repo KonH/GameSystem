@@ -54,7 +54,7 @@ namespace Core.Client.Standalone {
 			var validCommands = _history.ValidCommands;
 			_history = new CommandHistory<TConfig, TState>();
 			foreach ( var command in validCommands ) {
-				_singleExecutor.Apply(Config, State, command, false);
+				_singleExecutor.Apply(Config, State, command);
 			}
 			_history.AddCommands(validCommands, true);
 		}
