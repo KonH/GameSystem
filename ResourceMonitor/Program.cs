@@ -18,6 +18,7 @@ namespace ResourceMonitor {
 				writer.Write(info);
 				prevCpu = curCpu;
 			}
+			// ReSharper disable once FunctionNeverReturns
 		}
 	}
 }
