@@ -1,3 +1,4 @@
+using System.IO;
 using Nuke.Common;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
@@ -161,6 +162,19 @@ namespace BuildPipeline {
 				var targetPath = (AbsolutePath) LocalPiHome / "Static" / TargetProject;
 				CopyDirectoryRecursively(buildDir, targetPath,
 					DirectoryExistsPolicy.Merge, FileExistsPolicy.OverwriteIfNewer);
+			});
+
+		Target CreateDiagrams => _ => _
+			.Executes(() => {
+				var sourceDirectory = RootDirectory / "Graphviz";
+				var targetDirectory = RootDirectory / "Png";
+				var sourceFiles = Directory.GetFiles(sourceDirectory, "*.gv", SearchOption.AllDirectories);
+				foreach ( var sourceFile in sourceFiles ) {
+					var relativePath = Path.GetRelativePath(sourceDirectory, sourceFile);
+					Logger.Info($"Process file '{relativePath}'");
+					var targetPath = Path.ChangeExtension(targetDirectory / relativePath, "png");
+					ProcessTasks.StartProcess("dot", $"-Tpng {sourceFile} -o \"{targetPath}\"").WaitForExit();
+				}
 			});
 	}
 }
