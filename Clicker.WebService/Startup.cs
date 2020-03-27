@@ -76,8 +76,12 @@ namespace Clicker.WebService {
 					services.AddSingleton<IStateRepository<GameState>, MongoStateRepository<GameState>>();
 					break;
 				}
-			}
 
+				case RepositoryMode.CouchDb: {
+					services.AddSingleton<IStateRepository<GameState>, CouchStateRepository<GameState>>();
+					break;
+				}
+			}
 
 			services.AddSingleton(new GetSingleConfigStrategy<GameConfig>.Settings(Config.Version));
 			services.AddSingleton<IGetConfigStrategy<GameConfig>, GetSingleConfigStrategy<GameConfig>>();
