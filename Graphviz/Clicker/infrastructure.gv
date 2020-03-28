@@ -1,0 +1,15 @@
+    strict digraph {
+        "Raspberry Pi (Debian Buster ARM x32)" [shape="polygon" style="filled"]
+        "system.d" [shape="polygon" style="dashed"]
+        nginx [shape="polygon"]
+        CouchDB [shape="polygon"]
+        "Clicker Unity Client" [shape="ellipse"]
+        "Clicker Web Service" [shape="ellipse"]
+        "system.d" -> "Raspberry Pi (Debian Buster ARM x32)"
+        nginx -> "system.d"
+        CouchDB -> "system.d"
+        "Clicker Unity Client" -> nginx [dir="both"]
+        "Clicker Web Service" -> "system.d"
+        "Clicker Web Service" -> CouchDB [dir="both"]
+        "Clicker Web Service" -> nginx [dir="both"]
+    }
