@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Core.Common.Command;
 using Core.Common.Config;
@@ -11,7 +12,9 @@ namespace Core.Client.Shared {
 		public readonly IReadOnlyList<Type> CommandTypes;
 
 		public CommandProvider(Assembly typeAssembly) {
-			CommandTypes = TypeResolver.GetSubclasses<ICommand<TConfig, TState>>(typeAssembly);
+			CommandTypes = TypeResolver.GetSubclasses<ICommand<TConfig, TState>>(typeAssembly)
+				.Where(t => t.GetCustomAttribute<TrustedCommandAttribute>() != null)
+				.ToArray();
 		}
 	}
 }
