@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Client.UnityClient", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Service.WebService", "Core.Service.WebService\Core.Service.WebService.csproj", "{A897C4CD-C19E-40AE-B4E5-A989337D6FF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype.LongPollingServer", "Prototype.LongPollingServer\Prototype.LongPollingServer.csproj", "{B8445669-B68D-4D9F-B478-D4C5E6EACD97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{A897C4CD-C19E-40AE-B4E5-A989337D6FF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A897C4CD-C19E-40AE-B4E5-A989337D6FF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A897C4CD-C19E-40AE-B4E5-A989337D6FF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
