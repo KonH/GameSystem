@@ -15,6 +15,7 @@ namespace Prototype.LongPollingServer {
 		public void ConfigureServices(IServiceCollection services) {
 			services.AddControllers();
 			services.AddSingleton<LongPollingChat>();
+			services.AddCors();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
@@ -23,6 +24,8 @@ namespace Prototype.LongPollingServer {
 			}
 
 			app.UseRouting();
+
+			app.UseCors(opts => opts.AllowAnyOrigin());
 
 			app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 		}

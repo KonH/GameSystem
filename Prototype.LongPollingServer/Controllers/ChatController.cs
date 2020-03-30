@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Prototype.LongPollingServer.Controllers {
+	[EnableCors]
 	[ApiController]
 	[Route("[controller]")]
 	public class ChatController : ControllerBase {
