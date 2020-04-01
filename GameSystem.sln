@@ -43,6 +43,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Service.WebService", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype.LongPollingServer", "Prototype.LongPollingServer\Prototype.LongPollingServer.csproj", "{B8445669-B68D-4D9F-B478-D4C5E6EACD97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idler.Common", "Idler.Common\Idler.Common.csproj", "{8E5F639E-C789-4035-A88B-FBA102F9FBB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idler.WebService", "Idler.WebService\Idler.WebService.csproj", "{12A8C359-1E9E-4859-804A-DC17377BBFF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idler.Tests", "Idler.Tests\Idler.Tests.csproj", "{0E69B743-3C49-48A2-AE4C-0096F170BD11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +129,18 @@ Global
 		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8445669-B68D-4D9F-B478-D4C5E6EACD97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5F639E-C789-4035-A88B-FBA102F9FBB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5F639E-C789-4035-A88B-FBA102F9FBB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5F639E-C789-4035-A88B-FBA102F9FBB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5F639E-C789-4035-A88B-FBA102F9FBB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12A8C359-1E9E-4859-804A-DC17377BBFF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12A8C359-1E9E-4859-804A-DC17377BBFF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12A8C359-1E9E-4859-804A-DC17377BBFF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12A8C359-1E9E-4859-804A-DC17377BBFF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E69B743-3C49-48A2-AE4C-0096F170BD11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E69B743-3C49-48A2-AE4C-0096F170BD11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E69B743-3C49-48A2-AE4C-0096F170BD11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E69B743-3C49-48A2-AE4C-0096F170BD11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

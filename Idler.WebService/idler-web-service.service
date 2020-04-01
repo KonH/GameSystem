@@ -1,0 +1,13 @@
+[Unit]
+Description=Idler Web Service
+
+[Service]
+ExecStart=/share/Idler.WebService/Idler.WebService
+WorkingDirectory=/share/Idler.WebService
+User=root
+Group=root
+Restart=on-failure
+SyslogIdentifier=idler-web-service
+
+[Install]
+WantedBy=multi-user.target
