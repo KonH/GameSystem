@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using LogLevel = Core.Common.Utils.LogLevel;
 
-namespace Clicker.WebService {
+namespace Core.Service.WebService.Shared {
 	public sealed class WebServiceLogger<T> : Core.Common.Utils.ILogger<T> {
 		readonly ILogger _logger;
 

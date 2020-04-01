@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Clicker.Common.Config;
 using Core.Common.Utils;
 using Core.Service.UseCase.GetConfig;
+using Core.Service.WebService.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clicker.WebService.Controllers {

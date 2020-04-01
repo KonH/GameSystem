@@ -1,4 +1,4 @@
-namespace Clicker.WebService {
+namespace Core.Service.WebService.Shared {
 	public sealed class WebResponse {
 		public object Data { get; set; }
 

@@ -4,6 +4,7 @@ using Clicker.Common.State;
 using Core.Common.Utils;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
+using Core.Service.WebService.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clicker.WebService.Controllers {

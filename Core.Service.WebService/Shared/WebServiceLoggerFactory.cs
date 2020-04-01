@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using ILoggerFactory = Core.Common.Utils.ILoggerFactory;
 
-namespace Clicker.WebService {
+namespace Core.Service.WebService.Shared {
 	public sealed class WebServiceLoggerFactory : ILoggerFactory {
 		readonly Microsoft.Extensions.Logging.ILoggerFactory _internalFactory;
 

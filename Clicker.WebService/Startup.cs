@@ -14,6 +14,7 @@ using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
+using Core.Service.WebService.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
