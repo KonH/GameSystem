@@ -4,6 +4,6 @@ using Core.Service.Model;
 
 namespace Core.Service {
 	public interface IUpdateWatcher<TConfig, TState> where TConfig : IConfig where TState : IState {
-		void OnCommandRequest(UserId userId, CommandScheduler<TConfig, TState> scheduler);
+		void OnCommandRequest(TConfig config, TState state, UserId userId, CommandScheduler<TConfig, TState> scheduler);
 	}
 }

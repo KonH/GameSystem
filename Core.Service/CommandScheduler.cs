@@ -39,7 +39,7 @@ namespace Core.Service {
 			}
 		}
 
-		public async Task<ICommand<TConfig, TState>[]> WaitForCommands(UserId userId) {
+		public async Task<ICommand<TConfig, TState>[]> WaitForCommands(TConfig config, TState state, UserId userId) {
 			var tcs = new TaskCompletionSource<ICommand<TConfig, TState>[]>();
 			_listeners.AddOrUpdate(
 				userId,
@@ -49,7 +49,7 @@ namespace Core.Service {
 					return tcs;
 				});
 			foreach ( var watcher in _settings.Watchers ) {
-				watcher.OnCommandRequest(userId, this);
+				watcher.OnCommandRequest(config, state, userId, this);
 			}
 			TryApplyCommand(userId);
 			return await tcs.Task;

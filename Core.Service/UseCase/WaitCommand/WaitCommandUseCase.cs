@@ -35,7 +35,7 @@ namespace Core.Service.UseCase.WaitCommand {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var commandTask = _scheduler.WaitForCommands(request.UserId);
+			var commandTask = _scheduler.WaitForCommands(config, state, request.UserId);
 			var delayTask   = Task.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
 			if ( commandTask.IsCompleted ) {

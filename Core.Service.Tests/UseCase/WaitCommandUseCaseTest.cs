@@ -30,7 +30,7 @@ namespace Core.Service.Tests.UseCase {
 		sealed class Watcher : IUpdateWatcher<Config, State> {
 			public bool IsNotified { get; private set; }
 
-			public void OnCommandRequest(UserId userId, CommandScheduler<Config, State> scheduler) {
+			public void OnCommandRequest(Config config, State state, UserId userId, CommandScheduler<Config, State> scheduler) {
 				IsNotified = true;
 			}
 		}
