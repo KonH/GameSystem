@@ -4,7 +4,7 @@ using Core.Service.Model;
 using Core.Service.Repository;
 using Core.Service.Repository.State;
 
-namespace Core.Service.Tests {
+namespace Core.TestTools {
 	public static class StateRepository {
 		public static UserId ValidUserId => new UserId("ValidUserId");
 	}

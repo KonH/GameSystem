@@ -14,6 +14,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Core.Service\Core.Service.csproj" />
+	  <ProjectReference Include="..\Core.TestTools\Core.TestTools.csproj" />
 	</ItemGroup>
 
 </Project>

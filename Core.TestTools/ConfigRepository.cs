@@ -3,7 +3,7 @@ using Core.Service.Extension;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 
-namespace Core.Service.Tests {
+namespace Core.TestTools {
 	public static class ConfigRepository<TConfig> where TConfig : IConfig {
 		public static IConfigRepository<TConfig> Create(params TConfig[] configs) {
 			var settings   = JsonRepositoryDecoratorSettings.Create<TConfig>();

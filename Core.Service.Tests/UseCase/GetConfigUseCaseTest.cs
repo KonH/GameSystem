@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Core.Common.Config;
 using Core.Service.Model;
 using Core.Service.UseCase.GetConfig;
+using Core.TestTools;
 using NUnit.Framework;
 
 namespace Core.Service.Tests.UseCase {

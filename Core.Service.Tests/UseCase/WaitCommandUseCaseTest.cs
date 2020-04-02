@@ -8,6 +8,7 @@ using Core.Common.State;
 using Core.Common.Utils;
 using Core.Service.Model;
 using Core.Service.UseCase.WaitCommand;
+using Core.TestTools;
 using NUnit.Framework;
 
 namespace Core.Service.Tests.UseCase {

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Core.Common.State;
 using Core.Service.Model;
 using Core.Service.UseCase.GetState;
+using Core.TestTools;
 using NUnit.Framework;
 
 namespace Core.Service.Tests.UseCase {
