@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.Config;
@@ -9,8 +10,8 @@ namespace Core.Service {
 	public sealed class CommandScheduler<TConfig, TState> where TConfig : IConfig where TState : IState {
 		readonly ConcurrentDictionary<UserId, ConcurrentQueue<ICommand<TConfig, TState>>> _commands
 			= new ConcurrentDictionary<UserId, ConcurrentQueue<ICommand<TConfig, TState>>>();
-		readonly ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>>> _listeners =
-			new ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>>>();
+		readonly ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>[]>> _listeners =
+			new ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>[]>>();
 
 		public void AddCommand(UserId userId, ICommand<TConfig, TState> command) {
 			_commands.AddOrUpdate(
@@ -20,8 +21,8 @@ namespace Core.Service {
 			TryApplyCommand(userId);
 		}
 
-		public async Task<ICommand<TConfig, TState>> WaitForCommand(UserId userId) {
-			var tcs = new TaskCompletionSource<ICommand<TConfig, TState>>();
+		public async Task<ICommand<TConfig, TState>[]> WaitForCommands(UserId userId) {
+			var tcs = new TaskCompletionSource<ICommand<TConfig, TState>[]>();
 			_listeners.AddOrUpdate(
 				userId,
 				_ => tcs,
@@ -42,8 +43,12 @@ namespace Core.Service {
 		void TryApplyCommand(UserId userId) {
 			if ( _commands.TryGetValue(userId, out var commands) ) {
 				if ( _listeners.TryRemove(userId, out var tcs) ) {
-					if ( commands.TryDequeue(out var command) ) {
-						tcs.SetResult(command);
+					var result = new List<ICommand<TConfig, TState>>();
+					while ( commands.TryDequeue(out var command) ) {
+						result.Add(command);
+					}
+					if ( result.Count > 0 ) {
+						tcs.SetResult(result.ToArray());
 					}
 				}
 			}

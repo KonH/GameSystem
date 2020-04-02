@@ -35,13 +35,24 @@ namespace Core.Service.UseCase.WaitCommand {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var commandTask = _scheduler.WaitForCommand(request.UserId);
+			var commandTask = _scheduler.WaitForCommands(request.UserId);
 			var delayTask   = Task.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
 			if ( commandTask.IsCompleted ) {
-				var command = commandTask.Result;
-				var result  = await _commandExecutor.Apply(config, state, command);
-				return HandleResult(request.UserId, command, state, result);
+				var commands = commandTask.Result;
+				var allCommands = new List<ICommand<TConfig, TState>>(commands.Length);
+				var lastVersion = state.Version;
+				foreach ( var command in commands ) {
+					var result = await _commandExecutor.Apply(config, state, command);
+					var response = HandleResult(request.UserId, command, state, result);
+					if ( response is WaitCommandResponse.Updated<TConfig, TState> okResponse ) {
+						allCommands.AddRange(okResponse.NextCommands);
+						lastVersion = okResponse.NewVersion;
+						continue;
+					}
+					return response;
+				}
+				return Updated(lastVersion, allCommands);
 			}
 			_scheduler.CancelWaiting(request.UserId);
 			return NotFound();

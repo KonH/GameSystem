@@ -53,6 +53,22 @@ namespace Core.Service.Tests.UseCase {
 		}
 
 		[Test]
+		public async Task IsSeveralCommandsFound() {
+			var scheduler = new CommandScheduler<Config, State>();
+			var useCase   = GetUseCase(scheduler);
+			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
+
+			scheduler.AddCommand(StateRepository.ValidUserId, new OkCommand());
+			scheduler.AddCommand(StateRepository.ValidUserId, new OkCommand());
+
+			var resp = await useCase.Handle(req);
+
+			Assert.IsInstanceOf<WaitCommandResponse.Updated<Config, State>>(resp);
+			var nextCommands = ((WaitCommandResponse.Updated<Config, State>)resp).NextCommands;
+			Assert.AreEqual(2, nextCommands.Count);
+		}
+
+		[Test]
 		public async Task IsStateOutdated() {
 			var useCase = GetUseCase(new CommandScheduler<Config, State>());
 			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(-1));
