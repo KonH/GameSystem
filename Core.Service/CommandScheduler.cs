@@ -8,17 +8,35 @@ using Core.Service.Model;
 
 namespace Core.Service {
 	public sealed class CommandScheduler<TConfig, TState> where TConfig : IConfig where TState : IState {
+		public sealed class Settings {
+			public IReadOnlyCollection<IUpdateWatcher<TConfig, TState>> Watchers => _watchers.AsReadOnly();
+
+			List<IUpdateWatcher<TConfig, TState>> _watchers = new List<IUpdateWatcher<TConfig, TState>>();
+
+			public void AddWatcher(IUpdateWatcher<TConfig, TState> watcher) {
+				_watchers.Add(watcher);
+			}
+		}
+
+		readonly Settings _settings;
+
 		readonly ConcurrentDictionary<UserId, ConcurrentQueue<ICommand<TConfig, TState>>> _commands
 			= new ConcurrentDictionary<UserId, ConcurrentQueue<ICommand<TConfig, TState>>>();
 		readonly ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>[]>> _listeners =
 			new ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>[]>>();
 
-		public void AddCommand(UserId userId, ICommand<TConfig, TState> command) {
+		public CommandScheduler(Settings settings) {
+			_settings = settings;
+		}
+
+		public void AddCommand(UserId userId, ICommand<TConfig, TState> command, bool autoApply = false) {
 			_commands.AddOrUpdate(
 				userId,
 				_ => CreateNewQueue(command),
 				(_, commands) => UpdateQueue(commands, command));
-			TryApplyCommand(userId);
+			if ( autoApply ) {
+				TryApplyCommand(userId);
+			}
 		}
 
 		public async Task<ICommand<TConfig, TState>[]> WaitForCommands(UserId userId) {
@@ -30,6 +48,9 @@ namespace Core.Service {
 					oldTcs.SetCanceled();
 					return tcs;
 				});
+			foreach ( var watcher in _settings.Watchers ) {
+				watcher.OnCommandRequest(userId, this);
+			}
 			TryApplyCommand(userId);
 			return await tcs.Task;
 		}

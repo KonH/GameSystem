@@ -26,9 +26,17 @@ namespace Core.Service.Tests.UseCase {
 			}
 		}
 
+		sealed class Watcher : IUpdateWatcher<Config, State> {
+			public bool IsNotified { get; private set; }
+
+			public void OnCommandRequest(UserId userId, CommandScheduler<Config, State> scheduler) {
+				IsNotified = true;
+			}
+		}
+
 		[Test]
 		public async Task IsCommandNotFound() {
-			var useCase = GetUseCase(new CommandScheduler<Config, State>());
+			var useCase = GetUseCase(GetScheduler());
 			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
 			var resp = await useCase.Handle(req);
@@ -38,7 +46,7 @@ namespace Core.Service.Tests.UseCase {
 
 		[Test]
 		public async Task IsCommandFound() {
-			var scheduler = new CommandScheduler<Config, State>();
+			var scheduler = GetScheduler();
 			var useCase   = GetUseCase(scheduler);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
@@ -54,7 +62,7 @@ namespace Core.Service.Tests.UseCase {
 
 		[Test]
 		public async Task IsSeveralCommandsFound() {
-			var scheduler = new CommandScheduler<Config, State>();
+			var scheduler = GetScheduler();
 			var useCase   = GetUseCase(scheduler);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
@@ -70,13 +78,30 @@ namespace Core.Service.Tests.UseCase {
 
 		[Test]
 		public async Task IsStateOutdated() {
-			var useCase = GetUseCase(new CommandScheduler<Config, State>());
+			var useCase = GetUseCase(GetScheduler());
 			var req     = GetRequest(StateRepository.ValidUserId, new StateVersion(-1));
 
 			var resp = await useCase.Handle(req);
 
 			Assert.IsInstanceOf<WaitCommandResponse.Outdated>(resp);
 		}
+
+		[Test]
+		public async Task IsWatcherNotified() {
+			var settings = new CommandScheduler<Config, State>.Settings();
+			var watcher  = new Watcher();
+			settings.AddWatcher(watcher);
+			var scheduler = new CommandScheduler<Config, State>(settings);
+			var useCase   = GetUseCase(scheduler);
+			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
+
+			await useCase.Handle(req);
+
+			Assert.True(watcher.IsNotified);
+		}
+
+		CommandScheduler<Config, State> GetScheduler() =>
+			new CommandScheduler<Config, State>(new CommandScheduler<Config, State>.Settings());
 
 		WaitCommandUseCase<Config, State> GetUseCase(CommandScheduler<Config, State> scheduler) {
 			var settings         = new WaitCommandSettings { WaitTime = TimeSpan.Zero };
