@@ -22,11 +22,29 @@ namespace Core.Service {
 
 		readonly ConcurrentDictionary<UserId, ConcurrentQueue<ICommand<TConfig, TState>>> _commands
 			= new ConcurrentDictionary<UserId, ConcurrentQueue<ICommand<TConfig, TState>>>();
-		readonly ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>[]>> _listeners =
-			new ConcurrentDictionary<UserId, TaskCompletionSource<ICommand<TConfig, TState>[]>>();
+		readonly ConcurrentDictionary<UserId, CommandListener<TConfig, TState>> _listeners =
+			new ConcurrentDictionary<UserId, CommandListener<TConfig, TState>>();
 
 		public CommandScheduler(Settings settings) {
 			_settings = settings;
+		}
+
+		public void Update() {
+			foreach ( var pair in _listeners ) {
+				var userId   = pair.Key;
+				var listener = pair.Value;
+				var task     = listener.CompletionSource.Task;
+				if ( task.Status == TaskStatus.Canceled ) {
+					continue;
+				}
+				if ( task.Status == TaskStatus.RanToCompletion ) {
+					continue;
+				}
+				foreach ( var watcher in _settings.Watchers ) {
+					watcher.OnCommandRequest(listener.Config, listener.State, userId, this);
+				}
+				TryApplyCommand(userId, true);
+			}
 		}
 
 		public void AddCommand(UserId userId, ICommand<TConfig, TState> command, bool autoApply = false) {
@@ -35,41 +53,44 @@ namespace Core.Service {
 				_ => CreateNewQueue(command),
 				(_, commands) => UpdateQueue(commands, command));
 			if ( autoApply ) {
-				TryApplyCommand(userId);
+				TryApplyCommand(userId, true);
 			}
 		}
 
 		public async Task<ICommand<TConfig, TState>[]> WaitForCommands(TConfig config, TState state, UserId userId) {
-			var tcs = new TaskCompletionSource<ICommand<TConfig, TState>[]>();
+			var listener = new CommandListener<TConfig, TState>(config, state);
 			_listeners.AddOrUpdate(
 				userId,
-				_ => tcs,
-				(_, oldTcs) => {
-					oldTcs.SetCanceled();
-					return tcs;
+				_ => listener,
+				(_, oldListener) => {
+					oldListener.CompletionSource.TrySetCanceled();
+					return listener;
 				});
 			foreach ( var watcher in _settings.Watchers ) {
 				watcher.OnCommandRequest(config, state, userId, this);
 			}
-			TryApplyCommand(userId);
-			return await tcs.Task;
+			TryApplyCommand(userId, false);
+			return await listener.CompletionSource.Task;
 		}
 
 		public void CancelWaiting(UserId userId) {
-			if ( _listeners.TryRemove(userId, out var tcs) ) {
-				tcs.SetCanceled();
+			if ( _listeners.TryRemove(userId, out var listener) ) {
+				listener.CompletionSource.TrySetCanceled();
 			}
 		}
 
-		void TryApplyCommand(UserId userId) {
+		void TryApplyCommand(UserId userId, bool remove) {
 			if ( _commands.TryGetValue(userId, out var commands) ) {
-				if ( _listeners.TryRemove(userId, out var tcs) ) {
+				if ( _listeners.TryRemove(userId, out var listener) ) {
 					var result = new List<ICommand<TConfig, TState>>();
 					while ( commands.TryDequeue(out var command) ) {
 						result.Add(command);
 					}
 					if ( result.Count > 0 ) {
-						tcs.SetResult(result.ToArray());
+						listener.CompletionSource.TrySetResult(result.ToArray());
+					}
+					if ( !remove ) {
+						_listeners.TryAdd(userId, listener);
 					}
 				}
 			}
