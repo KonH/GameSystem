@@ -1,3 +1,4 @@
+using System;
 using Clicker.Common;
 using Idler.Common.Config;
 using Idler.Common.State;
@@ -5,16 +6,20 @@ using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.Utils;
+using Core.Service;
 using Core.Service.Extension;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
+using Core.Service.Shared;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.WaitCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
 using Core.Service.WebService.Shared;
+using Idler.Common.Watcher;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +41,7 @@ namespace Idler.WebService {
 				ResourceByTick = 10
 			},
 			Time = new TimeConfig {
-				TickInterval = 30
+				TickInterval = 15
 			}
 		};
 
@@ -82,6 +87,19 @@ namespace Idler.WebService {
 			services.AddSingleton<CommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
+
+			services.AddSingleton<ITimeProvider, RealTimeProvider>();
+			services.AddSingleton<WaitCommandUseCase<GameConfig, GameState>>();
+			services.AddSingleton(new WaitCommandSettings {
+				WaitTime = TimeSpan.FromSeconds(30)
+			});
+			services.AddSingleton<CommandScheduler<GameConfig, GameState>>();
+			services.AddSingleton<ResourceUpdateWatcher>();
+			services.AddSingleton(sp => {
+				var schedulerSettings = new CommandScheduler<GameConfig, GameState>.Settings();
+				schedulerSettings.AddWatcher(sp.GetService<ResourceUpdateWatcher>());
+				return schedulerSettings;
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
