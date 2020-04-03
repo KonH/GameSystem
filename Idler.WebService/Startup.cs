@@ -100,6 +100,8 @@ namespace Idler.WebService {
 				schedulerSettings.AddWatcher(sp.GetService<ResourceUpdateWatcher>());
 				return schedulerSettings;
 			});
+
+			services.AddHostedService<UpdateCommandSchedulerService>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
