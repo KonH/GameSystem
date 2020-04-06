@@ -5,8 +5,8 @@ using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
 using Core.Common.Utils;
-using Core.Service;
 using Core.Service.Model;
+using Core.Service.Queue;
 using Core.Service.Shared;
 using Core.Service.UseCase.WaitCommand;
 using Core.TestTools;
@@ -20,11 +20,15 @@ namespace Idler.Tests {
 	public sealed class AddResourceByTimeTest {
 		[Test]
 		public async Task IsResourceNotAddedWithoutTicks() {
-			var scheduler = GetScheduler(new FixedTimeProvider());
-			var useCase   = GetUseCase(scheduler);
+			var queue     = new CommandWorkQueue<GameConfig, GameState>();
+			var awaiter   = new CommandAwaiter<GameConfig, GameState>(queue);
+			var scheduler = GetScheduler(new FixedTimeProvider(), queue);
+			var useCase   = GetUseCase(awaiter);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
-			var resp = await useCase.Handle(req);
+			var task = useCase.Handle(req);
+			scheduler.Update();
+			var resp = await task;
 
 			Assert.IsInstanceOf<WaitCommandResponse.NotFound>(resp);
 		}
@@ -32,13 +36,17 @@ namespace Idler.Tests {
 		[Test]
 		public async Task IsResourceAddedByOneTick() {
 			var time      = new FixedTimeProvider();
-			var scheduler = GetScheduler(time);
-			var useCase   = GetUseCase(scheduler);
+			var queue     = new CommandWorkQueue<GameConfig, GameState>();
+			var awaiter   = new CommandAwaiter<GameConfig, GameState>(queue);
+			var scheduler = GetScheduler(time, queue);
+			var useCase   = GetUseCase(awaiter);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
+			awaiter.OnWait += () => scheduler.Update();
 			time.Advance(TimeSpan.FromSeconds(1));
 
-			var resp = await useCase.Handle(req);
+			var task = useCase.Handle(req);
+			var resp = await task;
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<GameConfig, GameState>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<GameConfig, GameState>)resp).NextCommands;
@@ -50,14 +58,18 @@ namespace Idler.Tests {
 		[Test]
 		public async Task IsLastDateUpdated() {
 			var time      = new FixedTimeProvider();
-			var scheduler = GetScheduler(time);
-			var useCase   = GetUseCase(scheduler);
+			var queue     = new CommandWorkQueue<GameConfig, GameState>();
+			var awaiter   = new CommandAwaiter<GameConfig, GameState>(queue);
+			var scheduler = GetScheduler(time, queue);
+			var useCase   = GetUseCase(awaiter);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 			var startTime = time.UtcNow;
 
+			awaiter.OnWait += () => scheduler.Update();
 			time.Advance(TimeSpan.FromSeconds(1));
 
-			var resp = await useCase.Handle(req);
+			var task = useCase.Handle(req);
+			var resp = await task;
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<GameConfig, GameState>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<GameConfig, GameState>)resp).NextCommands;
@@ -69,13 +81,17 @@ namespace Idler.Tests {
 		[Test]
 		public async Task IsResourceAddedBySeveralTicks() {
 			var time      = new FixedTimeProvider();
-			var scheduler = GetScheduler(time);
-			var useCase   = GetUseCase(scheduler);
+			var queue     = new CommandWorkQueue<GameConfig, GameState>();
+			var awaiter   = new CommandAwaiter<GameConfig, GameState>(queue);
+			var scheduler = GetScheduler(time, queue);
+			var useCase   = GetUseCase(awaiter);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
+			awaiter.OnWait += () => scheduler.Update();
 			time.Advance(TimeSpan.FromSeconds(2));
 
-			var resp = await useCase.Handle(req);
+			var task = useCase.Handle(req);
+			var resp = await task;
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<GameConfig, GameState>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<GameConfig, GameState>)resp).NextCommands;
@@ -94,20 +110,20 @@ namespace Idler.Tests {
 				}
 			};
 
-		CommandScheduler<GameConfig, GameState> GetScheduler(ITimeProvider timeProvider) {
+		CommandScheduler<GameConfig, GameState> GetScheduler(ITimeProvider timeProvider, CommandWorkQueue<GameConfig, GameState> queue) {
 			var settings = new CommandScheduler<GameConfig, GameState>.Settings();
 			settings.AddWatcher(new ResourceUpdateWatcher(timeProvider));
-			return new CommandScheduler<GameConfig, GameState>(settings);
+			return new CommandScheduler<GameConfig, GameState>(settings, queue);
 		}
 
-		WaitCommandUseCase<GameConfig, GameState> GetUseCase(CommandScheduler<GameConfig, GameState> scheduler) {
+		WaitCommandUseCase<GameConfig, GameState> GetUseCase(CommandAwaiter<GameConfig, GameState> awaiter) {
 			var settings         = new WaitCommandSettings { WaitTime = TimeSpan.Zero };
 			var stateRepository  = StateRepository<GameState>.Create();
 			var configRepository = ConfigRepository<GameConfig>.Create(GetConfig());
 			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 			var queue            = new CommandQueue<GameConfig, GameState>();
 			var commandExecutor  = new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(), queue);
-			return new WaitCommandUseCase<GameConfig, GameState>(settings, scheduler, stateRepository, configRepository, commandExecutor);
+			return new WaitCommandUseCase<GameConfig, GameState>(settings, awaiter, stateRepository, configRepository, commandExecutor);
 		}
 
 		WaitCommandRequest GetRequest(UserId userId, StateVersion stateVersion) {

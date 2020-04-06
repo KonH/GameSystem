@@ -1,5 +1,5 @@
-using Core.Service;
 using Core.Service.Model;
+using Core.Service.Queue;
 using Core.Service.Shared;
 using Idler.Common.Command;
 using Idler.Common.Config;
@@ -13,7 +13,7 @@ namespace Idler.Common.Watcher {
 			_timeProvider = timeProvider;
 		}
 
-		public void OnCommandRequest(GameConfig config, GameState state, UserId userId, CommandScheduler<GameConfig, GameState> scheduler) {
+		public void TryAddCommands(UserId userId, GameConfig config, GameState state, CommandSet<GameConfig, GameState> commands) {
 			var lastDate        = state.Time.LastDate;
 			var curDate         = _timeProvider.UtcNow;
 			var totalResources  = 0;
@@ -24,8 +24,8 @@ namespace Idler.Common.Watcher {
 				totalResources += resourcePerTick;
 			}
 			if ( totalResources > 0 ) {
-				scheduler.AddCommand(userId, new AddResourceCommand(totalResources));
-				scheduler.AddCommand(userId, new UpdateLastDateCommand(lastDate));
+				commands.Add(new AddResourceCommand(totalResources));
+				commands.Add(new UpdateLastDateCommand(lastDate));
 			}
 		}
 	}

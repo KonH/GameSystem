@@ -22,7 +22,7 @@ namespace Idler.Common.Command {
 		}
 
 		public override string ToString() {
-			return $"{nameof(AddResourceCommand)}: {LastDate}";
+			return $"{nameof(UpdateLastDateCommand)}: {LastDate}";
 		}
 	}
 }

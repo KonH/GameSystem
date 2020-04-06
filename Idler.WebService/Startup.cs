@@ -1,13 +1,11 @@
 using System;
 using Clicker.Common;
-using Idler.Common.Config;
-using Idler.Common.State;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.Utils;
-using Core.Service;
 using Core.Service.Extension;
+using Core.Service.Queue;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
@@ -19,6 +17,8 @@ using Core.Service.UseCase.WaitCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
 using Core.Service.WebService.Shared;
+using Idler.Common.Config;
+using Idler.Common.State;
 using Idler.Common.Watcher;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -91,8 +91,10 @@ namespace Idler.WebService {
 			services.AddSingleton<ITimeProvider, RealTimeProvider>();
 			services.AddSingleton<WaitCommandUseCase<GameConfig, GameState>>();
 			services.AddSingleton(new WaitCommandSettings {
-				WaitTime = TimeSpan.FromSeconds(30)
+				WaitTime = TimeSpan.FromSeconds(60)
 			});
+			services.AddSingleton<CommandWorkQueue<GameConfig, GameState>>();
+			services.AddSingleton<CommandAwaiter<GameConfig, GameState>>();
 			services.AddSingleton<CommandScheduler<GameConfig, GameState>>();
 			services.AddSingleton<ResourceUpdateWatcher>();
 			services.AddSingleton(sp => {

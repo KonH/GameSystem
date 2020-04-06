@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Service;
+using Core.Service.Queue;
 using Idler.Common.Config;
 using Idler.Common.State;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +17,8 @@ namespace Idler.WebService {
 		}
 
 		public Task StartAsync(CancellationToken cancellationToken) {
-			_timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+			_timer = new Timer(_ => _scheduler.Update(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
 			return Task.CompletedTask;
-		}
-
-		private void DoWork(object state) {
-			_scheduler.Update();
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken) {
