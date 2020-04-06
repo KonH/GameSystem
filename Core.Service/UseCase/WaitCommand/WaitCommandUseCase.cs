@@ -39,6 +39,10 @@ namespace Core.Service.UseCase.WaitCommand {
 			var delayTask   = Task.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
 			if ( commandTask.IsCompleted ) {
+				var actualState = await _stateRepository.Get(request.UserId);
+				if ( actualState.Version > state.Version ) {
+					return Outdated();
+				}
 				var commands = commandTask.Result;
 				var allCommands = new List<ICommand<TConfig, TState>>(commands.Length);
 				var lastVersion = state.Version;
