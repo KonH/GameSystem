@@ -6,6 +6,7 @@ using Core.Common.Config;
 using Core.Common.State;
 using Core.Service.Extension;
 using Core.Service.Model;
+using Core.Service.Queue;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
 
@@ -14,17 +15,17 @@ namespace Core.Service.UseCase.WaitCommand {
 		WaitCommandUseCase<TConfig, TState> : IUseCase<WaitCommandRequest, WaitCommandResponse>
 		where TConfig : IConfig where TState : class, IState, new() {
 		readonly WaitCommandSettings                   _settings;
-		readonly CommandScheduler<TConfig, TState>     _scheduler;
+		readonly CommandAwaiter<TConfig, TState>       _awaiter;
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
 		readonly BatchCommandExecutor<TConfig, TState> _commandExecutor;
 
 		public WaitCommandUseCase(
-			WaitCommandSettings settings, CommandScheduler<TConfig, TState> scheduler,
+			WaitCommandSettings settings, CommandAwaiter<TConfig, TState> awaiter,
 			IStateRepository<TState> stateRepository, IConfigRepository<TConfig> configRepository,
 			BatchCommandExecutor<TConfig, TState> commandExecutor) {
 			_settings         = settings;
-			_scheduler        = scheduler;
+			_awaiter          = awaiter;
 			_stateRepository  = stateRepository;
 			_configRepository = configRepository;
 			_commandExecutor  = commandExecutor;
@@ -35,9 +36,10 @@ namespace Core.Service.UseCase.WaitCommand {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var commandTask = _scheduler.WaitForCommands(config, state, request.UserId);
+			var commandTask = _awaiter.WaitForCommands(request.UserId, config, state);
 			var delayTask   = Task.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
+			_awaiter.CancelWaiting(request.UserId);
 			if ( commandTask.IsCompleted ) {
 				var actualState = await _stateRepository.Get(request.UserId);
 				if ( actualState.Version > state.Version ) {
@@ -58,7 +60,6 @@ namespace Core.Service.UseCase.WaitCommand {
 				}
 				return Updated(lastVersion, allCommands);
 			}
-			_scheduler.CancelWaiting(request.UserId);
 			return NotFound();
 		}
 
