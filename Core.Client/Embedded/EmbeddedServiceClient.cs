@@ -42,16 +42,14 @@ namespace Core.Client.Embedded {
 			_singleExecutor     = commandExecutor;
 		}
 
-		public Task<InitializationResult> Initialize() {
+		public async Task<InitializationResult> Initialize() {
 			try {
-				UpdateConfig();
-				UpdateState();
+				await UpdateConfig();
+				await UpdateState();
 			} catch ( Exception e ) {
-				return Task.FromResult<InitializationResult>(
-					new InitializationResult.Error(e.ToString()));
+				return new InitializationResult.Error(e.ToString());
 			}
-			return Task.FromResult<InitializationResult>(
-				new InitializationResult.Ok());
+			return new InitializationResult.Ok();
 		}
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
@@ -77,10 +75,10 @@ namespace Core.Client.Embedded {
 			}
 		}
 
-		void UpdateConfig() {
+		async Task UpdateConfig() {
 			_logger.LogTrace($"Update config for '{_userId}'");
 			var request  = new GetConfigRequest(_userId);
-			var response = _getConfigUseCase.Handle(request);
+			var response = await _getConfigUseCase.Handle(request);
 			switch ( response ) {
 				case GetConfigResponse.Found<TConfig> found: {
 					Config = found.Config;
@@ -95,10 +93,10 @@ namespace Core.Client.Embedded {
 			}
 		}
 
-		void UpdateState() {
+		async Task UpdateState() {
 			_logger.LogTrace($"Update state for '{_userId}'");
 			var request  = new GetStateRequest(_userId);
-			var response = _getStateUseCase.Handle(request);
+			var response = await _getStateUseCase.Handle(request);
 			switch ( response ) {
 				case GetStateResponse.Found<TState> found: {
 					State = found.State;
