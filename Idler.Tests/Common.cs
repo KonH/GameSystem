@@ -1,8 +1,8 @@
-using Clicker.Common;
-using Idler.Common.Config;
-using Idler.Common.State;
 using Core.Common.CommandExecution;
 using Core.Common.Utils;
+using Idler.Common;
+using Idler.Common.Config;
+using Idler.Common.State;
 
 namespace Idler.Tests {
 	public static class Common {

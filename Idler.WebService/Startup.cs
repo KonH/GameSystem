@@ -1,5 +1,4 @@
 using System;
-using Clicker.Common;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
@@ -17,6 +16,7 @@ using Core.Service.UseCase.WaitCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
 using Core.Service.WebService.Shared;
+using Idler.Common;
 using Idler.Common.Config;
 using Idler.Common.State;
 using Idler.Common.Watcher;
