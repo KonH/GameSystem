@@ -10,6 +10,6 @@
 	<assembly fullname="Core.Client" preserve="all"/>
 	<assembly fullname="Core.Client.UnityClient" preserve="all"/>
 	<assembly fullname="Core.Service" preserve="all"/>
-	<assembly fullname="Clicker.Common" preserve="all"/>
-	<assembly fullname="Clicker.UnityClient" preserve="all"/>
+	<assembly fullname="Idler.Common" preserve="all"/>
+	<assembly fullname="Idler.UnityClient" preserve="all"/>
 </linker>
