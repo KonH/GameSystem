@@ -4,6 +4,7 @@ using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Core.Service.Model;
 using Core.Service.Queue;
@@ -123,7 +124,7 @@ namespace Idler.Tests {
 			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 			var queue            = new CommandQueue<GameConfig, GameState>();
 			var commandExecutor  = new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(), queue);
-			return new WaitCommandUseCase<GameConfig, GameState>(settings, awaiter, stateRepository, configRepository, commandExecutor);
+			return new WaitCommandUseCase<GameConfig, GameState>(settings, awaiter, stateRepository, configRepository, commandExecutor, new DefaultTaskRunner());
 		}
 
 		WaitCommandRequest GetRequest(UserId userId, StateVersion stateVersion) {

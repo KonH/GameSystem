@@ -2,6 +2,7 @@ using System;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Core.Service.Extension;
 using Core.Service.Queue;
@@ -96,6 +97,7 @@ namespace Idler.WebService {
 			services.AddSingleton<CommandWorkQueue<GameConfig, GameState>>();
 			services.AddSingleton<CommandAwaiter<GameConfig, GameState>>();
 			services.AddSingleton<CommandScheduler<GameConfig, GameState>>();
+			services.AddSingleton<ITaskRunner, DefaultTaskRunner>();
 			services.AddSingleton<ResourceUpdateWatcher>();
 			services.AddSingleton(sp => {
 				var schedulerSettings = new CommandScheduler<GameConfig, GameState>.Settings();
