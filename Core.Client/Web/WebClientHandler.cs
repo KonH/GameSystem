@@ -6,6 +6,7 @@ using Core.Common.Utils;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
 using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.WaitCommand;
 
 namespace Core.Client.Web {
 	public sealed class WebClientHandler {
@@ -30,6 +31,10 @@ namespace Core.Client.Web {
 			where TConfig : IConfig where TState : IState =>
 			Post<UpdateStateRequest<TConfig, TState>, UpdateStateResponse>(
 				"state/update", request, e => new UpdateStateResponse.BadRequest(e.Description));
+
+		public Task<WaitCommandResponse> WaitCommand(WaitCommandRequest request) =>
+			Post<WaitCommandRequest, WaitCommandResponse>(
+				"state/wait", request, e => new WaitCommandResponse.BadRequest(e.Description));
 
 		async Task<TResponse> Post<TRequest, TResponse>(
 			string url, TRequest request, Func<ServiceResponse.Error, TResponse> errorHandler) {

@@ -42,6 +42,11 @@ namespace Core.Client.UnityClient {
 					return provider.CreateService<EmbeddedWaitClientSetup<TConfig, TState>>();
 				}
 
+				case ClientMode.Web: {
+					provider.AddService(new UnityWebRequestHandler.Settings(settings.BaseUrl));
+					return provider.CreateService<WebWaitClientSetup<TConfig, TState>>();
+				}
+
 				default:
 					throw new ArgumentOutOfRangeException(
 						nameof(settings.Mode), settings.Mode, "Unknown client type!");
