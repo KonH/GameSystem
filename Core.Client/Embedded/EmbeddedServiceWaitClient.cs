@@ -7,6 +7,7 @@ using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Core.Service.Model;
 using Core.Service.Queue;
@@ -28,6 +29,7 @@ namespace Core.Client.Embedded {
 		readonly UpdateStateUseCase<TConfig, TState> _updateStateUseCase;
 		readonly WaitCommandUseCase<TConfig, TState> _waitCommandUseCase;
 		readonly CommandScheduler<TConfig, TState>   _scheduler;
+		readonly ITaskRunner                         _taskRunner;
 
 		public TState  State  { get; private set; }
 		public TConfig Config { get; private set; }
@@ -40,7 +42,8 @@ namespace Core.Client.Embedded {
 			UpdateStateUseCase<TConfig, TState> updateStateUseCase,
 			WaitCommandUseCase<TConfig, TState> waitCommandUseCase,
 			UserIdSource                        userIdSource,
-			CommandScheduler<TConfig, TState>   scheduler) {
+			CommandScheduler<TConfig, TState>   scheduler,
+			ITaskRunner                         taskRunner) {
 			_userId             = userIdSource.GetOrCreateUserId();
 			_logger             = loggerFactory.Create<EmbeddedServiceWaitClient<TConfig, TState>>();
 			_getConfigUseCase   = getConfigUseCase;
@@ -49,14 +52,15 @@ namespace Core.Client.Embedded {
 			_waitCommandUseCase = waitCommandUseCase;
 			_singleExecutor     = commandExecutor;
 			_scheduler          = scheduler;
+			_taskRunner         = taskRunner;
 		}
 
 		public async Task<InitializationResult> Initialize(CancellationToken cancellationToken) {
 			try {
 				await UpdateConfig();
 				await UpdateState();
-				var _  = Task.Run(WaitCommand, cancellationToken);
-				var __ = Task.Run(ProcessCommand, cancellationToken);
+				_taskRunner.Run(WaitCommand, cancellationToken);
+				_taskRunner.Run(ProcessCommand, cancellationToken);
 			} catch ( Exception e ) {
 				return new InitializationResult.Error(e.ToString());
 			}
@@ -123,7 +127,7 @@ namespace Core.Client.Embedded {
 		async Task ProcessCommand() {
 			while ( true ) {
 				_scheduler.Update();
-				await Task.Delay(1);
+				await _taskRunner.Delay(TimeSpan.FromSeconds(1));
 			}
 			// ReSharper disable once FunctionNeverReturns
 		}

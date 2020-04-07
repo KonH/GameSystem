@@ -15,6 +15,10 @@ namespace Core.Client.UnityClient.Threading {
 			return GetAwaiterReturnVoid(instruction);
 		}
 
+		public static CoroutineAwaiter GetAwaiter(this WaitForSeconds instruction) {
+			return GetAwaiterReturnVoid(instruction);
+		}
+
 		public static CoroutineAwaiter<AsyncOperation> GetAwaiter(this AsyncOperation instruction) {
 			return GetAwaiterReturnSelf(instruction);
 		}

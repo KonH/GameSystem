@@ -2,8 +2,10 @@ using System;
 using Core.Client.Abstractions;
 using Core.Client.Embedded;
 using Core.Client.UnityClient.DependencyInjection;
+using Core.Client.UnityClient.Threading;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Service.Queue;
 using Core.Service.Shared;
 using Core.Service.UseCase.WaitCommand;
@@ -27,6 +29,8 @@ namespace Core.Client.UnityClient.Setup {
 			provider.AddService<ITimeProvider, RealTimeProvider>();
 			provider.AddService<CommandScheduler<TConfig, TState>>();
 			provider.AddService<CommandScheduler<TConfig, TState>.Settings>();
+
+			provider.AddService<ITaskRunner, UnityTaskRunner>();
 		}
 	}
 }

@@ -4,6 +4,7 @@ using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Service.Extension;
 using Core.Service.Model;
 using Core.Service.Queue;
@@ -19,16 +20,18 @@ namespace Core.Service.UseCase.WaitCommand {
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
 		readonly BatchCommandExecutor<TConfig, TState> _commandExecutor;
+		readonly ITaskRunner                           _taskRunner;
 
 		public WaitCommandUseCase(
 			WaitCommandSettings settings, CommandAwaiter<TConfig, TState> awaiter,
 			IStateRepository<TState> stateRepository, IConfigRepository<TConfig> configRepository,
-			BatchCommandExecutor<TConfig, TState> commandExecutor) {
+			BatchCommandExecutor<TConfig, TState> commandExecutor, ITaskRunner taskRunner) {
 			_settings         = settings;
 			_awaiter          = awaiter;
 			_stateRepository  = stateRepository;
 			_configRepository = configRepository;
 			_commandExecutor  = commandExecutor;
+			_taskRunner       = taskRunner;
 		}
 
 		public async Task<WaitCommandResponse> Handle(WaitCommandRequest request) {
@@ -37,7 +40,7 @@ namespace Core.Service.UseCase.WaitCommand {
 				return validateError;
 			}
 			var commandTask = _awaiter.WaitForCommands(request.UserId, config, state);
-			var delayTask   = Task.Delay(_settings.WaitTime);
+			var delayTask   = _taskRunner.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
 			_awaiter.CancelWaiting(request.UserId);
 			if ( commandTask.IsCompleted ) {

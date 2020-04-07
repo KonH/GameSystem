@@ -7,6 +7,7 @@ using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Core.Service.Model;
 using Core.Service.UseCase.GetConfig;
@@ -22,6 +23,7 @@ namespace Core.Client.Web {
 		readonly ILogger<WebServiceWaitClient<TConfig, TState>> _logger;
 		readonly CommandExecutor<TConfig, TState>               _singleExecutor;
 		readonly WebClientHandler                               _webClientHandler;
+		readonly ITaskRunner                                    _taskRunner;
 
 		bool _isUpdatingState = false;
 
@@ -30,18 +32,19 @@ namespace Core.Client.Web {
 
 		public WebServiceWaitClient(
 			ILoggerFactory loggerFactory, CommandExecutor<TConfig, TState> commandExecutor,
-			WebClientHandler webClientHandler, UserIdSource userIdSource) {
+			WebClientHandler webClientHandler, UserIdSource userIdSource, ITaskRunner taskRunner) {
 			_userId           = userIdSource.GetOrCreateUserId();
 			_logger           = loggerFactory.Create<WebServiceWaitClient<TConfig, TState>>();
 			_singleExecutor   = commandExecutor;
 			_webClientHandler = webClientHandler;
+			_taskRunner       = taskRunner;
 		}
 
 		public async Task<InitializationResult> Initialize(CancellationToken cancellationToken) {
 			try {
 				await UpdateConfig();
 				await UpdateState();
-				var _ = Task.Run(WaitCommand, cancellationToken);
+				_taskRunner.Run(WaitCommand, cancellationToken);
 			} catch ( Exception e ) {
 				return new InitializationResult.Error(e.ToString());
 			}
@@ -88,7 +91,7 @@ namespace Core.Client.Web {
 		async Task WaitCommand() {
 			while ( true ) {
 				while ( _isUpdatingState ) {
-					await Task.Delay(TimeSpan.FromSeconds(1));
+					await _taskRunner.Delay(TimeSpan.FromSeconds(1));
 				}
 				_logger.LogTrace("Awaiting for new command");
 				var request  = new WaitCommandRequest(_userId, State.Version, Config.Version);

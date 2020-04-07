@@ -5,6 +5,7 @@ using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Core.Service.Model;
 using Core.Service.Queue;
@@ -87,7 +88,7 @@ namespace Core.Service.Tests.UseCase {
 			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 			var queue            = new CommandQueue<Config, State>();
 			var commandExecutor  = new BatchCommandExecutor<Config, State>(loggerFactory, new CommandExecutor<Config, State>(), queue);
-			return new WaitCommandUseCase<Config, State>(settings, awaiter, stateRepository, configRepository, commandExecutor);
+			return new WaitCommandUseCase<Config, State>(settings, awaiter, stateRepository, configRepository, commandExecutor, new DefaultTaskRunner());
 		}
 
 		WaitCommandRequest GetRequest(UserId userId, StateVersion stateVersion) {

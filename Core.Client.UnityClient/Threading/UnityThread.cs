@@ -17,8 +17,12 @@ namespace Core.Client.UnityClient.Threading {
 			if ( SynchronizationContext.Current == SynchronizationContext ) {
 				action();
 			} else {
-				SynchronizationContext.Post(_ => action(), null);
+				Post(action);
 			}
+		}
+
+		public static void Post(Action action) {
+			SynchronizationContext.Post(_ => action(), null);
 		}
 	}
 }
