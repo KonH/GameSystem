@@ -88,7 +88,7 @@ namespace Core.Client.Embedded {
 
 		async Task WaitCommand() {
 			while ( true ) {
-				_logger.LogTrace($"Awaiting for new command");
+				_logger.LogTrace("Awaiting for new command");
 				var request = new WaitCommandRequest(_userId, State.Version, Config.Version);
 				var response = await _waitCommandUseCase.Handle(request);
 				switch ( response ) {
