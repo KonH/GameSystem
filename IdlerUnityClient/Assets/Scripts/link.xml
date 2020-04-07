@@ -1,0 +1,15 @@
+<linker>
+	<assembly fullname="System.Core">
+		<type fullname="System.Linq.Expressions.Interpreter.LightLambda" preserve="all"/>
+	</assembly>
+	<assembly fullname="netstandard">
+		<type fullname="System.ComponentModel.ReferenceConverter" preserve="all"/>
+	</assembly>
+	<assembly fullname="Newtonsoft.Json" preserve="all"/>
+	<assembly fullname="Core.Common" preserve="all"/>
+	<assembly fullname="Core.Client" preserve="all"/>
+	<assembly fullname="Core.Client.UnityClient" preserve="all"/>
+	<assembly fullname="Core.Service" preserve="all"/>
+	<assembly fullname="Clicker.Common" preserve="all"/>
+	<assembly fullname="Clicker.UnityClient" preserve="all"/>
+</linker>

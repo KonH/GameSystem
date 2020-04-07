@@ -1,0 +1,11 @@
+{
+  "Version": {
+    "Value": "Config"
+  },
+  "Resource": {
+    "ResourceByTick": 10
+  },
+  "Time": {
+    "TickInterval": 15
+  }
+}

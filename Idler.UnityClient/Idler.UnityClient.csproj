@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Core.Client.UnityClient.CustomBuildPipeline\Core.Client.UnityClient.CustomBuildPipeline.csproj" />
+	  <ProjectReference Include="..\Core.Client.UnityClient.ExternalCompiler\Core.Client.UnityClient.ExternalCompiler.csproj" />
+	  <ProjectReference Include="..\Core.Client.UnityClient\Core.Client.UnityClient.csproj" />
+	  <ProjectReference Include="..\Idler.Common\Idler.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+	    <HintPath>..\Dependencies\UnityEngine.CoreModule.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+</Project>
