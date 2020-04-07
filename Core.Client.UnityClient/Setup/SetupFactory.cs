@@ -33,5 +33,19 @@ namespace Core.Client.UnityClient {
 						nameof(settings.Mode), settings.Mode, "Unknown client type!");
 			}
 		}
+
+		public static IClientSetup CreateWaitable(ServiceProvider provider) {
+			var settings = provider.GetService<ISettings>();
+			switch ( settings.Mode ) {
+				case ClientMode.Embedded: {
+					provider.AddJsonFromResourcesAsService<TConfig>(settings.ConfigPath);
+					return provider.CreateService<EmbeddedWaitClientSetup<TConfig, TState>>();
+				}
+
+				default:
+					throw new ArgumentOutOfRangeException(
+						nameof(settings.Mode), settings.Mode, "Unknown client type!");
+			}
+		}
 	}
 }
