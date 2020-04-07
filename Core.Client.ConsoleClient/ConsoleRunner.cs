@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.Abstractions;
 using Core.Common.Command;
@@ -29,7 +30,7 @@ namespace Core.Client.ConsoleClient {
 		}
 
 		public async Task Run() {
-			var initializeResult = await _client.Initialize();
+			var initializeResult = await _client.Initialize(CancellationToken.None);
 			if ( initializeResult is InitializationResult.Error e ) {
 				Console.WriteLine($"Initialization failed with '{e.Description}'");
 				return;

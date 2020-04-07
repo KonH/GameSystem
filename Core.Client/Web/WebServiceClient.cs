@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.Abstractions;
 using Core.Client.Shared;
@@ -33,7 +34,7 @@ namespace Core.Client.Web {
 			_webClientHandler = webClientHandler;
 		}
 
-		public async Task<InitializationResult> Initialize() {
+		public async Task<InitializationResult> Initialize(CancellationToken cancellationToken) {
 			try {
 				await UpdateConfig();
 				await UpdateState();

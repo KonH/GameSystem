@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.Abstractions;
 using Core.Client.Shared;
@@ -18,14 +19,19 @@ namespace Core.Client.UnityClient {
 
 		IClient<TConfig, TState> _client;
 
-		Queue<ICommand<TConfig, TState>> _commands = new Queue<ICommand<TConfig, TState>>();
+		Queue<ICommand<TConfig, TState>> _commands          = new Queue<ICommand<TConfig, TState>>();
+		CancellationTokenSource          _cancelTokenSource = new CancellationTokenSource();
 
 		protected async Task Initialize() {
 			_client = ServiceProvider.Instance.GetService<IClient<TConfig, TState>>();
 			await Async.WaitForBackgroundThread;
-			var result = await _client.Initialize();
+			var result = await _client.Initialize(_cancelTokenSource.Token);
 			await Async.WaitForUpdate;
 			HandleInitialization(result);
+		}
+
+		protected void OnDestroy() {
+			_cancelTokenSource.Cancel();
 		}
 
 		protected void EnqueueCommand(ICommand<TConfig, TState> command) {

@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.Abstractions;
 using Core.Client.Shared;
@@ -29,7 +30,7 @@ namespace Core.Client.Standalone {
 			State           = _stateFactory.Create();
 		}
 
-		public Task<InitializationResult> Initialize() =>
+		public Task<InitializationResult> Initialize(CancellationToken cancellationToken) =>
 			Task.FromResult<InitializationResult>(new InitializationResult.Ok());
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
