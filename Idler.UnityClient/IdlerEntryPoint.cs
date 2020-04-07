@@ -3,9 +3,11 @@ using Core.Client.UnityClient;
 using Core.Client.UnityClient.DependencyInjection;
 using Core.Client.UnityClient.Settings;
 using Core.Common.CommandDependency;
+using Core.Service.Queue;
 using Idler.Common;
 using Idler.Common.Config;
 using Idler.Common.State;
+using Idler.Common.Watcher;
 using UnityEngine;
 
 namespace Idler.UnityClient {
@@ -15,11 +17,19 @@ namespace Idler.UnityClient {
 			var provider = ServiceProvider.Instance;
 			provider.AddService<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			provider.AddServiceFromResources<ISettings, IdlerSettings>("Settings");
-			if ( provider.GetService<ISettings>().Mode == ClientMode.Standalone ) {
+			var mode = provider.GetService<ISettings>().Mode;
+			if ( mode == ClientMode.Standalone ) {
 				throw new InvalidOperationException($"{nameof(ClientMode.Standalone)} is not supported!");
 			}
-			var setup = SetupFactory<GameConfig, GameState>.Create(provider);
+			var setup = SetupFactory<GameConfig, GameState>.CreateWaitable(provider);
 			setup.Configure(provider);
+			switch ( mode ) {
+				case ClientMode.Embedded: {
+					provider.AddService<ResourceUpdateWatcher>();
+					provider.GetService<CommandScheduler<GameConfig, GameState>.Settings>().AddWatcher(provider.GetService<ResourceUpdateWatcher>());
+					break;
+				}
+			}
 		}
 	}
 }
