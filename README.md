@@ -148,3 +148,8 @@ Dedicated PC is used because of Unity dependency, it isn't support ARM to run Ed
 2) `sudo systemctl daemon-reload`
 3) `sudo systemctl enable %SERVICE_NAME%`
 4) `sudo systemctl start %SERVICE_NAME%`
+
+### Create CouchDB database
+
+1) Create database: `curl -X PUT http://%USERNAME%:%PASSWORD%@localhost:5984/%DB_NAME%`
+2) Setup anonymous write access: `curl -X PUT http://%USERNAME%:%PASSWORD%@localhost:5984/%DB_NAME%/_security/ -d '{"members":{},"admins":{"roles":["_admin"]}}'`
