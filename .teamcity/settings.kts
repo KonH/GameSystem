@@ -29,6 +29,15 @@ project {
 		buildType(createUnityBuildType("ClickerUnityClient", "WebGL", "Clicker.Tests"))
 		buildType(createUnityDeployType("ClickerUnityClient", "WebGL", "Clicker.Tests"))
 	}
+	subProject {
+		name = "Idler"
+		id = RelativeId(name)
+		buildType(createSimpleBuildType("Idler.Common", "Idler.Tests"))
+		buildType(createSimpleBuildType("Idler.WebService"))
+		buildType(createDeployBuildType("Idler.WebService", "idler-web-service", "Idler.Tests"))
+		buildType(createUnityBuildType("IdlerUnityClient", "WebGL", "Idler.Tests"))
+		buildType(createUnityDeployType("IdlerUnityClient", "WebGL", "Idler.Tests"))
+	}
 }
 
 fun createSimpleBuildType(projectName: String, testProjectName: String? = null): BuildType {
