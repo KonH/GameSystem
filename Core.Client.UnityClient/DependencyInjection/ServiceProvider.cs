@@ -27,17 +27,17 @@ namespace Core.Client.UnityClient.DependencyInjection {
 				return;
 			}
 			var entry = new ServiceEntry(instance.GetType(), instance);
-			_services.Add(typeof(TInterface), entry);
+			_services[typeof(TInterface)] = entry;
 		}
 
 		public void AddService<TService>() {
 			var entry = new ServiceEntry(typeof(TService), null);
-			_services.Add(typeof(TService), entry);
+			_services[typeof(TService)] = entry;
 		}
 
 		public void AddService<TInterface, TService>() where TService : class, TInterface {
 			var entry = new ServiceEntry(typeof(TService), null);
-			_services.Add(typeof(TInterface), entry);
+			_services[typeof(TInterface)] = entry;
 		}
 
 		public void AddServiceFromResources<TInterface, TService>(string path)
@@ -47,7 +47,7 @@ namespace Core.Client.UnityClient.DependencyInjection {
 				Debug.LogError($"Instance of service {typeof(TService)} not found in Resources at '{path}'");
 			}
 			var entry = new ServiceEntry(typeof(TService), instance);
-			_services.Add(typeof(TInterface), entry);
+			_services[typeof(TInterface)] = entry;
 		}
 
 		public void AddServiceFromResources<TService>(string path) where TService : ScriptableObject =>
