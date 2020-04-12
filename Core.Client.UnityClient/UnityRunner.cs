@@ -19,8 +19,13 @@ namespace Core.Client.UnityClient {
 
 		IClient<TConfig, TState> _client;
 
-		Queue<ICommand<TConfig, TState>> _commands          = new Queue<ICommand<TConfig, TState>>();
-		CancellationTokenSource          _cancelTokenSource = new CancellationTokenSource();
+		List<IUpdateHandler<TConfig, TState>> _updateHandlers    = new List<IUpdateHandler<TConfig, TState>>();
+		Queue<ICommand<TConfig, TState>>      _commands          = new Queue<ICommand<TConfig, TState>>();
+		CancellationTokenSource               _cancelTokenSource = new CancellationTokenSource();
+
+		protected void AddUpdateHandler(IUpdateHandler<TConfig, TState> handler) {
+			_updateHandlers.Add(handler);
+		}
 
 		protected async Task Initialize() {
 			_client = ServiceProvider.Instance.GetService<IClient<TConfig, TState>>();
@@ -43,6 +48,9 @@ namespace Core.Client.UnityClient {
 		}
 
 		async void Update() {
+			foreach ( var handler in _updateHandlers ) {
+				handler.Update(Config, State);
+			}
 			var hasAnyCommand = (_commands.Count > 0);
 			if ( !hasAnyCommand ) {
 				return;
