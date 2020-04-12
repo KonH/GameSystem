@@ -13,5 +13,16 @@ namespace Core.Client.UnityClient.Extension {
 				await Async.WaitForUpdate;
 			}
 		}
+
+		public static async Task Wait(this Animation anim, AnimationClip clip) {
+			anim.clip = clip;
+			anim.Play();
+			while ( true ) {
+				if ( !anim.isPlaying ) {
+					break;
+				}
+				await Async.WaitForUpdate;
+			}
+		}
 	}
 }
