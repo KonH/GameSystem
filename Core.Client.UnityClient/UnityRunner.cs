@@ -48,8 +48,10 @@ namespace Core.Client.UnityClient {
 		}
 
 		async void Update() {
-			foreach ( var handler in _updateHandlers ) {
-				handler.Update(Config, State);
+			if ( (Config != null) && (State != null) ) {
+				foreach ( var handler in _updateHandlers ) {
+					handler.Update(Config, State);
+				}
 			}
 			var hasAnyCommand = (_commands.Count > 0);
 			if ( !hasAnyCommand ) {
