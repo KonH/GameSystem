@@ -139,6 +139,26 @@ namespace BuildPipeline {
 				ServiceTarget.StartService(context, ServiceName);
 			});
 
+		Target Halt => _ => _
+			.Description("Halt remote host")
+			.Requires(() => SshHost)
+			.Requires(() => SshUserName)
+			.Requires(() => SshPassword)
+			.Executes(() => {
+				var context = new ServiceTarget.ExecutionContext(SshHost, SshUserName, SshPassword);
+				ServiceTarget.Halt(context);
+			});
+
+		Target Reboot => _ => _
+			.Description("Reboot remote host")
+			.Requires(() => SshHost)
+			.Requires(() => SshUserName)
+			.Requires(() => SshPassword)
+			.Executes(() => {
+				var context = new ServiceTarget.ExecutionContext(SshHost, SshUserName, SshPassword);
+				ServiceTarget.Reboot(context);
+			});
+
 		Target CleanUnity => _ => _
 			.Description("Remove Build directory")
 			.Requires(() => TargetProject)

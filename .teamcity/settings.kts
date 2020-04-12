@@ -40,6 +40,8 @@ project {
 		buildType(createUnityBuildType("IdlerUnityClient", "WebGL", "Idler.Tests"))
 		buildType(createUnityDeployType("IdlerUnityClient", "WebGL", "Idler.Tests"))
 	}
+	buildType(createHaltBuildType())
+	buildType(createRebootBuildType())
 }
 
 fun createSimpleBuildType(projectName: String, testProjectName: String? = null): BuildType {
@@ -190,6 +192,44 @@ fun createStopServiceBuildType(projectName: String, serviceName: String): BuildT
 				name = "Stop Service"
 				path = "nuke"
 				arguments = "--target StopService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
+			}
+		}
+	}
+}
+
+fun createHaltBuildType(): BuildType {
+	return BuildType {
+		name = "Halt"
+		id = RelativeId("Halt")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			exec {
+				name = "Halt"
+				path = "nuke"
+				arguments = "--target Halt --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
+			}
+		}
+	}
+}
+
+fun createRebootBuildType(): BuildType {
+	return BuildType {
+		name = "Reboot"
+		id = RelativeId("Reboot")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			exec {
+				name = "Reboot"
+				path = "nuke"
+				arguments = "--target Reboot --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
 			}
 		}
 	}

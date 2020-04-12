@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Nuke.Common;
@@ -25,8 +26,23 @@ namespace BuildPipeline {
 			ExecuteCommand(context, $"sudo systemctl stop {serviceName}");
 		}
 
-		static void ExecuteCommand(ExecutionContext context, string commandText) {
-			ExecuteCommandAsync(context, commandText).GetAwaiter().GetResult();
+		public static void Halt(ExecutionContext context) {
+			ExecuteCommand(context, $"sudo halt", true);
+		}
+
+		public static void Reboot(ExecutionContext context) {
+			ExecuteCommand(context, $"sudo reboot", true);
+		}
+
+		static void ExecuteCommand(ExecutionContext context, string commandText, bool ignoreError = false) {
+			try {
+				ExecuteCommandAsync(context, commandText).GetAwaiter().GetResult();
+			} catch ( Exception e ) {
+				if ( !ignoreError ) {
+					throw;
+				}
+				Logger.Warn(e);
+			}
 		}
 
 		static async Task ExecuteCommandAsync(ExecutionContext context, string commandText) {
