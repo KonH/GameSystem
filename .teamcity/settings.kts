@@ -10,6 +10,8 @@ project {
 		id = RelativeId(name)
 		buildType(createSimpleBuildType("ResourceMonitor"))
 		buildType(createDeployBuildType("ResourceMonitor", "resource-monitor"))
+		buildType(createRestartServiceBuildType("ResourceMonitor", "resource-monitor"))
+		buildType(createStopServiceBuildType("ResourceMonitor", "resource-monitor"))
 	}
 	subProject {
 		name = "Core"
@@ -145,6 +147,49 @@ fun createUnityDeployType(projectName: String, buildTarget: String, testProjectN
 				name = "Deploy"
 				path = "nuke"
 				arguments = args
+			}
+		}
+	}
+}
+
+fun createRestartServiceBuildType(projectName: String, serviceName: String): BuildType {
+	return BuildType {
+		name = "Restart ($projectName)"
+		id = RelativeId("Restart_${projectName.replace('.', '_')}")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			exec {
+				name = "Stop Service"
+				path = "nuke"
+				arguments = "--target StopService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
+			}
+			exec {
+				name = "Start Service"
+				path = "nuke"
+				arguments = "--target StartService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
+			}
+		}
+	}
+}
+
+fun createStopServiceBuildType(projectName: String, serviceName: String): BuildType {
+	return BuildType {
+		name = "Stop ($projectName)"
+		id = RelativeId("Stop_${projectName.replace('.', '_')}")
+
+		vcs {
+			root(DslContext.settingsRoot)
+		}
+
+		steps {
+			exec {
+				name = "Stop Service"
+				path = "nuke"
+				arguments = "--target StopService --service-name $serviceName --sshHost %env.SSH_HOST% --sshUserName %env.SSH_USER_NAME% --sshPassword %env.SSH_PASSWORD%"
 			}
 		}
 	}
