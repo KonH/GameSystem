@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
 using Clicker.Common.State;
@@ -50,7 +51,7 @@ namespace Clicker.UnityClient {
 			executor.AddReaction(new UpgradeCommandReaction(_upgradeLevelView));
 		}
 
-		protected override void HandleInitialization(InitializationResult result) {
+		protected override Task HandleInitialization(InitializationResult result) {
 			switch ( result ) {
 				case InitializationResult.Ok _: {
 					IsReadyForCommand = true;
@@ -64,12 +65,14 @@ namespace Clicker.UnityClient {
 					break;
 				}
 			}
+			return Task.CompletedTask;
 		}
 
-		protected override void HandleCommandResult(CommandApplyResult result) {
+		protected override Task HandleCommandResult(CommandApplyResult result) {
 			if ( result is CommandApplyResult.Error error ) {
 				Debug.LogError(error.Description);
 			}
+			return Task.CompletedTask;
 		}
 
 		void DisableStateView() {
