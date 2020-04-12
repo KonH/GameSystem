@@ -135,6 +135,12 @@ CI/CD process is automated using [TeamCity](.teamcity/settings.kts) on dedicated
 
 Dedicated PC is used because of Unity dependency, it isn't support ARM to run Editor, which is required to make builds.
 
+## Idler project
+
+### Screenshots
+
+![window animation](Gif/WindowAppear.gif)
+
 ## Internal tips
 
 ### Prepare new project
