@@ -166,8 +166,8 @@ namespace BuildPipeline {
 
 		Target CreateDiagrams => _ => _
 			.Executes(() => {
-				var sourceDirectory = RootDirectory / "Graphviz";
-				var targetDirectory = RootDirectory / "Png";
+				var sourceDirectory = RootDirectory / "Content" / "Graphviz";
+				var targetDirectory = RootDirectory / "Content" / "Png";
 				var sourceFiles = Directory.GetFiles(sourceDirectory, "*.gv", SearchOption.AllDirectories);
 				foreach ( var sourceFile in sourceFiles ) {
 					var relativePath = Path.GetRelativePath(sourceDirectory, sourceFile);

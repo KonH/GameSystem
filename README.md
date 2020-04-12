@@ -104,24 +104,24 @@ Play it [here](https://konhit.xyz/ClickerUnityClient/).
 
 Unity WebGL client:
 
-![unityClient](Png/Clicker/unityClient.png)
+![unityClient](Content/Png/Clicker/unityClient.png)
 
 Alternative console client:
 
-![consoleClient](Png/Clicker/consoleClient.png)
+![consoleClient](Content/Png/Clicker/consoleClient.png)
 
 ### Tech
 
 Basic architecture is simple:
 
-![architecture](Png/Clicker/architecture.png)
+![architecture](Content/Png/Clicker/architecture.png)
 
 Project uses many parts of shared code and its [common logic](Clicker.Common) relatively small.
 Several types of databases can be used on server side to save game process between player sessions and server reboots.
 
 And it's run on Raspberry Pi server:
 
-![infrastructure](Png/Clicker/infrastructure.png)
+![infrastructure](Content/Png/Clicker/infrastructure.png)
 
 **Nginx** is used as a reverse-proxy for web service and static web server for client content, also it handle SSL connections to support HTTPS for client-server communications.
 
@@ -131,7 +131,7 @@ And it's run on Raspberry Pi server:
 
 CI/CD process is automated using [TeamCity](.teamcity/settings.kts) on dedicated Windows PC, connected to Raspberry Pi server:
 
-![deploy](Png/Clicker/deploy.png)
+![deploy](Content/Png/Clicker/deploy.png)
 
 Dedicated PC is used because of Unity dependency, it isn't support ARM to run Editor, which is required to make builds.
 
@@ -139,7 +139,7 @@ Dedicated PC is used because of Unity dependency, it isn't support ARM to run Ed
 
 ### Screenshots
 
-![window animation](Gif/WindowAppear.gif)
+![window animation](Content/Gif/WindowAppear.gif)
 
 ## Internal tips
 
