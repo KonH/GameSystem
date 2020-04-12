@@ -7,9 +7,12 @@ using Core.Client.UnityClient;
 using Core.Client.UnityClient.DependencyInjection;
 using Core.Client.UnityClient.Window;
 using Core.Common.CommandExecution;
+using Core.Service.Shared;
 using Idler.UnityClient.Reaction;
+using Idler.UnityClient.UpdateHandler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Idler.UnityClient {
 	public sealed class IdlerRunner : UnityRunner<GameConfig, GameState> {
@@ -17,6 +20,7 @@ namespace Idler.UnityClient {
 
 		[Header("Resources")]
 		[SerializeField] ResourceView _resourceView = null;
+		[SerializeField] Slider      _incomeSlider  = null;
 
 		[Header("Windows")]
 		[SerializeField] WindowSettings _windowSettings = null;
@@ -26,12 +30,14 @@ namespace Idler.UnityClient {
 		void OnValidate() {
 			Debug.Assert(_stateView, nameof(_stateView));
 			Debug.Assert(_resourceView, nameof(_resourceView));
+			Debug.Assert(_incomeSlider, nameof(_incomeSlider));
 			Debug.Assert(_windowSettings, nameof(_windowSettings));
 		}
 
 		async void Awake() {
 			_windowManager = new WindowManager(_windowSettings);
 			AddReactions();
+			AddHandlers();
 			DisableStateView();
 			await Initialize();
 		}
@@ -40,6 +46,12 @@ namespace Idler.UnityClient {
 			var serviceProvider = ServiceProvider.Instance;
 			var executor        = serviceProvider.GetService<CommandExecutor<GameConfig, GameState>>();
 			executor.AddReaction(new AddResourceCommandReaction(_resourceView));
+		}
+
+		void AddHandlers() {
+			var serviceProvider = ServiceProvider.Instance;
+			var time            = serviceProvider.GetService<ITimeProvider>();
+			AddUpdateHandler(new IncomeHandler(_incomeSlider, time));
 		}
 
 		protected override async Task HandleInitialization(InitializationResult result) {

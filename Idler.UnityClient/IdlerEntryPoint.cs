@@ -4,6 +4,7 @@ using Core.Client.UnityClient.DependencyInjection;
 using Core.Client.UnityClient.Settings;
 using Core.Common.CommandDependency;
 using Core.Service.Queue;
+using Core.Service.Shared;
 using Idler.Common;
 using Idler.Common.Config;
 using Idler.Common.State;
@@ -17,6 +18,7 @@ namespace Idler.UnityClient {
 			var provider = ServiceProvider.Instance;
 			provider.AddService<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			provider.AddServiceFromResources<ISettings, IdlerSettings>("Settings");
+			provider.AddService<ITimeProvider, RealTimeProvider>();
 			var mode = provider.GetService<ISettings>().Mode;
 			if ( mode == ClientMode.Standalone ) {
 				throw new InvalidOperationException($"{nameof(ClientMode.Standalone)} is not supported!");
