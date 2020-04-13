@@ -55,6 +55,7 @@ namespace Idler.UnityClient {
 		void AddReactions() {
 			var serviceProvider = ServiceProvider.Instance;
 			var executor        = serviceProvider.GetService<CommandExecutor<GameConfig, GameState>>();
+			executor.ClearReactions();
 			executor.AddReaction(new AddResourceCommandReaction(_resourceView, _addSharedResourceButtonView));
 			executor.AddReaction(new RemoveResourceCommandReaction(_resourceView, _addSharedResourceButtonView));
 			executor.AddReaction(new AddSharedResourceCommandReaction(_sharedResourceView));

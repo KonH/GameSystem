@@ -32,6 +32,10 @@ namespace Core.Common.CommandExecution {
 			_logger = loggerFactory.Create<CommandExecutor<TConfig, TState>>();
 		}
 
+		public void ClearReactions() {
+			_reactions.Clear();
+		}
+
 		public void AddReaction<TCommand>(ICommandReaction<TConfig, TState, TCommand> reaction)
 			where TCommand : ICommand<TConfig, TState> {
 			var commandType = typeof(TCommand);
