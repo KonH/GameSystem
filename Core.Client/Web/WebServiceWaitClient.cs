@@ -111,6 +111,21 @@ namespace Core.Client.Web {
 						break;
 					}
 
+					case WaitCommandResponse.Outdated _: {
+						_logger.LogTrace($"Command outdated");
+						break;
+					}
+
+					case WaitCommandResponse.Rejected rejected: {
+						_logger.LogTrace($"Command rejected: '{rejected.Description}'");
+						break;
+					}
+
+					case WaitCommandResponse.BadRequest badRequest: {
+						_logger.LogTrace($"Command failed: '{badRequest.Description}'");
+						break;
+					}
+
 					case object value: {
 						_logger.LogError($"New command result is '{value.GetType()}'");
 						break;
