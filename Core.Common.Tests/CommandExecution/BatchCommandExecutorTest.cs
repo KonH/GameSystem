@@ -185,7 +185,7 @@ namespace Core.Common.Tests.CommandExecution {
 
 		BatchCommandExecutor<Config, State> CreateExecutor(CommandQueue<Config, State> queue) {
 			var loggerFactory = new TypeLoggerFactory(typeof(ConsoleLogger<>));
-			var commandExecutor = new CommandExecutor<Config, State>();
+			var commandExecutor = new CommandExecutor<Config, State>(loggerFactory);
 			return new BatchCommandExecutor<Config, State>(loggerFactory, commandExecutor, queue);
 		}
 	}

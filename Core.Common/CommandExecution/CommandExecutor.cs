@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Utils;
 
 namespace Core.Common.CommandExecution {
 	public sealed class CommandExecutor<TConfig, TState>
@@ -24,6 +25,12 @@ namespace Core.Common.CommandExecution {
 		readonly object[] _args = new object[3];
 
 		readonly Dictionary<Type, Reaction> _reactions = new Dictionary<Type, Reaction>();
+
+		readonly ILogger<CommandExecutor<TConfig, TState>> _logger;
+
+		public CommandExecutor(ILoggerFactory loggerFactory) {
+			_logger = loggerFactory.Create<CommandExecutor<TConfig, TState>>();
+		}
 
 		public void AddReaction<TCommand>(ICommandReaction<TConfig, TState, TCommand> reaction)
 			where TCommand : ICommand<TConfig, TState> {
@@ -68,10 +75,14 @@ namespace Core.Common.CommandExecution {
 			if ( _reactions.TryGetValue(command.GetType(), out var reaction) ) {
 				var method = reaction.BeforeMethod;
 				foreach ( object instance in reaction.Instances ) {
-					_args[0] = config;
-					_args[1] = state;
-					_args[2] = command;
-					await (Task)method.Invoke(instance, _args);
+					try {
+						_args[0] = config;
+						_args[1] = state;
+						_args[2] = command;
+						await (Task)method.Invoke(instance, _args);
+					} catch ( Exception e ) {
+						_logger.LogError(e.ToString());
+					}
 				}
 			}
 		}
@@ -81,10 +92,14 @@ namespace Core.Common.CommandExecution {
 			if ( _reactions.TryGetValue(command.GetType(), out var reaction) ) {
 				var method = reaction.AfterMethod;
 				foreach ( object instance in reaction.Instances ) {
-					_args[0] = config;
-					_args[1] = state;
-					_args[2] = command;
-					await (Task)method.Invoke(instance, _args);
+					try {
+						_args[0] = config;
+						_args[1] = state;
+						_args[2] = command;
+						await (Task)method.Invoke(instance, _args);
+					} catch ( Exception e ) {
+						_logger.LogError(e.ToString());
+					}
 				}
 			}
 		}

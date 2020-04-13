@@ -9,7 +9,7 @@ namespace Idler.Tests {
 		public static BatchCommandExecutor<GameConfig, GameState> CreateExecutor() {
 			var loggerFactory = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 			var queue         = new CommandQueue();
-			return new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(), queue);
+			return new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(loggerFactory), queue);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using Core.Common.Command;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Utils;
 using NUnit.Framework;
 
 namespace Core.Common.Tests.CommandExecution {
@@ -82,6 +83,6 @@ namespace Core.Common.Tests.CommandExecution {
 			Assert.IsInstanceOf<CommandResult.BadCommandResult>(result);
 		}
 
-		CommandExecutor<Config, State> CreateExecutor() => new CommandExecutor<Config, State>();
+		CommandExecutor<Config, State> CreateExecutor() => new CommandExecutor<Config, State>(new TypeLoggerFactory(typeof(ConsoleLogger<>)));
 	}
 }

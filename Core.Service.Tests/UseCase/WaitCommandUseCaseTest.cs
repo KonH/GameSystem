@@ -87,7 +87,7 @@ namespace Core.Service.Tests.UseCase {
 			var configRepository = ConfigRepository<Config>.Create(new Config());
 			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 			var queue            = new CommandQueue<Config, State>();
-			var commandExecutor  = new BatchCommandExecutor<Config, State>(loggerFactory, new CommandExecutor<Config, State>(), queue);
+			var commandExecutor  = new BatchCommandExecutor<Config, State>(loggerFactory, new CommandExecutor<Config, State>(loggerFactory), queue);
 			return new WaitCommandUseCase<Config, State>(settings, awaiter, stateRepository, configRepository, commandExecutor, new DefaultTaskRunner());
 		}
 
