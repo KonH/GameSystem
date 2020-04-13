@@ -39,7 +39,8 @@ namespace Idler.WebService {
 		GameConfig Config => new GameConfig {
 			Version = new ConfigVersion("Config"),
 			Resource = new ResourceConfig {
-				ResourceByTick = 10
+				ResourceByTick = 10,
+				SharedCost = 100,
 			},
 			Time = new TimeConfig {
 				TickInterval = 15

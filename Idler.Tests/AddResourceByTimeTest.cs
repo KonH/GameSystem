@@ -104,7 +104,8 @@ namespace Idler.Tests {
 		GameConfig GetConfig() =>
 			new GameConfig {
 				Resource = new ResourceConfig {
-					ResourceByTick = 10
+					ResourceByTick = 10,
+					SharedCost = 100,
 				},
 				Time = new TimeConfig {
 					TickInterval = 1
@@ -123,7 +124,7 @@ namespace Idler.Tests {
 			var configRepository = ConfigRepository<GameConfig>.Create(GetConfig());
 			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
 			var queue            = new CommandQueue<GameConfig, GameState>();
-			var commandExecutor  = new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(), queue);
+			var commandExecutor  = new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(loggerFactory), queue);
 			return new WaitCommandUseCase<GameConfig, GameState>(settings, awaiter, stateRepository, configRepository, commandExecutor, new DefaultTaskRunner());
 		}
 
