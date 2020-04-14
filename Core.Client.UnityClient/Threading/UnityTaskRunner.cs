@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Core.Client.UnityClient.Threading {
 	public sealed class UnityTaskRunner : ITaskRunner {
-		public void Run(Func<Task> action, CancellationToken cancellationToken) {
-			UnityThread.Post(() => action());
+		public void Run(Func<CancellationToken, Task> action, CancellationToken cancellationToken) {
+			UnityThread.Post(() => action(cancellationToken));
 		}
 
 		public async Task Delay(TimeSpan delay) {

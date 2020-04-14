@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.UnityClient.Threading;
 using Core.Common.Command;
@@ -12,21 +13,21 @@ namespace Core.Client.UnityClient.CommandExecution {
 		where TState : IState
 		where TCommand : ICommand<TConfig, TState> {
 
-		public async Task Before(TConfig config, TState state, TCommand command) {
+		public async Task Before(TConfig config, TState state, TCommand command, CancellationToken cancellationToken) {
 			await Async.WaitForUpdate;
-			await BeforeOnMainThread(config, state, command);
+			await BeforeOnMainThread(config, state, command, cancellationToken);
 		}
 
-		public virtual Task BeforeOnMainThread(TConfig config, TState state, TCommand command) {
+		public virtual Task BeforeOnMainThread(TConfig config, TState state, TCommand command, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
-		public async Task After(TConfig config, TState state, TCommand command) {
+		public async Task After(TConfig config, TState state, TCommand command, CancellationToken cancellationToken) {
 			await Async.WaitForUpdate;
-			await AfterOnMainThread(config, state, command);
+			await AfterOnMainThread(config, state, command, cancellationToken);
 		}
 
-		public virtual Task AfterOnMainThread(TConfig config, TState state, TCommand command) {
+		public virtual Task AfterOnMainThread(TConfig config, TState state, TCommand command, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 	}

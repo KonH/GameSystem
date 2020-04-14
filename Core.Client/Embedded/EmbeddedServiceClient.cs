@@ -53,7 +53,7 @@ namespace Core.Client.Embedded {
 			return new InitializationResult.Ok();
 		}
 
-		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
 			var response = await _updateStateUseCase.Handle(request);
 			switch ( response ) {

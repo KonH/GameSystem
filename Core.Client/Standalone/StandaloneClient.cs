@@ -33,7 +33,7 @@ namespace Core.Client.Standalone {
 		public Task<InitializationResult> Initialize(CancellationToken cancellationToken) =>
 			Task.FromResult<InitializationResult>(new InitializationResult.Ok());
 
-		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
 			var result = await _batchExecutor.Apply(Config, State, command, true);
 			switch ( result ) {
 				case BatchCommandResult.Ok<TConfig, TState> okResult: {

@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.UnityClient.Extension;
 using TMPro;
@@ -29,7 +30,8 @@ namespace Core.Client.UnityClient.Window {
 
 		TaskCompletionSource<bool> _completionSource;
 
-		public async Task Show(string headerText, string bodyText, string buttonText) {
+		public async Task Show(string headerText, string bodyText, string buttonText, CancellationToken cancellationToken) {
+			cancellationToken.ThrowIfCancellationRequested();
 			_button.onClick.RemoveAllListeners();
 			_button.onClick.AddListener(OnClick);
 			_headerText.text  = headerText;

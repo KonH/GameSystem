@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.Config;
@@ -22,7 +23,7 @@ namespace Core.Common.CommandExecution {
 			}
 		}
 
-		readonly object[] _args = new object[3];
+		readonly object[] _args = new object[4];
 
 		readonly Dictionary<Type, Reaction> _reactions = new Dictionary<Type, Reaction>();
 
@@ -50,7 +51,7 @@ namespace Core.Common.CommandExecution {
 		}
 
 		public async Task<CommandResult> Apply<TCommand>(
-			TConfig config, TState state, TCommand command, bool foreground = false)
+			TConfig config, TState state, TCommand command, bool foreground, CancellationToken cancellationToken)
 			where TCommand : ICommand<TConfig, TState> {
 			if ( config == null ) {
 				return CommandResult.BadCommand("Config is invalid");
@@ -62,27 +63,37 @@ namespace Core.Common.CommandExecution {
 				return CommandResult.BadCommand("Command is invalid");
 			}
 			if ( foreground ) {
-				await HandleBefore(config, state, command);
+				await HandleBefore(config, state, command, cancellationToken);
 			}
+			cancellationToken.ThrowIfCancellationRequested();
 			var commandResult = command.Apply(config, state);
 			if ( commandResult is CommandResult.OkResult ) {
 				if ( foreground ) {
-					await HandleAfter(config, state, command);
+					await HandleAfter(config, state, command, cancellationToken);
 				}
+				cancellationToken.ThrowIfCancellationRequested();
 				state.Version = new StateVersion(state.Version.Value + 1);
 			}
 			return commandResult;
 		}
 
-		async Task HandleBefore<TCommand>(TConfig config, TState state, TCommand command)
+		public Task<CommandResult> Apply<TCommand>(
+			TConfig config, TState state, TCommand command, bool foreground = false)
+			where TCommand : ICommand<TConfig, TState> {
+			return Apply(config, state, command, foreground, CancellationToken.None);
+		}
+
+		async Task HandleBefore<TCommand>(TConfig config, TState state, TCommand command, CancellationToken cancellationToken)
 			where TCommand : ICommand<TConfig, TState> {
 			if ( _reactions.TryGetValue(command.GetType(), out var reaction) ) {
 				var method = reaction.BeforeMethod;
 				foreach ( object instance in reaction.Instances ) {
+					cancellationToken.ThrowIfCancellationRequested();
 					try {
 						_args[0] = config;
 						_args[1] = state;
 						_args[2] = command;
+						_args[3] = cancellationToken;
 						await (Task)method.Invoke(instance, _args);
 					} catch ( Exception e ) {
 						_logger.LogError(e.ToString());
@@ -91,15 +102,17 @@ namespace Core.Common.CommandExecution {
 			}
 		}
 
-		async Task HandleAfter<TCommand>(TConfig config, TState state, TCommand command)
+		async Task HandleAfter<TCommand>(TConfig config, TState state, TCommand command, CancellationToken cancellationToken)
 			where TCommand : ICommand<TConfig, TState> {
 			if ( _reactions.TryGetValue(command.GetType(), out var reaction) ) {
 				var method = reaction.AfterMethod;
 				foreach ( object instance in reaction.Instances ) {
+					cancellationToken.ThrowIfCancellationRequested();
 					try {
 						_args[0] = config;
 						_args[1] = state;
 						_args[2] = command;
+						_args[3] = cancellationToken;
 						await (Task)method.Invoke(instance, _args);
 					} catch ( Exception e ) {
 						_logger.LogError(e.ToString());

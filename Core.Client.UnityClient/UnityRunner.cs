@@ -32,7 +32,7 @@ namespace Core.Client.UnityClient {
 			await Async.WaitForBackgroundThread;
 			var result = await _client.Initialize(_cancelTokenSource.Token);
 			await Async.WaitForUpdate;
-			await HandleInitialization(result);
+			await HandleInitialization(result, _cancelTokenSource.Token);
 		}
 
 		protected void OnDestroy() {
@@ -59,17 +59,17 @@ namespace Core.Client.UnityClient {
 			}
 			var command = _commands.Dequeue();
 			await Async.WaitForBackgroundThread;
-			await HandleCommand(command);
+			await HandleCommand(command, _cancelTokenSource.Token);
 		}
 
-		protected abstract Task HandleInitialization(InitializationResult result);
+		protected abstract Task HandleInitialization(InitializationResult result, CancellationToken cancellationToken);
 
-		async Task HandleCommand(ICommand<TConfig, TState> command) {
-			var result = await _client.Apply(command);
+		async Task HandleCommand(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
+			var result = await _client.Apply(command, cancellationToken);
 			await Async.WaitForUpdate;
-			await HandleCommandResult(result);
+			await HandleCommandResult(result, cancellationToken);
 		}
 
-		protected abstract Task HandleCommandResult(CommandApplyResult result);
+		protected abstract Task HandleCommandResult(CommandApplyResult result, CancellationToken cancellationToken);
 	}
 }

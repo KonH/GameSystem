@@ -42,8 +42,8 @@ namespace Core.Client.Web {
 
 		public async Task<InitializationResult> Initialize(CancellationToken cancellationToken) {
 			try {
-				await UpdateConfig();
-				await UpdateState();
+				await UpdateConfig(cancellationToken);
+				await UpdateState(cancellationToken);
 				_taskRunner.Run(WaitCommand, cancellationToken);
 			} catch ( Exception e ) {
 				return new InitializationResult.Error(e.ToString());
@@ -51,7 +51,7 @@ namespace Core.Client.Web {
 			return new InitializationResult.Ok();
 		}
 
-		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
 			_isUpdatingState = true;
 			UpdateStateResponse response;
@@ -62,9 +62,9 @@ namespace Core.Client.Web {
 			}
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					await _singleExecutor.Apply(Config, State, command, true);
+					await _singleExecutor.Apply(Config, State, command, true, cancellationToken);
 					foreach ( var cmd in updated.NextCommands ) {
-						await _singleExecutor.Apply(Config, State, cmd, true);
+						await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
 					}
 					State.Version = updated.NewVersion;
 					return new CommandApplyResult.Ok();
@@ -88,19 +88,21 @@ namespace Core.Client.Web {
 			}
 		}
 
-		async Task WaitCommand() {
+		async Task WaitCommand(CancellationToken cancellationToken) {
 			while ( true ) {
 				while ( _isUpdatingState ) {
 					await _taskRunner.Delay(TimeSpan.FromSeconds(1));
 				}
+				cancellationToken.ThrowIfCancellationRequested();
 				_logger.LogTrace("Awaiting for new command");
 				var request  = new WaitCommandRequest(_userId, State.Version, Config.Version);
 				var response = await _webClientHandler.WaitCommand(request);
+				cancellationToken.ThrowIfCancellationRequested();
 				switch ( response ) {
 					case WaitCommandResponse.Updated<TConfig, TState> updated: {
 						_logger.LogTrace($"New commands found: {updated.NextCommands.Count}");
 						foreach ( var cmd in updated.NextCommands ) {
-							await _singleExecutor.Apply(Config, State, cmd, true);
+							await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
 						}
 						State.Version = updated.NewVersion;
 						break;
@@ -140,10 +142,11 @@ namespace Core.Client.Web {
 			// ReSharper disable once FunctionNeverReturns
 		}
 
-		async Task UpdateConfig() {
+		async Task UpdateConfig(CancellationToken cancellationToken) {
 			_logger.LogTrace($"Update config for '{_userId}'");
 			var request  = new GetConfigRequest(_userId);
 			var response = await _webClientHandler.GetConfig(request);
+			cancellationToken.ThrowIfCancellationRequested();
 			switch ( response ) {
 				case GetConfigResponse.Found<TConfig> found: {
 					Config = found.Config;
@@ -158,10 +161,11 @@ namespace Core.Client.Web {
 			}
 		}
 
-		async Task UpdateState() {
+		async Task UpdateState(CancellationToken cancellationToken) {
 			_logger.LogTrace($"Update state for '{_userId}'");
 			var request  = new GetStateRequest(_userId);
 			var response = await _webClientHandler.GetState(request);
+			cancellationToken.ThrowIfCancellationRequested();
 			switch ( response ) {
 				case GetStateResponse.Found<TState> found: {
 					State = found.State;

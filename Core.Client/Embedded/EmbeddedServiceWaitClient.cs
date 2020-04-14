@@ -67,14 +67,15 @@ namespace Core.Client.Embedded {
 			return new InitializationResult.Ok();
 		}
 
-		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
 			var response = await _updateStateUseCase.Handle(request);
+			cancellationToken.ThrowIfCancellationRequested();
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					await _singleExecutor.Apply(Config, State, command, true);
+					await _singleExecutor.Apply(Config, State, command, true, cancellationToken);
 					foreach ( var cmd in updated.NextCommands ) {
-						await _singleExecutor.Apply(Config, State, cmd, true);
+						await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
 					}
 					State.Version = updated.NewVersion;
 					return new CommandApplyResult.Ok();
@@ -98,16 +99,17 @@ namespace Core.Client.Embedded {
 			}
 		}
 
-		async Task WaitCommand() {
+		async Task WaitCommand(CancellationToken cancellationToken) {
 			while ( true ) {
 				_logger.LogTrace("Awaiting for new command");
 				var request = new WaitCommandRequest(_userId, State.Version, Config.Version);
 				var response = await _waitCommandUseCase.Handle(request);
+				cancellationToken.ThrowIfCancellationRequested();
 				switch ( response ) {
 					case WaitCommandResponse.Updated<TConfig, TState> updated: {
 						_logger.LogTrace($"New commands found: {updated.NextCommands.Count}");
 						foreach ( var cmd in updated.NextCommands ) {
-							await _singleExecutor.Apply(Config, State, cmd, true);
+							await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
 						}
 						State.Version = updated.NewVersion;
 						break;
@@ -144,15 +146,14 @@ namespace Core.Client.Embedded {
 					}
 				}
 			}
-			// ReSharper disable once FunctionNeverReturns
 		}
 
-		async Task ProcessCommand() {
+		async Task ProcessCommand(CancellationToken cancellationToken) {
 			while ( true ) {
 				_scheduler.Update();
+				cancellationToken.ThrowIfCancellationRequested();
 				await _taskRunner.Delay(TimeSpan.FromSeconds(1));
 			}
-			// ReSharper disable once FunctionNeverReturns
 		}
 
 		async Task UpdateConfig() {

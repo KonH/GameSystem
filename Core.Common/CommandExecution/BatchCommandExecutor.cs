@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandDependency;
@@ -22,10 +23,11 @@ namespace Core.Common.CommandExecution {
 		}
 
 		public async Task<BatchCommandResult> Apply<TCommand>(
-			TConfig config, TState state, TCommand command, bool foreground = false)
+			TConfig config, TState state, TCommand command, bool foreground, CancellationToken cancellationToken)
 			where TCommand : ICommand<TConfig, TState> {
+			cancellationToken.ThrowIfCancellationRequested();
 			_logger.LogTrace($"Applying command: '{command}'");
-			var commandResult = await _executor.Apply(config, state, command, foreground);
+			var commandResult = await _executor.Apply(config, state, command, foreground, cancellationToken);
 			if ( commandResult is CommandResult.BadCommandResult badCommand ) {
 				_logger.LogWarning($"Command '{command}' failed: '{badCommand.Description}'");
 				return new BatchCommandResult.BadCommand(badCommand.Description);
@@ -33,7 +35,7 @@ namespace Core.Common.CommandExecution {
 			var dependencies = _dependencyHandler.GetDependentCommands(config, state, command);
 			var accum        = new List<ICommand<TConfig, TState>>();
 			foreach ( var dependency in dependencies ) {
-				var dependencyResult = await Apply(config, state, dependency, foreground);
+				var dependencyResult = await Apply(config, state, dependency, foreground, cancellationToken);
 				if ( dependencyResult is BatchCommandResult.BadCommand ) {
 					return dependencyResult;
 				}
@@ -45,6 +47,11 @@ namespace Core.Common.CommandExecution {
 				accum.AddRange(okResult.NextCommands);
 			}
 			return new BatchCommandResult.Ok<TConfig, TState>(accum);
+		}
+
+		public Task<BatchCommandResult> Apply<TCommand>(TConfig config, TState state, TCommand command, bool foreground = false)
+			where TCommand : ICommand<TConfig, TState> {
+			return Apply(config, state, command, foreground, CancellationToken.None);
 		}
 	}
 }

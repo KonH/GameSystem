@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
@@ -52,7 +53,7 @@ namespace Core.Service.UseCase.WaitCommand {
 				var allCommands = new List<ICommand<TConfig, TState>>(commands.Length);
 				var lastVersion = state.Version;
 				foreach ( var command in commands ) {
-					var result = await _commandExecutor.Apply(config, state, command);
+					var result = await _commandExecutor.Apply(config, state, command, false, CancellationToken.None);
 					var response = HandleResult(request.UserId, command, state, result);
 					if ( response is WaitCommandResponse.Updated<TConfig, TState> okResponse ) {
 						allCommands.AddRange(okResponse.NextCommands);

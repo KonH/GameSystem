@@ -10,6 +10,6 @@ namespace Core.Client.Abstractions {
 		TState State { get; }
 		TConfig Config { get; }
 		Task<InitializationResult> Initialize(CancellationToken cancellationToken);
-		Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command);
+		Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken);
 	}
 }

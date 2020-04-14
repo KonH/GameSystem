@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.Config;
@@ -8,7 +9,7 @@ namespace Core.Common.CommandExecution {
 		where TConfig : IConfig
 		where TState : IState
 		where TCommand : ICommand<TConfig, TState> {
-		Task Before(TConfig config, TState state, TCommand command);
-		Task After(TConfig config, TState state, TCommand command);
+		Task Before(TConfig config, TState state, TCommand command, CancellationToken cancellationToken);
+		Task After(TConfig config, TState state, TCommand command, CancellationToken cancellationToken);
 	}
 }

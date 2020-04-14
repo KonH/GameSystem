@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.UnityClient.Extension;
 using TMPro;
@@ -21,18 +22,20 @@ namespace Core.Client.UnityClient.Component.View {
 
 		public override void Init(int value) => Init(value.ToString());
 
-		public Task AnimateValue(string value) {
+		public Task AnimateValue(string value, CancellationToken cancellationToken) {
+			cancellationToken.ThrowIfCancellationRequested();
 			UpdateValue(value);
 			return _animation.Wait();
 		}
 
-		public Task AnimateValue(int value) => AnimateValue(value.ToString());
+		public Task AnimateValue(int value, CancellationToken cancellationToken) => AnimateValue(value.ToString(), cancellationToken);
 
-		public async Task AnimateBeforeValue(string value) {
+		public async Task AnimateBeforeValue(string value, CancellationToken cancellationToken) {
 			await _animation.Wait();
+			cancellationToken.ThrowIfCancellationRequested();
 			UpdateValue(value);
 		}
 
-		public Task AnimateBeforeValue(int value) => AnimateBeforeValue(value.ToString());
+		public Task AnimateBeforeValue(int value, CancellationToken cancellationToken) => AnimateBeforeValue(value.ToString(), cancellationToken);
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
@@ -37,7 +38,7 @@ namespace Core.Service.UseCase.UpdateState {
 			if ( !IsTrustedCommand(commandType) ) {
 				return Rejected($"Command of type '{commandType.FullName}' isn't trusted");
 			}
-			var result = await _commandExecutor.Apply(config, state, request.Command);
+			var result = await _commandExecutor.Apply(config, state, request.Command, false);
 			return HandleResult(request.UserId, state, result);
 		}
 

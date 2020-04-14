@@ -59,7 +59,7 @@ namespace Core.Client.ConsoleClient {
 
 		async Task ExecuteCommand(int index) {
 			var command = CreateCommand(index);
-			var result  = await _client.Apply(command);
+			var result  = await _client.Apply(command, CancellationToken.None);
 			if ( result is CommandApplyResult.Error error ) {
 				Console.WriteLine($"Error: '{error.Description}'");
 			}

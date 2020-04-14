@@ -44,7 +44,7 @@ namespace Core.Client.Web {
 			return new InitializationResult.Ok();
 		}
 
-		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command) {
+		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
 			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
 			var response = await _webClientHandler.UpdateState(request);
 			switch ( response ) {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.UnityClient.Extension;
 using UnityEngine;
@@ -15,22 +16,25 @@ namespace Core.Client.UnityClient.Window {
 			_settings = settings;
 		}
 
-		public async Task Show<T>(string windowName, Func<T, Task> showMethod) {
-			await ShowContent();
-			var prefab   = _settings.Prefabs.Find(p => p.Key == windowName).Value;
+		public async Task Show<T>(string windowName, Func<T, CancellationToken, Task> showMethod, CancellationToken cancellationToken) {
+			await ShowContent(cancellationToken);
+			var prefab = _settings.Prefabs.Find(p => p.Key == windowName).Value;
+			cancellationToken.ThrowIfCancellationRequested();
 			var instance = Object.Instantiate(prefab, _settings.Content.transform);
 			_windows.Enqueue(instance);
 			var component = instance.GetComponent<T>();
-			await showMethod(component);
+			await showMethod(component, cancellationToken);
 			_windows.Dequeue();
+			cancellationToken.ThrowIfCancellationRequested();
 			Object.Destroy(instance);
-			await HideContent();
+			await HideContent(cancellationToken);
 		}
 
-		Task ShowContent() {
+		Task ShowContent(CancellationToken cancellationToken) {
 			if ( _windows.Count > 0 ) {
 				return Task.CompletedTask;
 			}
+			cancellationToken.ThrowIfCancellationRequested();
 			var content = _settings.Content;
 			content.SetActive(true);
 			var animation = _settings.Animation;
@@ -40,7 +44,7 @@ namespace Core.Client.UnityClient.Window {
 			return Task.CompletedTask;
 		}
 
-		Task HideContent() {
+		Task HideContent(CancellationToken cancellationToken) {
 			if ( _windows.Count > 0 ) {
 				return Task.CompletedTask;
 			}
@@ -48,6 +52,7 @@ namespace Core.Client.UnityClient.Window {
 			if ( animation && _settings.HideAnimation ) {
 				return animation.Wait(_settings.HideAnimation);
 			}
+			cancellationToken.ThrowIfCancellationRequested();
 			_settings.Content.SetActive(false);
 			return Task.CompletedTask;
 		}
