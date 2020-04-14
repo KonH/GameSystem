@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Idler.Common.Config;
 using Idler.Common.State;
@@ -67,7 +68,7 @@ namespace Idler.UnityClient {
 			AddUpdateHandler(new IncomeHandler(_incomeSlider, time));
 		}
 
-		protected override async Task HandleInitialization(InitializationResult result) {
+		protected override async Task HandleInitialization(InitializationResult result, CancellationToken cancellationToken) {
 			switch ( result ) {
 				case InitializationResult.Ok _: {
 					IsReadyForCommand = true;
@@ -80,19 +81,21 @@ namespace Idler.UnityClient {
 					Debug.LogError(error.Description);
 					await _windowManager.Show<MessageWindow>(
 						nameof(MessageWindow),
-						w => w.Show("Server Error", "Failed to connect to server", "Retry"));
+						(w, ct) => w.Show("Server Error", "Failed to connect to server", "Retry", ct),
+						cancellationToken);
 					SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 					break;
 				}
 			}
 		}
 
-		protected override async Task HandleCommandResult(CommandApplyResult result) {
+		protected override async Task HandleCommandResult(CommandApplyResult result, CancellationToken cancellationToken) {
 			if ( result is CommandApplyResult.Error error ) {
 				Debug.LogError(error.Description);
 				await _windowManager.Show<MessageWindow>(
 					nameof(MessageWindow),
-					w => w.Show("Command Error", "Error happens while communication with server", "Retry"));
+					(w, ct) => w.Show("Command Error", "Error happens while communication with server", "Retry", ct),
+					cancellationToken);
 				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 			}
 		}

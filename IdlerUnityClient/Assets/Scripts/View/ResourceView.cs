@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Idler.Common.State;
 using Core.Client.UnityClient.Component.View;
@@ -15,13 +16,13 @@ namespace Idler.UnityClient.View {
 			UpdateValue(state);
 		}
 
-		public Task AppearValue(int amount) {
+		public Task AppearValue(int amount, CancellationToken cancellationToken) {
 			var view = (amount >= 0) ? _incrementText : _decrementText;
-			return view.AnimateValue(Mathf.Abs(amount));
+			return view.AnimateValue(Mathf.Abs(amount), cancellationToken);
 		}
 
-		public Task AnimateValue(GameState state) {
-			return AnimateValue(state.Resource.Resources);
+		public Task AnimateValue(GameState state, CancellationToken cancellationToken) {
+			return AnimateValue(state.Resource.Resources, cancellationToken);
 		}
 
 		void UpdateValue(GameState state) {

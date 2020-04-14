@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Idler.Common.Command;
 using Idler.Common.Config;
@@ -15,12 +16,13 @@ namespace Idler.UnityClient.Reaction {
 			_addSharedResourceView = addSharedResourceView;
 		}
 
-		public override Task BeforeOnMainThread(GameConfig config, GameState state, AddResourceCommand command) {
-			return _resourceView.AppearValue(command.Amount);
+		public override Task BeforeOnMainThread(GameConfig config, GameState state, AddResourceCommand command, CancellationToken cancellationToken) {
+			return _resourceView.AppearValue(command.Amount, cancellationToken);
 		}
 
-		public override async Task AfterOnMainThread(GameConfig config, GameState state, AddResourceCommand command) {
-			await _resourceView.AnimateValue(state);
+		public override async Task AfterOnMainThread(GameConfig config, GameState state, AddResourceCommand command, CancellationToken cancellationToken) {
+			await _resourceView.AnimateValue(state, cancellationToken);
+			cancellationToken.ThrowIfCancellationRequested();
 			_addSharedResourceView.UpdateState(config, state);
 		}
 	}

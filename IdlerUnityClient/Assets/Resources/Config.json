@@ -3,9 +3,10 @@
     "Value": "Config"
   },
   "Resource": {
-    "ResourceByTick": 10
+    "ResourceByTick": 10,
+    "SharedCost": 10
   },
   "Time": {
-    "TickInterval": 15
+    "TickInterval": 3
   }
 }

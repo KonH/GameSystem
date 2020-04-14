@@ -1084,20 +1084,10 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 8765778436822490003, guid: 605d66ad3021540bab70ca769d9a2a69,
-        type: 3}
-      propertyPath: m_Animation
-      value: 
-      objectReference: {fileID: 7400000, guid: 1fc7973d47a9a445fbccb9648af467b1, type: 2}
     - target: {fileID: 8765778436822490093, guid: 605d66ad3021540bab70ca769d9a2a69,
         type: 3}
       propertyPath: m_Name
       value: WindowContent
-      objectReference: {fileID: 0}
-    - target: {fileID: 8765778436822490093, guid: 605d66ad3021540bab70ca769d9a2a69,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 605d66ad3021540bab70ca769d9a2a69, type: 3}
