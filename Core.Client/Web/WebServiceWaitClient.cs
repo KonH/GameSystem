@@ -25,7 +25,10 @@ namespace Core.Client.Web {
 		readonly WebClientHandler                               _webClientHandler;
 		readonly ITaskRunner                                    _taskRunner;
 
-		bool _isUpdatingState = false;
+		TaskCompletionSource<bool> _mainRequestCompletionSource = null;
+		TaskCompletionSource<bool> _updateStateCompletionSource = null;
+
+		ICommand<TConfig, TState> _outdatedCommand = null;
 
 		public TState  State  { get; private set; }
 		public TConfig Config { get; private set; }
@@ -52,22 +55,34 @@ namespace Core.Client.Web {
 		}
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
-			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
-			_isUpdatingState = true;
-			UpdateStateResponse response;
-			try {
-				response = await _webClientHandler.UpdateState(request);
-			} finally {
-				_isUpdatingState = false;
-			}
+			await WaitForStateUpdate();
+			var request = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
+			var response = await PerformMainRequest(() => _webClientHandler.UpdateState(request));
 			switch ( response ) {
 				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					await _singleExecutor.Apply(Config, State, command, true, cancellationToken);
-					foreach ( var cmd in updated.NextCommands ) {
-						await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
-					}
-					State.Version = updated.NewVersion;
+					_logger.LogTrace($"New next commands found: {updated.NextCommands.Count}");
+					await UpdateState(updated.NewVersion, async () => {
+						await _singleExecutor.Apply(Config, State, command, true, cancellationToken);
+						foreach ( var cmd in updated.NextCommands ) {
+							await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
+						}
+					});
 					return new CommandApplyResult.Ok();
+				}
+
+				case UpdateStateResponse.Outdated _: {
+					if ( _outdatedCommand == null ) {
+						CommandApplyResult result;
+						try {
+							_logger.LogTrace("Command is outdated, try to repeat it");
+							_outdatedCommand = command;
+							result = await Apply(_outdatedCommand, cancellationToken);
+						} finally {
+							_outdatedCommand = null;
+						}
+						return result;
+					}
+					return new CommandApplyResult.Error("Command outdated");
 				}
 
 				case UpdateStateResponse.Rejected rejected: {
@@ -90,21 +105,21 @@ namespace Core.Client.Web {
 
 		async Task WaitCommand(CancellationToken cancellationToken) {
 			while ( true ) {
-				while ( _isUpdatingState ) {
-					await _taskRunner.Delay(TimeSpan.FromSeconds(1));
-				}
 				cancellationToken.ThrowIfCancellationRequested();
 				_logger.LogTrace("Awaiting for new command");
+				await WaitForStateUpdate();
+				await WaitForMainRequest();
 				var request  = new WaitCommandRequest(_userId, State.Version, Config.Version);
 				var response = await _webClientHandler.WaitCommand(request);
 				cancellationToken.ThrowIfCancellationRequested();
 				switch ( response ) {
 					case WaitCommandResponse.Updated<TConfig, TState> updated: {
 						_logger.LogTrace($"New commands found: {updated.NextCommands.Count}");
-						foreach ( var cmd in updated.NextCommands ) {
-							await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
-						}
-						State.Version = updated.NewVersion;
+						await UpdateState(updated.NewVersion, async () => {
+							foreach ( var cmd in updated.NextCommands ) {
+								await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
+							}
+						});
 						break;
 					}
 
@@ -138,6 +153,7 @@ namespace Core.Client.Web {
 						break;
 					}
 				}
+				await _taskRunner.Delay(TimeSpan.FromSeconds(3));
 			}
 			// ReSharper disable once FunctionNeverReturns
 		}
@@ -182,6 +198,47 @@ namespace Core.Client.Web {
 					_logger.LogError($"Result is '{value.GetType()}'");
 					throw new InvalidOperationException();
 				}
+			}
+		}
+
+		async Task WaitForMainRequest() {
+			if ( _mainRequestCompletionSource != null ) {
+				var task = _mainRequestCompletionSource.Task;
+				_logger.LogTrace("Main request in progress, waiting for complete");
+				await task;
+				_logger.LogTrace("Main request finished");
+			}
+		}
+
+		async Task<T> PerformMainRequest<T>(Func<Task<T>> callback) {
+			try {
+				await WaitForMainRequest();
+				_mainRequestCompletionSource = new TaskCompletionSource<bool>();
+				return await callback();
+			} finally {
+				_mainRequestCompletionSource?.TrySetResult(true);
+				_mainRequestCompletionSource = null;
+			}
+		}
+
+		async Task WaitForStateUpdate() {
+			if ( _updateStateCompletionSource != null ) {
+				var task = _updateStateCompletionSource.Task;
+				_logger.LogTrace("Update state in progress, waiting for complete");
+				await task;
+				_logger.LogTrace("Update state finished");
+			}
+		}
+
+		async Task UpdateState(StateVersion updatedVersion, Func<Task> callback) {
+			try {
+				await WaitForStateUpdate();
+				_updateStateCompletionSource = new TaskCompletionSource<bool>();
+				await callback();
+				State.Version = new StateVersion(Math.Max(State.Version.Value, updatedVersion.Value));
+			} finally {
+				_updateStateCompletionSource?.TrySetResult(true);
+				_updateStateCompletionSource = null;
 			}
 		}
 	}
