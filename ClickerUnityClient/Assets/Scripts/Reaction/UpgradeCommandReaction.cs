@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
@@ -13,8 +14,8 @@ namespace Clicker.UnityClient.Reaction {
 			_view = view;
 		}
 
-		public override Task AfterOnMainThread(GameConfig config, GameState state, UpgradeCommand command) {
-			return _view.AnimateValue(config, state);
+		public override Task AfterOnMainThread(GameConfig config, GameState state, UpgradeCommand command, CancellationToken cancellationToken) {
+			return _view.AnimateValue(config, state, cancellationToken);
 		}
 	}
 }

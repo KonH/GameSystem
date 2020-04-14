@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
@@ -51,7 +52,7 @@ namespace Clicker.UnityClient {
 			executor.AddReaction(new UpgradeCommandReaction(_upgradeLevelView));
 		}
 
-		protected override Task HandleInitialization(InitializationResult result) {
+		protected override Task HandleInitialization(InitializationResult result, CancellationToken cancellationToken) {
 			switch ( result ) {
 				case InitializationResult.Ok _: {
 					IsReadyForCommand = true;
@@ -68,7 +69,7 @@ namespace Clicker.UnityClient {
 			return Task.CompletedTask;
 		}
 
-		protected override Task HandleCommandResult(CommandApplyResult result) {
+		protected override Task HandleCommandResult(CommandApplyResult result, CancellationToken cancellationToken) {
 			if ( result is CommandApplyResult.Error error ) {
 				Debug.LogError(error.Description);
 			}

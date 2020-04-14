@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Clicker.Common.Config;
 using Clicker.Common.State;
@@ -16,9 +17,9 @@ namespace Clicker.UnityClient.View {
 			UpdateValue(config, state);
 		}
 
-		public async Task AnimateValue(GameConfig config, GameState state) {
-			await _appearText.AnimateValue(1);
-			await base.AnimateValue(state.Upgrade.Level);
+		public async Task AnimateValue(GameConfig config, GameState state, CancellationToken cancellationToken) {
+			await _appearText.AnimateValue(1, cancellationToken);
+			await base.AnimateValue(state.Upgrade.Level, cancellationToken);
 		}
 
 		void UpdateValue(GameConfig config, GameState state) {

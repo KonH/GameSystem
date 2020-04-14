@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Clicker.Common.Command;
 using Clicker.Common.Config;
@@ -16,13 +17,14 @@ namespace Clicker.UnityClient.Reaction {
 			_upgradeView  = upgradeView;
 		}
 
-		public override Task BeforeOnMainThread(GameConfig config, GameState state, RemoveResourceCommand command) {
-			return _resourceView.AppearValue(-command.Amount);
+		public override Task BeforeOnMainThread(GameConfig config, GameState state, RemoveResourceCommand command, CancellationToken cancellationToken) {
+			return _resourceView.AppearValue(-command.Amount, cancellationToken);
 		}
 
 		public override async Task AfterOnMainThread(
-			GameConfig config, GameState state, RemoveResourceCommand command) {
-			await _resourceView.AnimateValue(state);
+			GameConfig config, GameState state, RemoveResourceCommand command, CancellationToken cancellationToken) {
+			await _resourceView.AnimateValue(state, cancellationToken);
+			cancellationToken.ThrowIfCancellationRequested();
 			_upgradeView.UpdateState(config, state);
 		}
 	}
