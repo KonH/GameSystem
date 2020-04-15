@@ -19,13 +19,11 @@ project {
 		buildType(createSimpleBuildType("Core.Common", "Core.Common.Tests"))
 		buildType(createSimpleBuildType("Core.Service", "Core.Service.Tests"))
 		buildType(createSimpleBuildType("Core.Client"))
-		buildType(createSimpleBuildType("Core.Client.ConsoleClient"))
 	}
 	subProject {
 		name = "Clicker"
 		id = RelativeId(name)
 		buildType(createSimpleBuildType("Clicker.Common", "Clicker.Tests"))
-		buildType(createSimpleBuildType("Clicker.ConsoleClient"))
 		buildType(createSimpleBuildType("Clicker.WebService"))
 		buildType(createDeployBuildType("Clicker.WebService", "clicker-web-service", "Clicker.Tests"))
 		buildType(createUnityBuildType("ClickerUnityClient", "WebGL", "Clicker.Tests"))
