@@ -1,17 +1,21 @@
+using System;
 using Clicker.Common;
 using Clicker.Common.Config;
 using Clicker.Common.State;
 using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Core.Service.Extension;
+using Core.Service.Queue;
 using Core.Service.Repository;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
+using Core.Service.UseCase.WaitCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
 using Core.Service.WebService.Shared;
@@ -90,11 +94,28 @@ namespace Clicker.WebService {
 
 			services.AddSingleton<GetStateUseCase<GameState>>();
 
+			services.AddSingleton<CommandWorkQueue<GameConfig, GameState>>();
+			services.AddSingleton<CommandAwaiter<GameConfig, GameState>>();
+			services.AddSingleton<CommandScheduler<GameConfig, GameState>>();
+			services.AddSingleton<ITaskRunner, DefaultTaskRunner>();
+			services.AddSingleton(new WaitCommandSettings {
+				WaitTime = TimeSpan.FromSeconds(60)
+			});
+			services.AddSingleton<WaitCommandUseCase<GameConfig, GameState>>();
+
 			services.AddSingleton<ILoggerFactory, WebServiceLoggerFactory>();
 			services.AddSingleton<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			services.AddSingleton<CommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
-			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
+			services.AddSingleton<CommonWatcher<GameConfig, GameState>>();
+			services.AddSingleton(sp => {
+				var scheduleSettings = new CommandScheduler<GameConfig, GameState>.Settings();
+				scheduleSettings.AddWatcher(sp.GetService<CommonWatcher<GameConfig, GameState>>());
+				return scheduleSettings;
+			});
+			services.AddSingleton<SendCommandUseCase<GameConfig, GameState>>();
+
+			services.AddHostedService<UpdateCommandSchedulerService<GameConfig, GameState>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

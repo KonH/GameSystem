@@ -30,7 +30,7 @@ namespace Core.Client.ConsoleClient.Setup {
 			services.AddSingleton<ISettingsSource, FileSettingsSource>();
 			services.AddSingleton<UserIdGenerator>();
 			services.AddSingleton<UserIdSource>();
-			services.AddSingleton<IClient<TConfig, TState>, WebServiceClient<TConfig, TState>>();
+			services.AddSingleton<IClient<TConfig, TState>, WebServiceWaitClient<TConfig, TState>>();
 		}
 
 		public override void Initialize(ServiceProvider provider) { }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Client.Shared;
@@ -11,5 +12,6 @@ namespace Core.Client.Abstractions {
 		TConfig Config { get; }
 		Task<InitializationResult> Initialize(CancellationToken cancellationToken);
 		Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken);
+		event Action StateUpdated;
 	}
 }

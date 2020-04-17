@@ -9,7 +9,7 @@ using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 
 namespace Core.Client.UnityClient.Setup {
 	abstract class BaseEmbeddedClientSetup<TConfig, TState> : CommonClientSetup<TConfig, TState>
@@ -31,7 +31,7 @@ namespace Core.Client.UnityClient.Setup {
 
 			provider.AddService<GetStateUseCase<TState>>();
 
-			provider.AddService<UpdateStateUseCase<TConfig, TState>>();
+			provider.AddService<SendCommandUseCase<TConfig, TState>>();
 
 			provider.AddService(new StateFactory<TState>(() => new TState()));
 

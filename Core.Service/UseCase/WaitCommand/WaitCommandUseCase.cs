@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
@@ -7,7 +6,6 @@ using Core.Common.Config;
 using Core.Common.State;
 using Core.Common.Threading;
 using Core.Service.Extension;
-using Core.Service.Model;
 using Core.Service.Queue;
 using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
@@ -20,18 +18,16 @@ namespace Core.Service.UseCase.WaitCommand {
 		readonly CommandAwaiter<TConfig, TState>       _awaiter;
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly IConfigRepository<TConfig>            _configRepository;
-		readonly BatchCommandExecutor<TConfig, TState> _commandExecutor;
 		readonly ITaskRunner                           _taskRunner;
 
 		public WaitCommandUseCase(
-			WaitCommandSettings settings, CommandAwaiter<TConfig, TState> awaiter,
-			IStateRepository<TState> stateRepository, IConfigRepository<TConfig> configRepository,
-			BatchCommandExecutor<TConfig, TState> commandExecutor, ITaskRunner taskRunner) {
+			WaitCommandSettings      settings,        CommandAwaiter<TConfig, TState> awaiter,
+			IStateRepository<TState> stateRepository, IConfigRepository<TConfig>      configRepository,
+			ITaskRunner              taskRunner) {
 			_settings         = settings;
 			_awaiter          = awaiter;
 			_stateRepository  = stateRepository;
 			_configRepository = configRepository;
-			_commandExecutor  = commandExecutor;
 			_taskRunner       = taskRunner;
 		}
 
@@ -40,29 +36,16 @@ namespace Core.Service.UseCase.WaitCommand {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var commandTask = _awaiter.WaitForCommands(request.UserId, config, state);
+			var cts = new CancellationTokenSource();
+			var commandTask = _awaiter.WaitForCommands(request.UserId, config, state, cts.Token);
 			var delayTask   = _taskRunner.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
 			_awaiter.CancelWaiting(request.UserId);
 			if ( commandTask.IsCompleted ) {
 				var actualState = await _stateRepository.Get(request.UserId);
-				if ( actualState.Version > state.Version ) {
-					return Outdated();
-				}
-				var commands = commandTask.Result;
-				var allCommands = new List<ICommand<TConfig, TState>>(commands.Length);
-				var lastVersion = state.Version;
-				foreach ( var command in commands ) {
-					var result = await _commandExecutor.Apply(config, state, command, false, CancellationToken.None);
-					var response = HandleResult(request.UserId, command, state, result);
-					if ( response is WaitCommandResponse.Updated<TConfig, TState> okResponse ) {
-						allCommands.AddRange(okResponse.NextCommands);
-						lastVersion = okResponse.NewVersion;
-						continue;
-					}
-					return response;
-				}
-				return Updated(lastVersion, allCommands);
+				var result = commandTask.Result;
+				var lastVersion = actualState.Version;
+				return Updated(lastVersion, result.Commands, result.Errors);
 			}
 			return NotFound();
 		}
@@ -85,41 +68,13 @@ namespace Core.Service.UseCase.WaitCommand {
 			return (null, (config, state));
 		}
 
-		WaitCommandResponse HandleResult(
-			UserId userId, ICommand<TConfig, TState> command, TState state, BatchCommandResult result) {
-			switch ( result ) {
-				case BatchCommandResult.Ok<TConfig, TState> okResult: {
-					_stateRepository.Update(userId, state);
-					var newVersion = state.Version;
-					var nextCommands = okResult.NextCommands;
-					var allCommands = new List<ICommand<TConfig, TState>> {
-						command
-					};
-					allCommands.AddRange(nextCommands);
-					return Updated(newVersion, allCommands);
-				}
-
-				case BatchCommandResult.BadCommand badResult: {
-					return Rejected(badResult.Description);
-				}
-
-				default: {
-					return BadRequest();
-				}
-			}
-		}
-
 		static WaitCommandResponse Outdated() {
 			return new WaitCommandResponse.Outdated();
 		}
 
 		static WaitCommandResponse Updated(
-			StateVersion newVersion, List<ICommand<TConfig, TState>> nextCommands) {
-			return new WaitCommandResponse.Updated<TConfig, TState>(newVersion, nextCommands);
-		}
-
-		static WaitCommandResponse Rejected(string description) {
-			return new WaitCommandResponse.Rejected(description);
+			StateVersion newVersion, ICommand<TConfig, TState>[] nextCommands, BatchCommandResult[] errors) {
+			return new WaitCommandResponse.Updated<TConfig, TState>(newVersion, nextCommands, errors);
 		}
 
 		static WaitCommandResponse NotFound() {

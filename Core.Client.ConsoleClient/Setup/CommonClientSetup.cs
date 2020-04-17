@@ -5,6 +5,7 @@ using Core.Common.CommandDependency;
 using Core.Common.CommandExecution;
 using Core.Common.Config;
 using Core.Common.State;
+using Core.Common.Threading;
 using Core.Common.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +27,8 @@ namespace Core.Client.ConsoleClient.Setup {
 			services.AddSingleton(new CommandProvider<TConfig, TState>(typeof(TState).Assembly));
 			services.AddSingleton<CommandExecutor<TConfig, TState>>();
 			services.AddSingleton<BatchCommandExecutor<TConfig, TState>>();
+
+			services.AddSingleton<ITaskRunner, DefaultTaskRunner>();
 		}
 
 		public abstract void Initialize(ServiceProvider provider);

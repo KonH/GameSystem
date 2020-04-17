@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Common.Command;
 using Core.Common.Config;
 using Core.Common.State;
 using Core.Service.Model;
@@ -16,10 +15,10 @@ namespace Core.Service.Queue {
 			_queue = queue;
 		}
 
-		public Task<ICommand<TConfig, TState>[]> WaitForCommands(UserId userId, TConfig config, TState state) {
+		public Task<CommandQueueResult<TConfig, TState>> WaitForCommands(UserId userId, TConfig config, TState state, CancellationToken cancellationToken) {
 			var item = new CommandWorkItem<TConfig, TState>(config, state);
 			if ( !_queue.Enqueue(userId, item) ) {
-				return Task.FromCanceled<ICommand<TConfig, TState>[]>(CancellationToken.None);
+				return Task.FromCanceled<CommandQueueResult<TConfig, TState>>(cancellationToken);
 			}
 			OnWait?.Invoke();
 			return item.Task;

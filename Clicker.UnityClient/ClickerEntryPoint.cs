@@ -5,12 +5,10 @@ using Core.Client.UnityClient;
 using Core.Client.UnityClient.DependencyInjection;
 using Core.Client.UnityClient.Settings;
 using Core.Common.CommandDependency;
-using UnityEngine;
 
 namespace Clicker.UnityClient {
 	public static class ClickerEntryPoint {
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-		static void Install() {
+		public static void Install() {
 			var provider = ServiceProvider.Instance;
 			provider.AddService<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			provider.AddServiceFromResources<ISettings, ClickerSettings>("Settings");

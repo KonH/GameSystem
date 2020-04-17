@@ -53,7 +53,7 @@ namespace Core.Service.Tests.UseCase {
 			var watcher = new OkWatcher();
 			settings.AddWatcher(watcher);
 			var queue     = new CommandWorkQueue<Config, State>();
-			var scheduler = new CommandScheduler<Config, State>(settings, queue);
+			var scheduler = new CommandScheduler<Config, State>(settings, queue, StateRepository<State>.Create(), CreateExecutor());
 			var awaiter   = new CommandAwaiter<Config, State>(queue);
 			var useCase   = GetUseCase(awaiter);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
@@ -65,7 +65,7 @@ namespace Core.Service.Tests.UseCase {
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<Config, State>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<Config, State>)resp).NextCommands;
-			Assert.AreEqual(1, nextCommands.Count);
+			Assert.AreEqual(1, nextCommands.Length);
 			Assert.IsInstanceOf<OkCommand>(nextCommands[0]);
 		}
 
@@ -85,14 +85,17 @@ namespace Core.Service.Tests.UseCase {
 			var settings         = new WaitCommandSettings { WaitTime = TimeSpan.Zero };
 			var stateRepository  = StateRepository<State>.Create();
 			var configRepository = ConfigRepository<Config>.Create(new Config());
-			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
-			var queue            = new CommandQueue<Config, State>();
-			var commandExecutor  = new BatchCommandExecutor<Config, State>(loggerFactory, new CommandExecutor<Config, State>(loggerFactory), queue);
-			return new WaitCommandUseCase<Config, State>(settings, awaiter, stateRepository, configRepository, commandExecutor, new DefaultTaskRunner());
+			return new WaitCommandUseCase<Config, State>(settings, awaiter, stateRepository, configRepository, new DefaultTaskRunner());
 		}
 
 		WaitCommandRequest GetRequest(UserId userId, StateVersion stateVersion) {
 			return new WaitCommandRequest(userId, stateVersion, new ConfigVersion());
+		}
+
+		BatchCommandExecutor<Config, State> CreateExecutor() {
+			var loggerFactory = new TypeLoggerFactory(typeof(ConsoleLogger<>));
+			var queue         = new CommandQueue<Config, State>();
+			return new BatchCommandExecutor<Config, State>(loggerFactory, new CommandExecutor<Config, State>(loggerFactory), queue);
 		}
 	}
 }

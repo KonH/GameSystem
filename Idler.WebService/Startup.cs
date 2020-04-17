@@ -12,7 +12,7 @@ using Core.Service.Repository.State;
 using Core.Service.Shared;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 using Core.Service.UseCase.WaitCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
@@ -88,25 +88,28 @@ namespace Idler.WebService {
 			services.AddSingleton<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			services.AddSingleton<CommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
-			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
+			services.AddSingleton<SendCommandUseCase<GameConfig, GameState>>();
 
-			services.AddSingleton<ITimeProvider, RealTimeProvider>();
-			services.AddSingleton<WaitCommandUseCase<GameConfig, GameState>>();
 			services.AddSingleton(new WaitCommandSettings {
 				WaitTime = TimeSpan.FromSeconds(60)
 			});
+			services.AddSingleton<WaitCommandUseCase<GameConfig, GameState>>();
+
+			services.AddSingleton<ITimeProvider, RealTimeProvider>();
 			services.AddSingleton<CommandWorkQueue<GameConfig, GameState>>();
 			services.AddSingleton<CommandAwaiter<GameConfig, GameState>>();
 			services.AddSingleton<CommandScheduler<GameConfig, GameState>>();
 			services.AddSingleton<ITaskRunner, DefaultTaskRunner>();
+			services.AddSingleton<CommonWatcher<GameConfig, GameState>>();
 			services.AddSingleton<ResourceUpdateWatcher>();
 			services.AddSingleton(sp => {
 				var schedulerSettings = new CommandScheduler<GameConfig, GameState>.Settings();
+				schedulerSettings.AddWatcher(sp.GetService<CommonWatcher<GameConfig, GameState>>());
 				schedulerSettings.AddWatcher(sp.GetService<ResourceUpdateWatcher>());
 				return schedulerSettings;
 			});
 
-			services.AddHostedService<UpdateCommandSchedulerService>();
+			services.AddHostedService<UpdateCommandSchedulerService<GameConfig, GameState>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

@@ -5,7 +5,7 @@ using Core.Common.State;
 using Core.Common.Utils;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 using Core.Service.UseCase.WaitCommand;
 
 namespace Core.Client.Web {
@@ -26,11 +26,11 @@ namespace Core.Client.Web {
 			Post<GetStateRequest, GetStateResponse>(
 				"state/get", request, e => new GetStateResponse.BadRequest(e.Description));
 
-		public Task<UpdateStateResponse> UpdateState<TConfig, TState>(
-			UpdateStateRequest<TConfig, TState> request)
+		public Task<SendCommandResponse> SendCommand<TConfig, TState>(
+			SendCommandRequest<TConfig, TState> request)
 			where TConfig : IConfig where TState : IState =>
-			Post<UpdateStateRequest<TConfig, TState>, UpdateStateResponse>(
-				"state/update", request, e => new UpdateStateResponse.BadRequest(e.Description));
+			Post<SendCommandRequest<TConfig, TState>, SendCommandResponse>(
+				"state/send", request, e => new SendCommandResponse.BadRequest(e.Description));
 
 		public Task<WaitCommandResponse> WaitCommand(WaitCommandRequest request) =>
 			Post<WaitCommandRequest, WaitCommandResponse>(

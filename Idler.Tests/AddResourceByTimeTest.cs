@@ -28,7 +28,7 @@ namespace Idler.Tests {
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
 
 			var task = useCase.Handle(req);
-			scheduler.Update();
+			await scheduler.Update();
 			var resp = await task;
 
 			Assert.IsInstanceOf<WaitCommandResponse.NotFound>(resp);
@@ -51,7 +51,7 @@ namespace Idler.Tests {
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<GameConfig, GameState>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<GameConfig, GameState>)resp).NextCommands;
-			Assert.AreEqual(2, nextCommands.Count);
+			Assert.AreEqual(2, nextCommands.Length);
 			Assert.IsInstanceOf<AddResourceCommand>(nextCommands[0]);
 			Assert.AreEqual(10, ((AddResourceCommand)nextCommands[0]).Amount);
 		}
@@ -74,7 +74,7 @@ namespace Idler.Tests {
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<GameConfig, GameState>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<GameConfig, GameState>)resp).NextCommands;
-			Assert.AreEqual(2, nextCommands.Count);
+			Assert.AreEqual(2, nextCommands.Length);
 			Assert.IsInstanceOf<UpdateLastDateCommand>(nextCommands[1]);
 			Assert.AreEqual(startTime.ToUnixTimeSeconds() + 1, ((UpdateLastDateCommand)nextCommands[1]).LastDate.ToUnixTimeSeconds());
 		}
@@ -96,7 +96,7 @@ namespace Idler.Tests {
 
 			Assert.IsInstanceOf<WaitCommandResponse.Updated<GameConfig, GameState>>(resp);
 			var nextCommands = ((WaitCommandResponse.Updated<GameConfig, GameState>)resp).NextCommands;
-			Assert.AreEqual(2, nextCommands.Count);
+			Assert.AreEqual(2, nextCommands.Length);
 			Assert.IsInstanceOf<AddResourceCommand>(nextCommands[0]);
 			Assert.AreEqual(20, ((AddResourceCommand)nextCommands[0]).Amount);
 		}
@@ -115,21 +115,24 @@ namespace Idler.Tests {
 		CommandScheduler<GameConfig, GameState> GetScheduler(ITimeProvider timeProvider, CommandWorkQueue<GameConfig, GameState> queue) {
 			var settings = new CommandScheduler<GameConfig, GameState>.Settings();
 			settings.AddWatcher(new ResourceUpdateWatcher(timeProvider));
-			return new CommandScheduler<GameConfig, GameState>(settings, queue);
+			return new CommandScheduler<GameConfig, GameState>(settings, queue, StateRepository<GameState>.Create(), CreateExecutor());
 		}
 
 		WaitCommandUseCase<GameConfig, GameState> GetUseCase(CommandAwaiter<GameConfig, GameState> awaiter) {
 			var settings         = new WaitCommandSettings { WaitTime = TimeSpan.Zero };
 			var stateRepository  = StateRepository<GameState>.Create();
 			var configRepository = ConfigRepository<GameConfig>.Create(GetConfig());
-			var loggerFactory    = new TypeLoggerFactory(typeof(ConsoleLogger<>));
-			var queue            = new CommandQueue<GameConfig, GameState>();
-			var commandExecutor  = new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(loggerFactory), queue);
-			return new WaitCommandUseCase<GameConfig, GameState>(settings, awaiter, stateRepository, configRepository, commandExecutor, new DefaultTaskRunner());
+			return new WaitCommandUseCase<GameConfig, GameState>(settings, awaiter, stateRepository, configRepository, new DefaultTaskRunner());
 		}
 
 		WaitCommandRequest GetRequest(UserId userId, StateVersion stateVersion) {
 			return new WaitCommandRequest(userId, stateVersion, new ConfigVersion());
+		}
+
+		public static BatchCommandExecutor<GameConfig, GameState> CreateExecutor() {
+			var loggerFactory = new TypeLoggerFactory(typeof(ConsoleLogger<>));
+			var queue         = new CommandQueue<GameConfig, GameState>();
+			return new BatchCommandExecutor<GameConfig, GameState>(loggerFactory, new CommandExecutor<GameConfig, GameState>(loggerFactory), queue);
 		}
 	}
 }

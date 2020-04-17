@@ -45,6 +45,7 @@ namespace Idler.UnityClient {
 		}
 
 		async void Awake() {
+			IdlerEntryPoint.Install();
 			_windowManager = new WindowManager(_windowSettings);
 			_addSharedResourceButton.onClick.AddListener(HandleAddSharedResource);
 			AddReactions();

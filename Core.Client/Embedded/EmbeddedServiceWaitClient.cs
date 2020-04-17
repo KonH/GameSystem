@@ -13,7 +13,7 @@ using Core.Service.Model;
 using Core.Service.Queue;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 using Core.Service.UseCase.WaitCommand;
 
 namespace Core.Client.Embedded {
@@ -26,7 +26,7 @@ namespace Core.Client.Embedded {
 
 		readonly GetConfigUseCase<TConfig>           _getConfigUseCase;
 		readonly GetStateUseCase<TState>             _getStateUseCase;
-		readonly UpdateStateUseCase<TConfig, TState> _updateStateUseCase;
+		readonly SendCommandUseCase<TConfig, TState> _sendCommandUseCase;
 		readonly WaitCommandUseCase<TConfig, TState> _waitCommandUseCase;
 		readonly CommandScheduler<TConfig, TState>   _scheduler;
 		readonly ITaskRunner                         _taskRunner;
@@ -34,12 +34,14 @@ namespace Core.Client.Embedded {
 		public TState  State  { get; private set; }
 		public TConfig Config { get; private set; }
 
+		public event Action StateUpdated = () => {};
+
 		public EmbeddedServiceWaitClient(
 			ILoggerFactory                      loggerFactory,
 			CommandExecutor<TConfig, TState>    commandExecutor,
 			GetConfigUseCase<TConfig>           getConfigUseCase,
 			GetStateUseCase<TState>             getStateUseCase,
-			UpdateStateUseCase<TConfig, TState> updateStateUseCase,
+			SendCommandUseCase<TConfig, TState> sendCommandUseCase,
 			WaitCommandUseCase<TConfig, TState> waitCommandUseCase,
 			UserIdSource                        userIdSource,
 			CommandScheduler<TConfig, TState>   scheduler,
@@ -48,7 +50,7 @@ namespace Core.Client.Embedded {
 			_logger             = loggerFactory.Create<EmbeddedServiceWaitClient<TConfig, TState>>();
 			_getConfigUseCase   = getConfigUseCase;
 			_getStateUseCase    = getStateUseCase;
-			_updateStateUseCase = updateStateUseCase;
+			_sendCommandUseCase = sendCommandUseCase;
 			_waitCommandUseCase = waitCommandUseCase;
 			_singleExecutor     = commandExecutor;
 			_scheduler          = scheduler;
@@ -68,24 +70,19 @@ namespace Core.Client.Embedded {
 		}
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
-			var request  = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
-			var response = await _updateStateUseCase.Handle(request);
+			var request  = new SendCommandRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
+			var response = await _sendCommandUseCase.Handle(request);
 			cancellationToken.ThrowIfCancellationRequested();
 			switch ( response ) {
-				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					await _singleExecutor.Apply(Config, State, command, true, cancellationToken);
-					foreach ( var cmd in updated.NextCommands ) {
-						await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
-					}
-					State.Version = updated.NewVersion;
+				case SendCommandResponse.Applied _: {
 					return new CommandApplyResult.Ok();
 				}
 
-				case UpdateStateResponse.Rejected rejected: {
+				case SendCommandResponse.Rejected rejected: {
 					return new CommandApplyResult.Error($"Command rejected: '{rejected.Description}'");
 				}
 
-				case UpdateStateResponse.BadRequest badRequest: {
+				case SendCommandResponse.BadRequest badRequest: {
 					return new CommandApplyResult.Error($"Command is invalid: '{badRequest.Description}'");
 				}
 
@@ -107,11 +104,15 @@ namespace Core.Client.Embedded {
 				cancellationToken.ThrowIfCancellationRequested();
 				switch ( response ) {
 					case WaitCommandResponse.Updated<TConfig, TState> updated: {
-						_logger.LogTrace($"New commands found: {updated.NextCommands.Count}");
+						_logger.LogTrace($"New commands found: {updated.NextCommands.Length}");
 						foreach ( var cmd in updated.NextCommands ) {
 							await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
 						}
+						foreach ( var error in updated.Errors ) {
+							_logger.LogError(error.ToString());
+						}
 						State.Version = updated.NewVersion;
+						StateUpdated.Invoke();
 						break;
 					}
 
@@ -122,11 +123,6 @@ namespace Core.Client.Embedded {
 
 					case WaitCommandResponse.Outdated _: {
 						_logger.LogTrace($"Command outdated");
-						break;
-					}
-
-					case WaitCommandResponse.Rejected rejected: {
-						_logger.LogTrace($"Command rejected: '{rejected.Description}'");
 						break;
 					}
 
@@ -146,14 +142,16 @@ namespace Core.Client.Embedded {
 					}
 				}
 			}
+			// ReSharper disable once FunctionNeverReturns
 		}
 
 		async Task ProcessCommand(CancellationToken cancellationToken) {
 			while ( true ) {
-				_scheduler.Update();
+				await _scheduler.Update();
 				cancellationToken.ThrowIfCancellationRequested();
 				await _taskRunner.Delay(TimeSpan.FromSeconds(1));
 			}
+			// ReSharper disable once FunctionNeverReturns
 		}
 
 		async Task UpdateConfig() {

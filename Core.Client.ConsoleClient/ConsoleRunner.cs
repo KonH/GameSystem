@@ -30,6 +30,11 @@ namespace Core.Client.ConsoleClient {
 		}
 
 		public async Task Run() {
+			_client.StateUpdated += () => {
+				Console.WriteLine("State updated");
+				DrawState();
+				DrawCommands();
+			};
 			var initializeResult = await _client.Initialize(CancellationToken.None);
 			if ( initializeResult is InitializationResult.Error e ) {
 				Console.WriteLine($"Initialization failed with '{e.Description}'");
