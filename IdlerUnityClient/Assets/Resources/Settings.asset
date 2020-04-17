@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mode: 1
   _configPath: Config
-  _baseUrl: http://127.0.0.1:8082/
+  _baseUrl: https://konhit.xyz/idler_service/
