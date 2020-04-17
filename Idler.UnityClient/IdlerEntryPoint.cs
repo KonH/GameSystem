@@ -8,12 +8,10 @@ using Idler.Common;
 using Idler.Common.Config;
 using Idler.Common.State;
 using Idler.Common.Watcher;
-using UnityEngine;
 
 namespace Idler.UnityClient {
 	public static class IdlerEntryPoint {
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-		static void Install() {
+		public static void Install() {
 			var provider = ServiceProvider.Instance;
 			provider.AddService<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			provider.AddServiceFromResources<ISettings, IdlerSettings>("Settings");
