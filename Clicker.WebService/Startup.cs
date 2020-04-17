@@ -11,7 +11,7 @@ using Core.Service.Repository.Config;
 using Core.Service.Repository.State;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
 using Core.Service.WebService.Shared;
@@ -94,7 +94,7 @@ namespace Clicker.WebService {
 			services.AddSingleton<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			services.AddSingleton<CommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
-			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
+			services.AddSingleton<SendCommandUseCase<GameConfig, GameState>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
