@@ -9,23 +9,31 @@ namespace Core.Common.CommandExecution {
 			where TConfig : IConfig where TState : IState {
 			public List<ICommand<TConfig, TState>> NextCommands { get; set; } = new List<ICommand<TConfig, TState>>();
 
-			public Ok() { }
+			public Ok() {}
 
 			public Ok(List<ICommand<TConfig, TState>> nextCommands) {
 				NextCommands = nextCommands;
+			}
+
+			public override string ToString() {
+				return nameof(Ok<TConfig, TState>);
 			}
 		}
 
 		public class BadCommand : BatchCommandResult {
 			public string Description { get; set; }
 
-			public BadCommand() { }
+			public BadCommand() {}
 
 			public BadCommand(string description) {
 				Description = description;
 			}
+
+			public override string ToString() {
+				return $"{nameof(BadCommand)}: '{Description}'";
+			}
 		}
 
-		BatchCommandResult() { }
+		BatchCommandResult() {}
 	}
 }

@@ -12,7 +12,7 @@ using Core.Common.Utils;
 using Core.Service.Model;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 using Core.Service.UseCase.WaitCommand;
 
 namespace Core.Client.Web {
@@ -27,8 +27,6 @@ namespace Core.Client.Web {
 
 		TaskCompletionSource<bool> _mainRequestCompletionSource = null;
 		TaskCompletionSource<bool> _updateStateCompletionSource = null;
-
-		ICommand<TConfig, TState> _outdatedCommand = null;
 
 		public TState  State  { get; private set; }
 		public TConfig Config { get; private set; }
@@ -56,40 +54,18 @@ namespace Core.Client.Web {
 
 		public async Task<CommandApplyResult> Apply(ICommand<TConfig, TState> command, CancellationToken cancellationToken) {
 			await WaitForStateUpdate();
-			var request = new UpdateStateRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
-			var response = await PerformMainRequest(() => _webClientHandler.UpdateState(request));
+			var request = new SendCommandRequest<TConfig, TState>(_userId, State.Version, Config.Version, command);
+			var response = await PerformMainRequest(() => _webClientHandler.SendCommand(request));
 			switch ( response ) {
-				case UpdateStateResponse.Updated<TConfig, TState> updated: {
-					_logger.LogTrace($"New next commands found: {updated.NextCommands.Count}");
-					await UpdateState(updated.NewVersion, async () => {
-						await _singleExecutor.Apply(Config, State, command, true, cancellationToken);
-						foreach ( var cmd in updated.NextCommands ) {
-							await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
-						}
-					});
+				case SendCommandResponse.Applied _: {
 					return new CommandApplyResult.Ok();
 				}
 
-				case UpdateStateResponse.Outdated _: {
-					if ( _outdatedCommand == null ) {
-						CommandApplyResult result;
-						try {
-							_logger.LogTrace("Command is outdated, try to repeat it");
-							_outdatedCommand = command;
-							result = await Apply(_outdatedCommand, cancellationToken);
-						} finally {
-							_outdatedCommand = null;
-						}
-						return result;
-					}
-					return new CommandApplyResult.Error("Command outdated");
-				}
-
-				case UpdateStateResponse.Rejected rejected: {
+				case SendCommandResponse.Rejected rejected: {
 					return new CommandApplyResult.Error($"Command rejected: '{rejected.Description}'");
 				}
 
-				case UpdateStateResponse.BadRequest badRequest: {
+				case SendCommandResponse.BadRequest badRequest: {
 					return new CommandApplyResult.Error($"Command is invalid: '{badRequest.Description}'");
 				}
 
@@ -114,12 +90,15 @@ namespace Core.Client.Web {
 				cancellationToken.ThrowIfCancellationRequested();
 				switch ( response ) {
 					case WaitCommandResponse.Updated<TConfig, TState> updated: {
-						_logger.LogTrace($"New commands found: {updated.NextCommands.Count}");
+						_logger.LogTrace($"New commands found: {updated.NextCommands.Length}");
 						await UpdateState(updated.NewVersion, async () => {
 							foreach ( var cmd in updated.NextCommands ) {
 								await _singleExecutor.Apply(Config, State, cmd, true, cancellationToken);
 							}
 						});
+						foreach ( var error in updated.Errors ) {
+							_logger.LogError(error.ToString());
+						}
 						break;
 					}
 
@@ -130,11 +109,6 @@ namespace Core.Client.Web {
 
 					case WaitCommandResponse.Outdated _: {
 						_logger.LogTrace($"Command outdated");
-						break;
-					}
-
-					case WaitCommandResponse.Rejected rejected: {
-						_logger.LogTrace($"Command rejected: '{rejected.Description}'");
 						break;
 					}
 
@@ -153,7 +127,6 @@ namespace Core.Client.Web {
 						break;
 					}
 				}
-				await _taskRunner.Delay(TimeSpan.FromSeconds(3));
 			}
 			// ReSharper disable once FunctionNeverReturns
 		}

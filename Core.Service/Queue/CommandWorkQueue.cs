@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Core.Common.Config;
 using Core.Common.State;
 using Core.Service.Model;
@@ -17,14 +18,14 @@ namespace Core.Service.Queue {
 			_items.TryRemove(userId, out _);
 		}
 
-		public void ForEachPending(Action<UserId, CommandWorkItem<TConfig, TState>> callback) {
+		public async Task ForEachPending(Func<UserId, CommandWorkItem<TConfig, TState>, Task> callback) {
 			foreach ( var pair in _items ) {
 				var userId = pair.Key;
 				var item   = pair.Value;
 				if ( item.IsCompleted ) {
 					continue;
 				}
-				callback(userId, item);
+				await callback(userId, item);
 			}
 		}
 	}
