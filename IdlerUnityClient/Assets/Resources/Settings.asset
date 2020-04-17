@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 1991736922, guid: 148f70bf2b4a44660bca20121f81d028, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  _mode: 2
+  _mode: 1
   _configPath: Config
-  _baseUrl: https://konhit.xyz/idler_service/
+  _baseUrl: http://127.0.0.1:8082/
