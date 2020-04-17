@@ -31,6 +31,8 @@ namespace Core.Client.Web {
 		public TState  State  { get; private set; }
 		public TConfig Config { get; private set; }
 
+		public event Action StateUpdated = () => {};
+
 		public WebServiceWaitClient(
 			ILoggerFactory loggerFactory, CommandExecutor<TConfig, TState> commandExecutor,
 			WebClientHandler webClientHandler, UserIdSource userIdSource, ITaskRunner taskRunner) {
@@ -99,6 +101,7 @@ namespace Core.Client.Web {
 						foreach ( var error in updated.Errors ) {
 							_logger.LogError(error.ToString());
 						}
+						StateUpdated.Invoke();
 						break;
 					}
 

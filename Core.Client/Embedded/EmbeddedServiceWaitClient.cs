@@ -34,6 +34,8 @@ namespace Core.Client.Embedded {
 		public TState  State  { get; private set; }
 		public TConfig Config { get; private set; }
 
+		public event Action StateUpdated = () => {};
+
 		public EmbeddedServiceWaitClient(
 			ILoggerFactory                      loggerFactory,
 			CommandExecutor<TConfig, TState>    commandExecutor,
@@ -110,6 +112,7 @@ namespace Core.Client.Embedded {
 							_logger.LogError(error.ToString());
 						}
 						State.Version = updated.NewVersion;
+						StateUpdated.Invoke();
 						break;
 					}
 
