@@ -1,0 +1,44 @@
+strict digraph {
+    subgraph cluster_1 {
+        label = "Client"
+        labeljust = "l"
+        "Command intention"
+        "Local state" [shape="rect", style="filled", color="gray"]
+        "UI" [shape="rect", style="filled", color="gray"]
+        subgraph cluster_4 {
+            label = ""
+            style = "filled"
+            color = "white"
+            "Direct request" [style="dotted"]
+            "Long-poll request" [style="dotted"]
+        }
+    }
+
+    subgraph cluster_2 {
+        label = "Server"
+        labeljust = "l"
+        "Command queue"
+        "Scheduler"
+        "Server state" [shape="rect", style="filled", color="gray"]
+        subgraph cluster_4 {
+            label = ""
+            style = "filled"
+            color = "white"
+            "Commands + errors" [style="dotted"]
+        }
+    }
+
+    subgraph cluster_3 {
+        label = "Network"
+        labeljust = "l"
+        POST1 [label="POST /send", shape="polygon", style="dashed"]
+        POST2 [label="POST /wait", shape="polygon", style="dashed"]
+    }
+
+    "UI" -> "Command intention" -> "Direct request" -> POST1 -> "Command queue"
+    "Command queue" -> "Scheduler" -> "Server state"
+    "Scheduler" -> "Server state"
+    "Scheduler" -> "Commands + errors" -> POST2
+    "Long-poll request" -> POST2
+    POST2 -> "Long-poll request" -> "Local state", "UI"
+}
