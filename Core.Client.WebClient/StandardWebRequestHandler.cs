@@ -5,18 +5,19 @@ using Core.Client.Web;
 
 namespace Core.Client.WebClient {
 	public sealed class StandardWebRequestHandler : IWebRequestHandler {
-		readonly System.Net.WebClient _webClient;
+		readonly string _baseAddress;
 
 		public StandardWebRequestHandler(string baseAddress) {
-			_webClient = new System.Net.WebClient {
-				BaseAddress = baseAddress
-			};
+			_baseAddress = baseAddress;
 		}
 
 		public async Task<ServiceResponse> Post(string url, string body) {
-			_webClient.Headers.Add("Content-Type", "application/json");
+			var webClient = new System.Net.WebClient {
+				BaseAddress = _baseAddress
+			};
+			webClient.Headers.Add("Content-Type", "application/json");
 			try {
-				var result = await _webClient.UploadStringTaskAsync(url, HttpMethod.Post.ToString(), body);
+				var result = await webClient.UploadStringTaskAsync(url, HttpMethod.Post.ToString(), body);
 				return new ServiceResponse.Ok<string>(result);
 			} catch ( WebException e ) {
 				return new ServiceResponse.Error(e.ToString());
