@@ -1,18 +1,18 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Common.Config;
+using Core.Common.State;
 using Core.Service.Queue;
-using Idler.Common.Config;
-using Idler.Common.State;
 using Microsoft.Extensions.Hosting;
 
-namespace Idler.WebService {
-	sealed class UpdateCommandSchedulerService : IHostedService, IDisposable {
-		readonly CommandScheduler<GameConfig, GameState> _scheduler;
+namespace Core.Service.WebService.Shared {
+	public sealed class UpdateCommandSchedulerService<TConfig, TState> : IHostedService, IDisposable where TConfig : IConfig where TState : IState {
+		readonly CommandScheduler<TConfig, TState> _scheduler;
 
 		Timer _timer;
 
-		public UpdateCommandSchedulerService(CommandScheduler<GameConfig, GameState> scheduler) {
+		public UpdateCommandSchedulerService(CommandScheduler<TConfig, TState> scheduler) {
 			_scheduler = scheduler;
 		}
 
