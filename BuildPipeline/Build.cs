@@ -193,6 +193,10 @@ namespace BuildPipeline {
 					var relativePath = Path.GetRelativePath(sourceDirectory, sourceFile);
 					Logger.Info($"Process file '{relativePath}'");
 					var targetPath = Path.ChangeExtension(targetDirectory / relativePath, "png");
+					var directoryPath = Path.GetDirectoryName(targetPath);
+					if ( !Directory.Exists(directoryPath) ) {
+						Directory.CreateDirectory(directoryPath);
+					}
 					ProcessTasks.StartProcess("dot", $"-Tpng {sourceFile} -o \"{targetPath}\"").WaitForExit();
 				}
 			});
