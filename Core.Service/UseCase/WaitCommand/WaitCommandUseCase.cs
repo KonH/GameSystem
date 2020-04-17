@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Command;
 using Core.Common.CommandExecution;
@@ -35,7 +36,8 @@ namespace Core.Service.UseCase.WaitCommand {
 			if ( validateError != null ) {
 				return validateError;
 			}
-			var commandTask = _awaiter.WaitForCommands(request.UserId, config, state);
+			var cts = new CancellationTokenSource();
+			var commandTask = _awaiter.WaitForCommands(request.UserId, config, state, cts.Token);
 			var delayTask   = _taskRunner.Delay(_settings.WaitTime);
 			await Task.WhenAny(commandTask, delayTask);
 			_awaiter.CancelWaiting(request.UserId);

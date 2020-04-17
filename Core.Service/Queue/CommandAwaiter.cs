@@ -15,10 +15,10 @@ namespace Core.Service.Queue {
 			_queue = queue;
 		}
 
-		public Task<CommandQueueResult<TConfig, TState>> WaitForCommands(UserId userId, TConfig config, TState state) {
+		public Task<CommandQueueResult<TConfig, TState>> WaitForCommands(UserId userId, TConfig config, TState state, CancellationToken cancellationToken) {
 			var item = new CommandWorkItem<TConfig, TState>(config, state);
 			if ( !_queue.Enqueue(userId, item) ) {
-				return Task.FromCanceled<CommandQueueResult<TConfig, TState>>(CancellationToken.None);
+				return Task.FromCanceled<CommandQueueResult<TConfig, TState>>(cancellationToken);
 			}
 			OnWait?.Invoke();
 			return item.Task;
