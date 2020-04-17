@@ -37,6 +37,7 @@ namespace Clicker.UnityClient {
 		}
 
 		async void Awake() {
+			ClickerEntryPoint.Install();
 			AddReactions();
 			_clickButton.onClick.AddListener(HandleClick);
 			_upgradeButton.onClick.AddListener(HandleUpgrade);
