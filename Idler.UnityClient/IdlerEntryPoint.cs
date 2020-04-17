@@ -1,5 +1,4 @@
-﻿using System;
-using Core.Client.UnityClient;
+﻿using Core.Client.UnityClient;
 using Core.Client.UnityClient.DependencyInjection;
 using Core.Client.UnityClient.Settings;
 using Core.Common.CommandDependency;
@@ -20,15 +19,13 @@ namespace Idler.UnityClient {
 			provider.AddServiceFromResources<ISettings, IdlerSettings>("Settings");
 			provider.AddService<ITimeProvider, RealTimeProvider>();
 			var mode = provider.GetService<ISettings>().Mode;
-			if ( mode == ClientMode.Standalone ) {
-				throw new InvalidOperationException($"{nameof(ClientMode.Standalone)} is not supported!");
-			}
-			var setup = SetupFactory<GameConfig, GameState>.CreateWaitable(provider);
+			var setup = SetupFactory<GameConfig, GameState>.Create(provider);
 			setup.Configure(provider);
 			switch ( mode ) {
 				case ClientMode.Embedded: {
 					provider.AddService<ResourceUpdateWatcher>();
-					provider.GetService<CommandScheduler<GameConfig, GameState>.Settings>().AddWatcher(provider.GetService<ResourceUpdateWatcher>());
+					var settings = provider.GetService<CommandScheduler<GameConfig, GameState>.Settings>();
+					settings.AddWatcher(provider.GetService<ResourceUpdateWatcher>());
 					break;
 				}
 			}

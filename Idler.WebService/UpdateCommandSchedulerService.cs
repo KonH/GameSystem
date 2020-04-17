@@ -17,7 +17,7 @@ namespace Idler.WebService {
 		}
 
 		public Task StartAsync(CancellationToken cancellationToken) {
-			_timer = new Timer(_ => _scheduler.Update(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+			_timer = new Timer(_ => Task.Run(_scheduler.Update, cancellationToken), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
 			return Task.CompletedTask;
 		}
 

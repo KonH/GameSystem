@@ -12,7 +12,7 @@ using Core.Service.Repository.State;
 using Core.Service.Shared;
 using Core.Service.UseCase.GetConfig;
 using Core.Service.UseCase.GetState;
-using Core.Service.UseCase.UpdateState;
+using Core.Service.UseCase.SendCommand;
 using Core.Service.UseCase.WaitCommand;
 using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
@@ -88,7 +88,7 @@ namespace Idler.WebService {
 			services.AddSingleton<CommandQueue<GameConfig, GameState>, CommandQueue>();
 			services.AddSingleton<CommandExecutor<GameConfig, GameState>>();
 			services.AddSingleton<BatchCommandExecutor<GameConfig, GameState>>();
-			services.AddSingleton<UpdateStateUseCase<GameConfig, GameState>>();
+			services.AddSingleton<SendCommandUseCase<GameConfig, GameState>>();
 
 			services.AddSingleton<ITimeProvider, RealTimeProvider>();
 			services.AddSingleton<WaitCommandUseCase<GameConfig, GameState>>();
