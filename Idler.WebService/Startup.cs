@@ -18,7 +18,10 @@ using Core.Service.WebService.Configuration;
 using Core.Service.WebService.Repository;
 using Core.Service.WebService.Shared;
 using Idler.Common;
+using Idler.Common.Command;
 using Idler.Common.Config;
+using Idler.Common.Queue;
+using Idler.Common.Repository;
 using Idler.Common.State;
 using Idler.Common.Watcher;
 using Microsoft.AspNetCore.Builder;
@@ -107,6 +110,14 @@ namespace Idler.WebService {
 				schedulerSettings.AddWatcher(sp.GetService<CommonWatcher<GameConfig, GameState>>());
 				schedulerSettings.AddWatcher(sp.GetService<ResourceUpdateWatcher>());
 				return schedulerSettings;
+			});
+
+			services.AddSingleton<SharedStateRepository>();
+			services.AddSingleton<SendSharedResourceProcessor>();
+			services.AddSingleton(sp => {
+				var processor = new CommandProcessor<GameConfig, GameState>(sp.GetService<ITaskRunner>());
+				processor.Handle<SendSharedResourceCommand>(sp.GetService<SendSharedResourceProcessor>().Handle);
+				return processor;
 			});
 
 			services.AddHostedService<UpdateCommandSchedulerService<GameConfig, GameState>>();
