@@ -25,14 +25,16 @@ namespace Core.Service.Queue {
 		readonly CommandWorkQueue<TConfig, TState>     _queue;
 		readonly IStateRepository<TState>              _stateRepository;
 		readonly BatchCommandExecutor<TConfig, TState> _executor;
+		readonly CommandProcessor<TConfig, TState>     _processor;
 
 		public CommandScheduler(
 			Settings                 settings,        CommandWorkQueue<TConfig, TState>     queue,
-			IStateRepository<TState> stateRepository, BatchCommandExecutor<TConfig, TState> executor) {
+			IStateRepository<TState> stateRepository, BatchCommandExecutor<TConfig, TState> executor, CommandProcessor<TConfig, TState> processor) {
 			_settings        = settings;
 			_queue           = queue;
 			_stateRepository = stateRepository;
 			_executor        = executor;
+			_processor       = processor;
 		}
 
 		public async Task Update() {
@@ -54,6 +56,9 @@ namespace Core.Service.Queue {
 						} else {
 							finalErrors.Add(result);
 						}
+					}
+					foreach ( var command in finalCommands ) {
+						_processor.OnNewCommand(userId, command);
 					}
 					item.Complete(finalCommands.ToArray(), finalErrors.ToArray());
 				}

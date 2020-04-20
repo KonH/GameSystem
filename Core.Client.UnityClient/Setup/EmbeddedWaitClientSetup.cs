@@ -35,6 +35,8 @@ namespace Core.Client.UnityClient.Setup {
 			provider.AddService<CommonWatcher<TConfig, TState>>();
 			var settings = provider.GetService<CommandScheduler<TConfig, TState>.Settings>();
 			settings.AddWatcher(provider.GetService<CommonWatcher<TConfig, TState>>());
+
+			provider.AddService<CommandProcessor<TConfig, TState>>();
 		}
 	}
 }

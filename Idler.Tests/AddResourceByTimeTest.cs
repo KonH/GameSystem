@@ -115,7 +115,8 @@ namespace Idler.Tests {
 		CommandScheduler<GameConfig, GameState> GetScheduler(ITimeProvider timeProvider, CommandWorkQueue<GameConfig, GameState> queue) {
 			var settings = new CommandScheduler<GameConfig, GameState>.Settings();
 			settings.AddWatcher(new ResourceUpdateWatcher(timeProvider));
-			return new CommandScheduler<GameConfig, GameState>(settings, queue, StateRepository<GameState>.Create(), CreateExecutor());
+			var processor = new CommandProcessor<GameConfig, GameState>(new DefaultTaskRunner());
+			return new CommandScheduler<GameConfig, GameState>(settings, queue, StateRepository<GameState>.Create(), CreateExecutor(), processor);
 		}
 
 		WaitCommandUseCase<GameConfig, GameState> GetUseCase(CommandAwaiter<GameConfig, GameState> awaiter) {

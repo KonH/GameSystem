@@ -53,7 +53,8 @@ namespace Core.Service.Tests.UseCase {
 			var watcher = new OkWatcher();
 			settings.AddWatcher(watcher);
 			var queue     = new CommandWorkQueue<Config, State>();
-			var scheduler = new CommandScheduler<Config, State>(settings, queue, StateRepository<State>.Create(), CreateExecutor());
+			var processor = new CommandProcessor<Config, State>(new DefaultTaskRunner());
+			var scheduler = new CommandScheduler<Config, State>(settings, queue, StateRepository<State>.Create(), CreateExecutor(), processor);
 			var awaiter   = new CommandAwaiter<Config, State>(queue);
 			var useCase   = GetUseCase(awaiter);
 			var req       = GetRequest(StateRepository.ValidUserId, new StateVersion(0));
