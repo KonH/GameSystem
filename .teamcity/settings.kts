@@ -35,6 +35,7 @@ project {
 		name = "Idler"
 		id = RelativeId(name)
 		buildType(createSimpleBuildType("Idler.Common", "Idler.Tests"))
+		buildType(createSimpleBuildType("Idler.ConsoleClient"))
 		buildType(createSimpleBuildType("Idler.WebService"))
 		buildType(createDeployBuildType("Idler.WebService", "idler-web-service", "Idler.Tests"))
 		buildType(createUnityBuildType("IdlerUnityClient", "WebGL", "Idler.Tests"))

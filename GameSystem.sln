@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.TestTools", "Core.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idler.UnityClient", "Idler.UnityClient\Idler.UnityClient.csproj", "{767EEE32-68AB-4EAC-A650-C17ECDFFAF77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idler.ConsoleClient", "Idler.ConsoleClient\Idler.ConsoleClient.csproj", "{9BC8B9D1-572C-40EC-9D47-16C8B833F144}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,10 @@ Global
 		{767EEE32-68AB-4EAC-A650-C17ECDFFAF77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{767EEE32-68AB-4EAC-A650-C17ECDFFAF77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{767EEE32-68AB-4EAC-A650-C17ECDFFAF77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BC8B9D1-572C-40EC-9D47-16C8B833F144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BC8B9D1-572C-40EC-9D47-16C8B833F144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BC8B9D1-572C-40EC-9D47-16C8B833F144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BC8B9D1-572C-40EC-9D47-16C8B833F144}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
