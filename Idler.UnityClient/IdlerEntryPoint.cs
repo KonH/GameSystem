@@ -11,6 +11,7 @@ using Idler.Common.Queue;
 using Idler.Common.Repository;
 using Idler.Common.State;
 using Idler.Common.Watcher;
+using Idler.UnityClient.Repository;
 
 namespace Idler.UnityClient {
 	public static class IdlerEntryPoint {
@@ -30,6 +31,12 @@ namespace Idler.UnityClient {
 					settings.AddWatcher(provider.GetService<ResourceUpdateWatcher>());
 					var processor = provider.GetService<CommandProcessor<GameConfig, GameState>>();
 					processor.Handle<SendSharedResourceCommand>(provider.CreateService<SendSharedResourceProcessor>().Handle);
+					provider.AddService<ISharedStateProvider, EmbeddedSharedStateProvider>();
+					break;
+				}
+
+				case ClientMode.Web: {
+					provider.AddService<ISharedStateProvider, WebSharedStateProvider>();
 					break;
 				}
 			}
