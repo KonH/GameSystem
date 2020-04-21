@@ -21,13 +21,15 @@ namespace Idler.UnityClient {
 		[SerializeField] GameObject _stateView = null;
 
 		[Header("Resources")]
-		[SerializeField] ResourceView                _resourceView                = null;
-		[SerializeField] SharedResourceView          _sharedResourceView          = null;
-		[SerializeField] Slider                      _incomeSlider                = null;
-		[SerializeField] AddSharedResourceButtonView _addSharedResourceButtonView = null;
+		[SerializeField] ResourceView                 _resourceView                 = null;
+		[SerializeField] SharedResourceView           _sharedResourceView           = null;
+		[SerializeField] Slider                       _incomeSlider                 = null;
+		[SerializeField] AddSharedResourceButtonView  _addSharedResourceButtonView  = null;
+		[SerializeField] SendSharedResourceButtonView _sendSharedResourceButtonView = null;
 
 		[Header("Controls")]
-		[SerializeField] Button _addSharedResourceButton = null;
+		[SerializeField] Button _addSharedResourceButton  = null;
+		[SerializeField] Button _sendSharedResourceButton = null;
 
 
 		[Header("Windows")]
@@ -41,6 +43,7 @@ namespace Idler.UnityClient {
 			Debug.Assert(_incomeSlider, nameof(_incomeSlider));
 			Debug.Assert(_addSharedResourceButtonView, nameof(_addSharedResourceButtonView));
 			Debug.Assert(_addSharedResourceButton, nameof(_addSharedResourceButton));
+			Debug.Assert(_sendSharedResourceButton, nameof(_sendSharedResourceButton));
 			Debug.Assert(_windowSettings, nameof(_windowSettings));
 		}
 
@@ -48,6 +51,7 @@ namespace Idler.UnityClient {
 			IdlerEntryPoint.Install();
 			_windowManager = new WindowManager(_windowSettings);
 			_addSharedResourceButton.onClick.AddListener(HandleAddSharedResource);
+			_sendSharedResourceButton.onClick.AddListener(HandleSendSharedResource);
 			AddReactions();
 			AddHandlers();
 			DisableStateView();
@@ -59,7 +63,8 @@ namespace Idler.UnityClient {
 			var executor        = serviceProvider.GetService<CommandExecutor<GameConfig, GameState>>();
 			executor.AddReaction(new AddResourceCommandReaction(_resourceView, _addSharedResourceButtonView));
 			executor.AddReaction(new RemoveResourceCommandReaction(_resourceView, _addSharedResourceButtonView));
-			executor.AddReaction(new AddSharedResourceCommandReaction(_sharedResourceView));
+			executor.AddReaction(new AddSharedResourceCommandReaction(_sharedResourceView, _sendSharedResourceButtonView));
+			executor.AddReaction(new RemoveSharedResourceCommandReaction(_sharedResourceView, _sendSharedResourceButtonView));
 		}
 
 		void AddHandlers() {
@@ -112,10 +117,15 @@ namespace Idler.UnityClient {
 			_resourceView.Init(State);
 			_sharedResourceView.Init(State);
 			_addSharedResourceButtonView.Init(Config, State);
+			_sendSharedResourceButtonView.Init(Config, State);
 		}
 
 		void HandleAddSharedResource() {
 			EnqueueCommand(new AddSharedResourceCommand());
+		}
+
+		void HandleSendSharedResource() {
+			EnqueueCommand(new SendSharedResourceCommand());
 		}
 	}
 }

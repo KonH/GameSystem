@@ -8,10 +8,12 @@ using Core.Client.UnityClient.CommandExecution;
 
 namespace Idler.UnityClient.Reaction {
 	public sealed class AddSharedResourceCommandReaction : UnityCommandReaction<GameConfig, GameState, AddSharedResourceCommand> {
-		readonly SharedResourceView _resourceView;
+		readonly SharedResourceView           _resourceView;
+		readonly SendSharedResourceButtonView _sendSharedResourceButtonView;
 
-		public AddSharedResourceCommandReaction(SharedResourceView resourceView) {
-			_resourceView = resourceView;
+		public AddSharedResourceCommandReaction(SharedResourceView resourceView, SendSharedResourceButtonView sendSharedResourceButtonView) {
+			_resourceView                 = resourceView;
+			_sendSharedResourceButtonView = sendSharedResourceButtonView;
 		}
 
 		public override Task BeforeOnMainThread(GameConfig config, GameState state, AddSharedResourceCommand command, CancellationToken cancellationToken) {
@@ -20,6 +22,7 @@ namespace Idler.UnityClient.Reaction {
 
 		public override async Task AfterOnMainThread(GameConfig config, GameState state, AddSharedResourceCommand command, CancellationToken cancellationToken) {
 			await _resourceView.AnimateValue(state, cancellationToken);
+			_sendSharedResourceButtonView.UpdateState(config, state);
 		}
 	}
 }
