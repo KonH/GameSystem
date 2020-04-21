@@ -8,7 +8,7 @@ namespace Idler.Common.Command {
 			if ( state.Resource.SharedResources <= 0 ) {
 				return CommandResult.BadCommand("Not enough resources");
 			}
-			state.Resource.Resources--;
+			state.Resource.SharedResources--;
 			return CommandResult.Ok();
 		}
 
