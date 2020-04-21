@@ -20,6 +20,19 @@ namespace Core.Client.UnityClient.Utils {
 			_settings = settings;
 		}
 
+		public async Task<ServiceResponse> Get(string url) {
+			await Async.WaitForUpdate;
+			var req = new UnityWebRequest(_settings.BaseUrl + url, UnityWebRequest.kHttpVerbGET) {
+				downloadHandler = new DownloadHandlerBuffer()
+			};
+			req.SetRequestHeader("Content-Type", "application/json");
+			await req.SendWebRequest();
+			if ( req.isNetworkError || req.isHttpError ) {
+				return new ServiceResponse.Error($"{req.error}: {req.downloadHandler.text}");
+			}
+			return new ServiceResponse.Ok<string>(req.downloadHandler.text);
+		}
+
 		public async Task<ServiceResponse> Post(string url, string body) {
 			await Async.WaitForUpdate;
 			var bodyBytes = Encoding.UTF8.GetBytes(body);

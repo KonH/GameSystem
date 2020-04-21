@@ -36,7 +36,24 @@ namespace Core.Client.Web {
 			Post<WaitCommandRequest, WaitCommandResponse>(
 				"state/wait", request, e => new WaitCommandResponse.BadRequest(e.Description));
 
-		async Task<TResponse> Post<TRequest, TResponse>(
+		public async Task<TResponse> Get<TResponse>(
+			string url, Func<ServiceResponse.Error, TResponse> errorHandler) {
+			var result = await _handler.Get(url);
+			switch ( result ) {
+				case ServiceResponse.Ok<string> ok: {
+					var response = _serializer.Deserialize<WebResponse<TResponse>>(ok.Result);
+					return response.Data;
+				}
+
+				case ServiceResponse.Error error:
+					return errorHandler(error);
+
+				default:
+					throw new ArgumentOutOfRangeException(nameof(result), result, null);
+			}
+		}
+
+		public async Task<TResponse> Post<TRequest, TResponse>(
 			string url, TRequest request, Func<ServiceResponse.Error, TResponse> errorHandler) {
 			var body     = _serializer.Serialize(request);
 			var result   = await _handler.Post(url, body);

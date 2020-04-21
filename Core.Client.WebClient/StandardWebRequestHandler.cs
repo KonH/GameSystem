@@ -11,6 +11,19 @@ namespace Core.Client.WebClient {
 			_baseAddress = baseAddress;
 		}
 
+		public async Task<ServiceResponse> Get(string url) {
+			var webClient = new System.Net.WebClient {
+				BaseAddress = _baseAddress
+			};
+			webClient.Headers.Add("Content-Type", "application/json");
+			try {
+				var result = await webClient.DownloadStringTaskAsync(url);
+				return new ServiceResponse.Ok<string>(result);
+			} catch ( WebException e ) {
+				return new ServiceResponse.Error(e.ToString());
+			}
+		}
+
 		public async Task<ServiceResponse> Post(string url, string body) {
 			var webClient = new System.Net.WebClient {
 				BaseAddress = _baseAddress
