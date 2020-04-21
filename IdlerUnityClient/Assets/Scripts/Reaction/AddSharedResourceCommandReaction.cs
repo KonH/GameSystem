@@ -25,4 +25,16 @@ namespace Idler.UnityClient.Reaction {
 			_sendSharedResourceButtonView.UpdateState(config, state);
 		}
 	}
+
+	public sealed class SendSharedResourceCommandReaction : UnityCommandReaction<GameConfig, GameState, SendSharedResourceCommand> {
+		readonly SharedResourceRemoteView _resourceView;
+
+		public SendSharedResourceCommandReaction(SharedResourceRemoteView resourceView) {
+			_resourceView = resourceView;
+		}
+
+		public override Task AfterOnMainThread(GameConfig config, GameState state, SendSharedResourceCommand command, CancellationToken cancellationToken) {
+			return _resourceView.UpdateValue();
+		}
+	}
 }

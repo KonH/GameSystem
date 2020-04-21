@@ -11,6 +11,7 @@ using Core.Common.CommandExecution;
 using Core.Service.Shared;
 using Idler.Common.Command;
 using Idler.UnityClient.Reaction;
+using Idler.UnityClient.Repository;
 using Idler.UnityClient.UpdateHandler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -26,6 +27,7 @@ namespace Idler.UnityClient {
 		[SerializeField] Slider                       _incomeSlider                 = null;
 		[SerializeField] AddSharedResourceButtonView  _addSharedResourceButtonView  = null;
 		[SerializeField] SendSharedResourceButtonView _sendSharedResourceButtonView = null;
+		[SerializeField] SharedResourceRemoteView     _sharedResourceRemoteView     = null;
 
 		[Header("Controls")]
 		[SerializeField] Button _addSharedResourceButton  = null;
@@ -42,6 +44,7 @@ namespace Idler.UnityClient {
 			Debug.Assert(_resourceView, nameof(_resourceView));
 			Debug.Assert(_incomeSlider, nameof(_incomeSlider));
 			Debug.Assert(_addSharedResourceButtonView, nameof(_addSharedResourceButtonView));
+			Debug.Assert(_sharedResourceRemoteView, nameof(_sharedResourceRemoteView));
 			Debug.Assert(_addSharedResourceButton, nameof(_addSharedResourceButton));
 			Debug.Assert(_sendSharedResourceButton, nameof(_sendSharedResourceButton));
 			Debug.Assert(_windowSettings, nameof(_windowSettings));
@@ -64,6 +67,7 @@ namespace Idler.UnityClient {
 			executor.AddReaction(new AddResourceCommandReaction(_resourceView, _addSharedResourceButtonView));
 			executor.AddReaction(new RemoveResourceCommandReaction(_resourceView, _addSharedResourceButtonView));
 			executor.AddReaction(new AddSharedResourceCommandReaction(_sharedResourceView, _sendSharedResourceButtonView));
+			executor.AddReaction(new SendSharedResourceCommandReaction(_sharedResourceRemoteView));
 			executor.AddReaction(new RemoveSharedResourceCommandReaction(_sharedResourceView, _sendSharedResourceButtonView));
 		}
 
@@ -78,7 +82,7 @@ namespace Idler.UnityClient {
 				case InitializationResult.Ok _: {
 					IsReadyForCommand = true;
 					EnableStateView();
-					InitViews();
+					await InitViews();
 					break;
 				}
 
@@ -113,11 +117,12 @@ namespace Idler.UnityClient {
 			_stateView.SetActive(true);
 		}
 
-		void InitViews() {
+		async Task InitViews() {
 			_resourceView.Init(State);
 			_sharedResourceView.Init(State);
 			_addSharedResourceButtonView.Init(Config, State);
 			_sendSharedResourceButtonView.Init(Config, State);
+			await _sharedResourceRemoteView.Init(ServiceProvider.Instance.GetService<ISharedStateProvider>());
 		}
 
 		void HandleAddSharedResource() {
