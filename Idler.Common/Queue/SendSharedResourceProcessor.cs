@@ -8,11 +8,11 @@ using Idler.Common.Repository;
 namespace Idler.Common.Queue {
 	public sealed class SendSharedResourceProcessor {
 		readonly ILogger<SendSharedResourceProcessor> _logger;
-		readonly SharedStateRepository                _repository;
+		readonly ISharedStateRepository               _repository;
 
 		SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-		public SendSharedResourceProcessor(ILoggerFactory loggerFactory, SharedStateRepository repository) {
+		public SendSharedResourceProcessor(ILoggerFactory loggerFactory, ISharedStateRepository repository) {
 			_logger     = loggerFactory.Create<SendSharedResourceProcessor>();
 			_repository = repository;
 		}

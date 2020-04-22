@@ -25,7 +25,7 @@ namespace Idler.UnityClient {
 			setup.Configure(provider);
 			switch ( mode ) {
 				case ClientMode.Embedded: {
-					provider.AddService<SharedStateRepository>();
+					provider.AddService<ISharedStateRepository, InMemorySharedStateRepository>();
 					provider.AddService<ResourceUpdateWatcher>();
 					var settings = provider.GetService<CommandScheduler<GameConfig, GameState>.Settings>();
 					settings.AddWatcher(provider.GetService<ResourceUpdateWatcher>());

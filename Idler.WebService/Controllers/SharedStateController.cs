@@ -8,9 +8,9 @@ namespace Idler.WebService.Controllers {
 	[Route("[controller]")]
 	public sealed class SharedStateController : ControllerBase {
 		readonly ILogger<SharedStateController> _logger;
-		readonly SharedStateRepository          _repository;
+		readonly ISharedStateRepository         _repository;
 
-		public SharedStateController(ILoggerFactory loggerFactory, SharedStateRepository repository) {
+		public SharedStateController(ILoggerFactory loggerFactory, ISharedStateRepository repository) {
 			_logger     = loggerFactory.Create<SharedStateController>();
 			_repository = repository;
 		}

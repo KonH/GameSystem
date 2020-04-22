@@ -3,9 +3,9 @@ using Idler.Common.Repository;
 
 namespace Idler.UnityClient.Repository {
 	public sealed class EmbeddedSharedStateProvider : ISharedStateProvider {
-		readonly SharedStateRepository _repository;
+		readonly ISharedStateRepository _repository;
 
-		public EmbeddedSharedStateProvider(SharedStateRepository repository) {
+		public EmbeddedSharedStateProvider(ISharedStateRepository repository) {
 			_repository = repository;
 		}
 

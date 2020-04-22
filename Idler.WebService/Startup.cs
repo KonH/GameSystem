@@ -24,6 +24,7 @@ using Idler.Common.Queue;
 using Idler.Common.Repository;
 using Idler.Common.State;
 using Idler.Common.Watcher;
+using Idler.WebService.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -67,16 +68,13 @@ namespace Idler.WebService {
 				case RepositoryMode.Embedded: {
 					services.AddSingleton(JsonRepositoryDecoratorSettings.Create<GameState>());
 					services.AddSingleton<IStateRepository<GameState>, InMemoryStateRepository<GameState>>();
-					break;
-				}
-
-				case RepositoryMode.MongoDb: {
-					services.AddSingleton<IStateRepository<GameState>, MongoStateRepository<GameState>>();
+					services.AddSingleton<ISharedStateRepository, InMemorySharedStateRepository>();
 					break;
 				}
 
 				case RepositoryMode.CouchDb: {
 					services.AddSingleton<IStateRepository<GameState>, CouchStateRepository<GameState>>();
+					services.AddSingleton<ISharedStateRepository, CouchSharedStateRepository>();
 					break;
 				}
 			}
@@ -112,7 +110,6 @@ namespace Idler.WebService {
 				return schedulerSettings;
 			});
 
-			services.AddSingleton<SharedStateRepository>();
 			services.AddSingleton<SendSharedResourceProcessor>();
 			services.AddSingleton(sp => {
 				var processor = new CommandProcessor<GameConfig, GameState>(sp.GetService<ITaskRunner>());
