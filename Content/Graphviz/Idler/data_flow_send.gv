@@ -1,0 +1,21 @@
+strict digraph {
+	subgraph cluster_client {
+		label = "Client"
+		labeljust = "l"
+		"Command intention"
+		"UI" [shape = "rect", style = "filled", color = "gray"]
+	}
+	subgraph cluster_server {
+		label = "Server"
+		labeljust = "l"
+		"Command queue"
+		"Scheduler"
+		"Server state" [shape = "rect", style = "filled", color = "gray"]
+	}
+	subgraph cluster_network {
+		label = "Network"
+		labeljust = "l"
+		POST [label = "POST /send", shape = "polygon", style = "dashed"]
+	}
+	"UI" -> "Command intention" -> "POST" -> "Command queue" -> "Scheduler" -> "Server state"
+}

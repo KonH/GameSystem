@@ -1,0 +1,22 @@
+strict digraph {
+	subgraph cluster_client {
+		label = "Client"
+		labeljust = "l"
+		"UI" [shape="rect", style="filled", color="gray"]
+		"Local state" [shape="rect", style="filled", color="gray"]
+	}
+	subgraph cluster_server {
+		label = "Server"
+		labeljust = "l"
+		"Scheduler"
+		"Commands + errors" [style="dotted"]
+	}
+	subgraph cluster_network {
+		label = "Network"
+		labeljust = "l"
+		POST [label="POST /wait (long-poll)", shape="polygon", style="dashed"]
+	}
+	"Scheduler" -> "Commands + errors" -> "POST"
+	"POST" -> "Local state"
+	"POST" -> "UI"
+}
