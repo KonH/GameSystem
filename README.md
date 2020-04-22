@@ -137,9 +137,37 @@ Dedicated PC is used because of Unity dependency, it isn't support ARM to run Ed
 
 ## Idler project
 
+### Overview
+
+Increase your resources with simple wait, spend it to create barrels and send it to public domain.
+
+Play it [here](https://konhit.xyz/IdlerUnityClient/).
+
+### Features
+
+- Run in any modern web browser
+- Persist game progress between sessions
+- Basic cheat-protection
+- Make a contribution with other players
+
 ### Screenshots
 
-![window animation](Content/Gif/WindowAppear.gif)
+Unity WebGL client:
+
+![unityClient](Content/Png/Idler/unity_client.png)
+
+Window animation:
+
+![windowAnimation](Content/Gif/WindowAppear.gif)
+
+### Tech
+
+Client-server communication updated, now client send command intention in one channel (immediate POST request) and wait for pending commands in another one (long-polling POST request):
+
+![dataFlowSend](Content/Png/Idler/data_flow_send.png)
+![dataFlowWait](Content/Png/Idler/data_flow_wait.png)
+
+Also, this project contains state, which shared between clients and can be updated from any client.
 
 ## Internal tips
 
