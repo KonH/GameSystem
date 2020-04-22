@@ -1,19 +1,19 @@
 strict digraph {
-    Core [shape="polygon" style="filled"]
-    Clicker [shape="polygon" style="filled"]
-    ConsoleClient [shape="polygon" style="filled"]
-    UnityClient [shape="polygon" style="filled"]
-    WebService [shape="polygon" style="filled"]
-    netstandard [shape="polygon"]
-    MongoDB [shape="polygon"]
-    CouchDB [shape="polygon"]
-    Unity [shape="polygon"]
-    netstandard -> Core
-    Core -> Clicker
-    Unity -> UnityClient
-    Clicker -> ConsoleClient
-    Clicker -> UnityClient
-    Clicker -> WebService
-    MongoDB -> WebService
-    CouchDB -> WebService
+	Core [shape="polygon" style="filled"]
+	Clicker [shape="polygon" style="filled"]
+	ConsoleClient [shape="polygon" style="filled"]
+	UnityClient [shape="polygon" style="filled"]
+	WebService [shape="polygon" style="filled"]
+	netstandard [shape="polygon"]
+	MongoDB [shape="polygon"]
+	CouchDB [shape="polygon"]
+	Unity [shape="polygon"]
+	netstandard -> Core
+	Core -> Clicker
+	Unity -> UnityClient
+	Clicker -> ConsoleClient
+	Clicker -> UnityClient
+	Clicker -> WebService
+	MongoDB -> WebService
+	CouchDB -> WebService
 }

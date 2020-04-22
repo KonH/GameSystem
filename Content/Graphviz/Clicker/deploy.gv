@@ -1,39 +1,39 @@
-    strict digraph {
-        subgraph cluster_0 {
-        style="filled"
-        color="lightgrey"
-        label="Windows PC"
-        labeljust="l"
-        node [style="filled", color="white"]
-        GIT [shape="polygon"]
-        TeamCity [shape="polygon"]
-        Unity [shape="polygon"]
-        }
+strict digraph {
+	subgraph cluster_0 {
+		style="filled"
+		color="lightgrey"
+		label="Windows PC"
+		labeljust="l"
+		node [style="filled", color="white"]
+		GIT [shape="polygon"]
+		TeamCity [shape="polygon"]
+		Unity [shape="polygon"]
+	}
 
-        subgraph cluster_1 {
-        style="filled"
-        color="lightgrey"
-        label="Raspberry Pi"
-        labeljust="l"
-        node [style="filled", color="white"]
-        "nginx statics" [shape="polygon"]
-        "bin" [shape="polygon"]
-        "system.d" [shape="polygon"]
-        "https://konhit.xyz/ClickerUnityClient/" [shape="ellipse"]
-        "https://konhit.xyz/clicker_service/" [shape="ellipse"]
-        }
+	subgraph cluster_1 {
+		style="filled"
+		color="lightgrey"
+		label="Raspberry Pi"
+		labeljust="l"
+		node [style="filled", color="white"]
+		"nginx statics" [shape="polygon"]
+		"bin" [shape="polygon"]
+		"system.d" [shape="polygon"]
+		"https://konhit.xyz/ClickerUnityClient/" [shape="ellipse"]
+		"https://konhit.xyz/clicker_service/" [shape="ellipse"]
+	}
 
 
-        SSH [shape="polygon", style="dashed"]
-        SMB [shape="polygon", style="dashed"]
+	SSH [shape="polygon", style="dashed"]
+	SMB [shape="polygon", style="dashed"]
 
-        Unity -> TeamCity
-        GIT -> TeamCity
-        TeamCity -> SSH
-        TeamCity -> SMB
-        SMB -> "nginx statics"
-        "nginx statics" -> "https://konhit.xyz/ClickerUnityClient/"
-        SMB -> "bin"
-        SSH -> "system.d"
-        "system.d" -> "https://konhit.xyz/clicker_service/"
-    }
+	Unity -> TeamCity
+	GIT -> TeamCity
+	TeamCity -> SSH
+	TeamCity -> SMB
+	SMB -> "nginx statics"
+	"nginx statics" -> "https://konhit.xyz/ClickerUnityClient/"
+	SMB -> "bin"
+	SSH -> "system.d"
+	"system.d" -> "https://konhit.xyz/clicker_service/"
+}
