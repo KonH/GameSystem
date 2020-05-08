@@ -19,10 +19,10 @@ namespace Idler.Common.Queue {
 
 		public async Task Handle(UserId _, SendSharedResourceCommand __) {
 			await _semaphore.WaitAsync();
-			var state = _repository.Get();
+			var state = await _repository.Get();
 			state.Resources++;
 			_logger.LogTrace($"Shared resources now: {state.Resources}");
-			_repository.Update(state);
+			await _repository.Update(state);
 			_semaphore.Release();
 		}
 	}

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Core.Common.Utils;
 using Core.Service.WebService.Shared;
 using Idler.Common.Repository;
@@ -16,8 +17,8 @@ namespace Idler.WebService.Controllers {
 		}
 
 		[HttpGet]
-		public WebResponse Get() {
-			var state = _repository.Get();
+		public async Task<WebResponse> Get() {
+			var state = await _repository.Get();
 			_logger.LogTrace($"Return shared resources: '{state.Resources}'.");
 			return new WebResponse(state);
 		}

@@ -17,22 +17,22 @@ namespace Idler.WebService.Repository {
 			_database = client.GetDatabase<CouchState>(settings.CouchDatabaseName);
 		}
 
-		public SharedState Get() {
-			var state = /*await*/ GetRawState(_id).GetAwaiter().GetResult();
+		public async Task<SharedState> Get() {
+			var state = await GetRawState(_id);
 			if ( state == null ) {
 				return new SharedState();
 			}
 			return JsonConvert.DeserializeObject<SharedState>(state.Body);
 		}
 
-		public void Update(SharedState model) {
-			var state = /*await*/ GetRawState(_id).GetAwaiter().GetResult();
+		public async Task Update(SharedState model) {
+			var state = await GetRawState(_id);
 			if ( state == null ) {
 				state = CreateState(model);
 			} else {
 				state.Body = CreateBody(model);
 			}
-			/*await*/ _database.CreateOrUpdateAsync(state).GetAwaiter().GetResult();
+			await _database.CreateOrUpdateAsync(state);
 		}
 
 		Task<CouchState> GetRawState(string id) {

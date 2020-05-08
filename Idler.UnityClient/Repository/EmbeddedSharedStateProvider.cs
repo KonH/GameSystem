@@ -9,8 +9,8 @@ namespace Idler.UnityClient.Repository {
 			_repository = repository;
 		}
 
-		public Task<int> GetResourceCount() {
-			return Task.FromResult(_repository.Get().Resources);
+		public async Task<int> GetResourceCount() {
+			return (await _repository.Get()).Resources;
 		}
 	}
 }
